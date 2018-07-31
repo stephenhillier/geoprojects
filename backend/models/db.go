@@ -13,6 +13,7 @@ import (
 type Datastore interface {
 	AllProjects() ([]*Project, error)
 	CreateDescription(Description) (Description, error)
+	CreateProject(Project) (Project, error)
 }
 
 // DB represents a database with an open connection
@@ -53,18 +54,30 @@ func (db *DB) migrate() (migrated bool, err error) {
 	createConsCodes := `CREATE TYPE consistency AS ENUM ('loose', 'soft', 'firm', 'compact', 'hard', 'dense', '')`
 	createMoisCodes := `CREATE TYPE moisture AS ENUM ('very dry', 'dry', 'damp', 'moist', 'wet', 'very wet', '')`
 
+	createUserTable := `CREATE TABLE IF NOT EXISTS users(
+		id SERIAL PRIMARY KEY,
+		username TEXT NOT NULL CHECK (char_length(username) < 40)	
+	)`
+
 	createDescriptionTable := `CREATE TABLE IF NOT EXISTS description(
-		id serial primary key,
-		original text not null check(char_length(original) < 255),
-		"primary" soil not null,
+		id SERIAL PRIMARY KEY,
+		original TEXT NOT NULL CHECK (char_length(original) < 255),
+		"primary" soil NOT NULL,
 		secondary soil,
 		consistency consistency,
 		moisture moisture
 	)`
 
+	createProjectTable := `CREATE TABLE IF NOT EXISTS project(
+		id SERIAL PRIMARY KEY,
+		name TEXT NOT NULL CHECK (char_length(name) < 255),
+		location TEXT NOT NULL CHECK (char_length(location) < 255),
+		pm INTEGER REFERENCES users(id) ON DELETE SET NULL
+	)`
+
 	createMigrationsTable := `CREATE TABLE IF NOT EXISTS migration(
-		id int primary key,
-		migrated boolean not null
+		id INTEGER PRIMARY KEY,
+		migrated BOOLEAN NOT NULL
 	)`
 
 	registerMigration := `INSERT INTO migration (id, migrated) VALUES (1, TRUE)`
@@ -73,6 +86,8 @@ func (db *DB) migrate() (migrated bool, err error) {
 	tx.MustExec(createSoilCodes)
 	tx.MustExec(createConsCodes)
 	tx.MustExec(createMoisCodes)
+	tx.MustExec(createUserTable)
+	tx.MustExec(createProjectTable)
 	tx.MustExec(createDescriptionTable)
 	tx.MustExec(createMigrationsTable)
 	tx.MustExec(registerMigration)

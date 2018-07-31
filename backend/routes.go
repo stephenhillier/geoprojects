@@ -12,5 +12,6 @@ func (api *Server) routes() {
 	// projects endpoints (list/create/retrieve/update/delete project records)
 	api.router.Route("/projects", func(r chi.Router) {
 		r.Get("/", api.ProjectsIndex)
+		r.Post("/", api.ProjectPost)
 	})
 }

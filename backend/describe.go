@@ -28,6 +28,7 @@ func (api *Server) Describe(w http.ResponseWriter, req *http.Request) {
 		log.Panic(err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(response)
 }
 
