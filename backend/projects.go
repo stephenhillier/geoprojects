@@ -45,6 +45,7 @@ func (api *Server) ProjectPost(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, http.StatusText(405), 405)
 	}
 
+	// take input from POST request and store in a new Project type
 	project := models.Project{}
 	err = decoder.Decode(&project, req.PostForm)
 	if err != nil {
@@ -62,5 +63,12 @@ func (api *Server) ProjectPost(w http.ResponseWriter, req *http.Request) {
 	// return the new project record (including its id)
 	response, err := json.Marshal(record)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	w.Write(response)
+}
+
+// ProjectOpts response to an OPTIONS request with allowed methods
+func (api *Server) ProjectOpts(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	return
 }
