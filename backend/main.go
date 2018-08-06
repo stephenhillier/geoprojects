@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
 	"github.com/stephenhillier/geoprojects/backend/models"
 )
 
@@ -36,7 +35,6 @@ func main() {
 
 	// register middleware
 	api.router.Use(middleware.Logger)
-	api.router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// register routes from routes.go
 	api.routes()
@@ -45,4 +43,9 @@ func main() {
 	log.Printf("Press CTRL+C to stop.")
 	log.Fatal(http.ListenAndServe(":8000", api.router))
 
+}
+
+// Health is a simple health check endpoint that returns HTTP 200 OK.
+func (api *Server) health(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
