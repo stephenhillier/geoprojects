@@ -13,16 +13,17 @@ import (
 
 // Server represents the server environment (db and router)
 type Server struct {
-	db     models.Datastore
-	router chi.Router
+	db       models.Datastore
+	router   chi.Router
+	authCert pemCert // defined in auth.go
 }
 
 func main() {
 
-	dbuser := os.Getenv("DBUSER")
-	dbpass := os.Getenv("DBPASS")
-	dbname := os.Getenv("DBNAME")
-	dbhost := os.Getenv("DBHOST")
+	dbuser := os.Getenv("GEO_DBUSER")
+	dbpass := os.Getenv("GEO_DBPASS")
+	dbname := os.Getenv("GEO_DBNAME")
+	dbhost := os.Getenv("GEO_DBHOST")
 
 	// create db connection and router and use them to create a new "Server" instance
 	db, err := models.NewDB(fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbuser, dbpass, dbhost, dbname))
@@ -31,7 +32,13 @@ func main() {
 	}
 	r := chi.NewRouter()
 
-	api := &Server{db, r}
+	// get new certificate when server initially starts
+	cert, err := getCert(nil)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	api := &Server{db, r, cert}
 
 	// register middleware
 	api.router.Use(middleware.Logger)
