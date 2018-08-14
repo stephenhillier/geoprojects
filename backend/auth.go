@@ -40,15 +40,10 @@ var cert pemCert
 
 // jwtAuthentication returns a new JWTMiddleware from the auth0 go-jwt-middleware package.
 // the JWTMiddleware can be used with chi middleware using jwtAuthentication().Handler
-func jwtAuthentication() *jwtmiddleware.JWTMiddleware {
+func (api *Server) jwtAuthentication() *jwtmiddleware.JWTMiddleware {
 	var err error
 
 	// get new certificate when server initially starts
-	cert, err = getCert(nil)
-	if err != nil {
-		log.Panic(err)
-	}
-
 	// create a new middleware
 	// see https://auth0.com/docs/
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
@@ -67,13 +62,14 @@ func jwtAuthentication() *jwtmiddleware.JWTMiddleware {
 			}
 
 			// check if we need a new certificate
-			if cert.Cert == "" || cert.Kid != token.Header["kid"] || cert.Expiry.Before(time.Now()) {
-				cert, err = getCert(token)
+			if api.authCert.Cert == "" || api.authCert.Kid != token.Header["kid"] || api.authCert.Expiry.Before(time.Now()) {
+				api.authCert, err = getCert(token)
 				if err != nil {
 					log.Panic(err)
 				}
 			}
-			result, err := jwt.ParseRSAPublicKeyFromPEM([]byte(cert.Cert))
+
+			result, err := jwt.ParseRSAPublicKeyFromPEM([]byte(api.authCert.Cert))
 			if err != nil {
 				log.Panic(err)
 			}
@@ -135,3 +131,6 @@ keys:
 
 	return newCert, nil
 }
+
+// todo: add pemCert type receiver to getCert function (e.g. call by api.authCert.Update())
+// - also fix use of cert global variable

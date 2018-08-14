@@ -33,6 +33,7 @@ func main() {
 	r := chi.NewRouter()
 
 	// get new certificate when server initially starts
+	// see auth.go
 	cert, err := getCert(nil)
 	if err != nil {
 		log.Panic(err)
@@ -52,7 +53,7 @@ func main() {
 
 }
 
-// Health is a simple health check endpoint that returns HTTP 200 OK.
+// health is a simple health check handler that returns HTTP 200 OK.
 func (api *Server) health(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
