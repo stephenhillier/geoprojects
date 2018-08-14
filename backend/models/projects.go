@@ -41,3 +41,11 @@ func (db *DB) CreateProject(p Project) (Project, error) {
 	err := db.QueryRowx(query, p.Name, p.Location, p.PM).StructScan(&p)
 	return p, err
 }
+
+// RetrieveProject fetches one project record from database (by project ID)
+func (db *DB) RetrieveProject(projectID int) (Project, error) {
+	p := Project{}
+	query := `SELECT project.id, project.name, project.location, users.username AS pm FROM project LEFT JOIN users ON project.pm=users.id WHERE project.id=$1`
+	err := db.QueryRowx(query, projectID).StructScan(&p)
+	return p, err
+}

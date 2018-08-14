@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi"
 
 	"github.com/gorilla/schema"
 	"github.com/stephenhillier/geoprojects/backend/models"
@@ -67,8 +70,36 @@ func (api *Server) ProjectPost(w http.ResponseWriter, req *http.Request) {
 	w.Write(response)
 }
 
-// ProjectOpts response to an OPTIONS request with allowed methods
-func (api *Server) ProjectOpts(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+// projectOpts serves a response to an OPTIONS request with allowed methods
+func (api *Server) projectOptions(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Allow", "GET, POST, OPTIONS")
 	return
+}
+
+func (api *Server) singleProjectOptions(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Allow", "GET, OPTIONS")
+}
+
+// projectDetail retrieves one project record from database
+func (api *Server) projectDetail(w http.ResponseWriter, req *http.Request) {
+	projectID, err := strconv.Atoi(chi.URLParam(req, "projectID"))
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	project, err := api.db.RetrieveProject(projectID)
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	response, err := json.Marshal(project)
+
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
