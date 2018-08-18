@@ -10,6 +10,9 @@ go get github.com/go-chi/chi
 go get github.com/jmoiron/sqlx
 go get github.com/lib/pq
 
+pwd
+ls
+ls $APP_ROOT
 cd $APP_ROOT/github.com/stephenhillier/geoprojects/backend
 go install
 cd ..
