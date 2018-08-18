@@ -6,6 +6,14 @@ git config --global url.git@github.com:.insteadOf https://github.com/
 /usr/libexec/s2i/assemble
 rc=$?
 
+go get github.com/go-chi/chi
+go get github.com/jmoiron/sqlx
+go get github.com/lib/pq
+
+cd $APP_ROOT/backend
+go install
+cd ..
+
 if [ $rc -eq 0 ]; then
     echo "After successful assembling"
 else
