@@ -4,7 +4,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func (api *Server) routes() {
+func (api *server) routes() {
 
 	// Public routes
 	api.router.Group(func(r chi.Router) {
