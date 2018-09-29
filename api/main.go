@@ -8,14 +8,22 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/stephenhillier/geoprojects/api/projects"
 	"github.com/stephenhillier/geoprojects/backend/models"
 )
 
 // Server represents the server environment (db and router)
 type Server struct {
-	db       models.Datastore
 	router   chi.Router
 	authCert pemCert // defined in auth.go
+	apps     apps
+}
+
+// apps represents the applications available to the API.
+// Applications in this list should have a Routes property with a function
+// that registers API routes that the application handles.
+type apps struct {
+	projects projects.App
 }
 
 func main() {
@@ -26,11 +34,15 @@ func main() {
 	dbhost := os.Getenv("GEO_DBHOST")
 
 	// create db connection and router and use them to create a new "Server" instance
-	db, err := models.NewDB(fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbuser, dbpass, dbhost, dbname))
+	db, err := NewDB(fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbuser, dbpass, dbhost, dbname))
 	if err != nil {
 		log.Panic(err)
 	}
 	r := chi.NewRouter()
+
+	apps := apps{
+		projects: projects.NewApp(db)
+	}
 
 	// get new certificate when server initially starts
 	// see auth.go
@@ -39,7 +51,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	api := &Server{db, r, cert}
+	api := &Server{r, cert, apps}
 
 	// register middleware
 	api.router.Use(middleware.Logger)

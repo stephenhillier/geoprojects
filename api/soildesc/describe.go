@@ -1,4 +1,4 @@
-package main
+package soildesc
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package models
+package main
 
 import (
 	"log"
@@ -8,15 +8,6 @@ import (
 	// load postgres driver
 	_ "github.com/lib/pq"
 )
-
-// Datastore is the collection of model handlers available to the server
-// a model handler must be referenced here to be accessible by e.g. `api.db.AllProjects()`
-type Datastore interface {
-	CreateDescription(Description) (Description, error)
-	AllProjects() ([]*Project, error)
-	CreateProject(Project) (Project, error)
-	RetrieveProject(int) (Project, error)
-}
 
 // DB represents a database with an open connection
 type DB struct {
