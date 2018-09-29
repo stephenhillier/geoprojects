@@ -1,42 +1,25 @@
 package projects
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/render"
 	"github.com/gorilla/schema"
 )
 
 var decoder = schema.NewDecoder()
 
-// App represents an HTTP web application with a datastore, handlers and routes.
-// Routes can be passed into a chi.Router Route() to provide an
-// access point to the handlers in this app.
-type App struct {
-	repo   Repository
-	Routes func(r chi.Router)
-}
-
 // listProjects returns a list of all project records
 func (s *App) listProjects(w http.ResponseWriter, req *http.Request) {
 
-	if req.Method != "GET" {
-		http.Error(w, http.StatusText(405), 405)
-		return
-	}
 	projects, err := s.repo.AllProjects()
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 	}
 
-	response, err := json.Marshal(projects)
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(response)
+	render.JSON(w, req, projects)
 }
 
 // createProject handles a post request to the projects endpoint and
@@ -47,11 +30,6 @@ func (s *App) createProject(w http.ResponseWriter, req *http.Request) {
 	err := req.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), 400)
-	}
-
-	if req.Method != "POST" {
-		w.Header().Set("Allow", "POST")
-		http.Error(w, http.StatusText(405), 405)
 	}
 
 	// take input from POST request and store in a new Project type
@@ -70,10 +48,8 @@ func (s *App) createProject(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// return the new project record (including its id)
-	response, err := json.Marshal(record)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(response)
+	render.Status(req, http.StatusCreated)
+	render.JSON(w, req, record)
 }
 
 // projectOpts serves a response to an OPTIONS request with allowed methods
@@ -100,12 +76,5 @@ func (s *App) projectDetail(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(project)
-
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	render.JSON(w, req, project)
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func (s *App) routes() func(chi.Router) {
+func (s *App) makeRoutes() func(chi.Router) {
 	return func(r chi.Router) {
 		r.Get("/", s.listProjects)
 		r.Options("/", s.projectOptions)
