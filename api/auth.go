@@ -27,16 +27,16 @@ type jsonWebKeys struct {
 	X5c []string `json:"x5c"`
 }
 
-// cert is a public key (PEM) that has been fetched from an auth server.
+// PEMCert is a public key (PEM) that has been fetched from an auth server.
 // if the key is out of date or the key id doesn't match, a new key will be
 // fetched
-type pemCert struct {
+type PEMCert struct {
 	Cert   string
 	Kid    string
 	Expiry time.Time
 }
 
-var cert pemCert
+var cert PEMCert
 
 // jwtAuthentication returns a new JWTMiddleware from the auth0 go-jwt-middleware package.
 // the JWTMiddleware can be used with chi middleware using jwtAuthentication().Handler
@@ -82,12 +82,12 @@ func (api *Server) jwtAuthentication() *jwtmiddleware.JWTMiddleware {
 
 // getCert makes a request to the jwks endpoint and returns a public key certificate
 // original code from from auth0.com/docs/
-func getCert(token *jwt.Token) (pemCert, error) {
+func getCert(token *jwt.Token) (PEMCert, error) {
 
 	// create a new PEM certificate `newCert`.
 	// it will not be returned unless we successfully populate it.
 	// if function returns an error, the existing `cert` certificate will be returned.
-	newCert := pemCert{}
+	newCert := PEMCert{}
 	host := os.Getenv("GEO_AUTH_HOST_JWKS")
 
 	// make a request to the JWKS endpoint specified in `host` above
@@ -132,5 +132,5 @@ keys:
 	return newCert, nil
 }
 
-// todo: add pemCert type receiver to getCert function (e.g. call by api.authCert.Update())
+// todo: add PEMCert type receiver to getCert function (e.g. call by api.authCert.Update())
 // - also fix use of cert global variable

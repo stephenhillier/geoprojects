@@ -16,7 +16,7 @@ func (api *Server) routes() {
 	api.router.Group(func(r chi.Router) {
 		r.Use(api.jwtAuthentication().Handler)
 		// projects endpoints (list/create/retrieve/update/delete project records)
-		r.Route("/api/v1/projects", api.projects.Routes)
+		r.Route("/api/v1/projects", api.apps.projects.Routes)
 	})
 
 }

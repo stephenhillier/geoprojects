@@ -15,25 +15,23 @@ type DB struct {
 }
 
 // NewDB initializes the database connection
-func NewDB(connectionConfig string) (*DB, error) {
-	open, err := sqlx.Open("postgres", connectionConfig)
+func NewDB(connectionConfig string) (*sqlx.DB, error) {
+	db, err := sqlx.Open("postgres", connectionConfig)
 	if err != nil {
 		return nil, err
 	}
-
-	db := &DB{open}
 
 	if err = db.Ping(); err != nil {
 		return nil, err
 	}
 
-	db.migrate()
+	migrate(db)
 
 	log.Println("Database connection ready.")
 	return db, nil
 }
 
-func (db *DB) migrate() (migrated bool, err error) {
+func migrate(db *sqlx.DB) (migrated bool, err error) {
 	check := `SELECT migrated FROM migration WHERE id=$1`
 	row := db.QueryRow(check, 1)
 	err = row.Scan(&migrated)

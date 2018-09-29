@@ -9,13 +9,12 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/stephenhillier/geoprojects/api/projects"
-	"github.com/stephenhillier/geoprojects/backend/models"
 )
 
 // Server represents the server environment (db and router)
 type Server struct {
 	router   chi.Router
-	authCert pemCert // defined in auth.go
+	authCert PEMCert // defined in auth.go
 	apps     apps
 }
 
@@ -23,7 +22,7 @@ type Server struct {
 // Applications in this list should have a Routes property with a function
 // that registers API routes that the application handles.
 type apps struct {
-	projects projects.App
+	projects *projects.App
 }
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 	r := chi.NewRouter()
 
 	apps := apps{
-		projects: projects.NewApp(db)
+		projects: projects.NewApp(db),
 	}
 
 	// get new certificate when server initially starts
