@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/namsral/flag"
 
 	"github.com/stephenhillier/geoprojects/api/projects"
@@ -74,6 +75,18 @@ func main() {
 	api.apps = apps{
 		projects: projects.NewApp(db),
 	}
+
+	// CORS settings
+	cors := cors.New(cors.Options{
+		// AllowedOrigins: []string{"https://foo.com"},
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	api.router.Use(cors.Handler)
 
 	// register middleware
 	api.router.Use(middleware.Logger)
