@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Dashboard from './views/Dashboard.vue'
+import ProjectList from './components/dashboard/ProjectList.vue'
+import NewProject from './components/dashboard/NewProject.vue'
 
 Vue.use(Router)
 
@@ -11,7 +13,19 @@ export default new Router({
     {
       path: '/',
       name: 'dashboard',
-      component: Dashboard
+      component: Dashboard,
+      children: [
+        {
+          path: 'projects/new',
+          name: 'newProject',
+          component: NewProject
+        },
+        {
+          path: 'projects',
+          name: 'projects',
+          component: ProjectList
+        }
+      ]
     }
     // {
     //   path: '/about',

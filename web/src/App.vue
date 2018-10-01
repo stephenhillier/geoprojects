@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <geo-header/>
-    <geo-dashboard/>
+    <router-view/>
   </div>
 </template>
 
