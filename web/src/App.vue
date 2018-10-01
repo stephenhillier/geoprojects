@@ -1,29 +1,43 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <geo-header/>
+    <geo-dashboard/>
   </div>
 </template>
 
+<script>
+import Header from '@/components/Header.vue'
+import Dashboard from '@/views/Dashboard.vue'
+export default {
+  name: 'App',
+  components: {
+    geoHeader: Header,
+    geoDashboard: Dashboard
+  }
+}
+</script>
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Montserrat:600');
+$primary: #01579b;
+$secondary: #263238;
+$dark: #002f6c;
+$white: #fff;
+$navbar-dark-color:                 rgba($white, .8);
+$navbar-dark-hover-color:           rgba($white, .9);
+
+@import "~bootstrap/scss/bootstrap.scss";
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  color: #333;
 }
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+
+.earthworks-brand {
+  font-family: 'Montserrat';
+  font-weight: 600;
+  font-size: 1.8rem;
 }
+
 </style>
