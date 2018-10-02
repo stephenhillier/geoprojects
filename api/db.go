@@ -66,6 +66,20 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		pm INTEGER REFERENCES users(id) ON DELETE SET NULL
 	)`
 
+	// 2018-10-1
+
+	createFieldProgramTable := `CREATE TABLE IF NOT EXISTS field_program(
+		id SERIAL PRIMARY KEY,
+		project INTEGER REFERENCES project(id) ON DELETE PROTECT,
+		start_date DATE NOT NULL,
+		end_date DATE NULL,
+	)`
+
+	createDatapointTable := `CREATE TABLE IF NOT EXISTS datapoint(
+		id SERIAL PRIMARY KEY,
+	)`
+
+	// migrations
 	createMigrationsTable := `CREATE TABLE IF NOT EXISTS migration(
 		id INTEGER PRIMARY KEY,
 		migrated BOOLEAN NOT NULL
@@ -81,6 +95,12 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	tx.MustExec(createProjectTable)
 	tx.MustExec(createDescriptionTable)
 	tx.MustExec(createMigrationsTable)
+
+	// 2018-10-01
+
+	tx.MustExec(createFieldProgramTable)
+	tx.MustExec(createDatapointTable)
+
 	tx.MustExec(registerMigration)
 	err = tx.Commit()
 	if err != nil {
