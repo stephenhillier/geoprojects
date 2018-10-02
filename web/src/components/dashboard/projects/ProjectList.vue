@@ -1,6 +1,10 @@
 <template>
   <b-card title="Projects">
-    <b-table :items="projects" :fields="fields"></b-table>
+    <b-table :items="projects" :fields="fields">
+      <template slot="name" slot-scope="data">
+        <router-link :to="{ name: 'project-details', params: { id: data.item.id }}">{{ data.value }}</router-link>
+      </template>
+    </b-table>
   </b-card>
 </template>
 

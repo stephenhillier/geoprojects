@@ -17,7 +17,6 @@ export default {
 }
 </script>
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Montserrat:600');
 $primary: #01579b;
 $secondary: #263238;
 $dark: #002f6c;
@@ -35,7 +34,6 @@ $navbar-dark-hover-color:           rgba($white, .9);
 }
 
 .earthworks-brand {
-  font-family: 'Montserrat';
   font-weight: 600;
   font-size: 1.8rem;
 }

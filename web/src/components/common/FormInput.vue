@@ -1,5 +1,5 @@
 <!--
-This code is copyright the Government of the Province of British Columbia and is licensed under the Apache 2.0 license
+This component code is copyright the Government of the Province of British Columbia and is licensed under the Apache 2.0 license
 https://github.com/bcgov/gwells/blob/master/app/frontend/src/common/components/FormInput.vue
 https://github.com/bcgov/gwells/blob/59efda5a5cda56f81a1cf7e5633eb632d874cad0/LICENSE
 -->

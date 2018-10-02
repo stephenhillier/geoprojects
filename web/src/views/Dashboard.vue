@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import ProjectList from '@/components/dashboard/ProjectList.vue'
+import ProjectList from '@/components/dashboard/projects/ProjectList.vue'
 import Menu from '@/components/dashboard/Menu.vue'
 export default {
   name: 'Dashboard',
