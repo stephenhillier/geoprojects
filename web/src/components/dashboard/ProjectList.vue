@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   name: 'ProjectList',
   data () {
@@ -15,7 +14,7 @@ export default {
     }
   },
   created () {
-    axios.get('http://localhost:8000/api/v1/projects/').then((r) => {
+    this.$http.get('api/v1/projects/').then((r) => {
       this.projects = r.data
     }).catch((e) => {
       console.log(e)
