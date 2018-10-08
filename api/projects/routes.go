@@ -4,14 +4,16 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func (s *App) makeRoutes() func(chi.Router) {
-	return func(r chi.Router) {
-		r.Get("/", s.listProjects)
-		r.Options("/", s.projectOptions)
-		r.Post("/", s.createProject)
-		r.Route("/{projectID}", func(r chi.Router) {
-			r.Get("/", s.projectDetail)
-			r.Options("/", s.singleProjectOptions)
-		})
-	}
+func (s *App) makeRoutes() chi.Router {
+	router := chi.NewRouter()
+
+	router.Get("/", s.listProjects)
+	router.Options("/", s.projectOptions)
+	router.Post("/", s.createProject)
+	router.Route("/{projectID}", func(r chi.Router) {
+		r.Get("/", s.projectDetail)
+		r.Options("/", s.singleProjectOptions)
+	})
+
+	return router
 }

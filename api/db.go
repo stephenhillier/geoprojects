@@ -41,22 +41,9 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		return migrated, err
 	}
 
-	createSoilCodes := `CREATE TYPE soil AS ENUM ('sand', 'gravel', 'silt', 'clay', 'cobbles', '')`
-	createConsCodes := `CREATE TYPE consistency AS ENUM ('loose', 'soft', 'firm', 'compact', 'hard', 'dense', '')`
-	createMoisCodes := `CREATE TYPE moisture AS ENUM ('very dry', 'dry', 'damp', 'moist', 'wet', 'very wet', '')`
-
 	createUserTable := `CREATE TABLE IF NOT EXISTS users(
 		id SERIAL PRIMARY KEY,
 		username TEXT NOT NULL CHECK (char_length(username) < 40)	
-	)`
-
-	createDescriptionTable := `CREATE TABLE IF NOT EXISTS description(
-		id SERIAL PRIMARY KEY,
-		original TEXT NOT NULL CHECK (char_length(original) < 255),
-		"primary" soil NOT NULL,
-		secondary soil,
-		consistency consistency,
-		moisture moisture
 	)`
 
 	createProjectTable := `CREATE TABLE IF NOT EXISTS project(
@@ -70,13 +57,23 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 
 	createFieldProgramTable := `CREATE TABLE IF NOT EXISTS field_program(
 		id SERIAL PRIMARY KEY,
-		project INTEGER REFERENCES project(id) ON DELETE PROTECT,
+		project INTEGER REFERENCES project(id) NOT NULL,
 		start_date DATE NOT NULL,
-		end_date DATE NULL,
+		end_date DATE
 	)`
 
 	createDatapointTable := `CREATE TABLE IF NOT EXISTS datapoint(
 		id SERIAL PRIMARY KEY,
+		location GEOGRAPHY(POINT,4326) NOT NULL
+	)`
+
+	createBoreholeTable := `CREATE TABLE IF NOT EXISTS borehole(
+		id SERIAL PRIMARY KEY,
+		datapoint INTEGER REFERENCES datapoint(id) NOT NULL,
+		program INTEGER REFERENCES field_program(id) NOT NULL,
+		start_date DATE NOT NULL,
+		end_date DATE,
+		field_eng INTEGER REFERENCES users(id)
 	)`
 
 	// migrations
@@ -88,18 +85,15 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	registerMigration := `INSERT INTO migration (id, migrated) VALUES (1, TRUE)`
 
 	tx := db.MustBegin()
-	tx.MustExec(createSoilCodes)
-	tx.MustExec(createConsCodes)
-	tx.MustExec(createMoisCodes)
 	tx.MustExec(createUserTable)
 	tx.MustExec(createProjectTable)
-	tx.MustExec(createDescriptionTable)
 	tx.MustExec(createMigrationsTable)
 
 	// 2018-10-01
 
 	tx.MustExec(createFieldProgramTable)
 	tx.MustExec(createDatapointTable)
+	tx.MustExec(createBoreholeTable)
 
 	tx.MustExec(registerMigration)
 	err = tx.Commit()

@@ -10,7 +10,7 @@ func (api *server) routes() {
 	api.router.Group(func(r chi.Router) {
 		// server health check
 		r.Get("/health", api.health)
-		r.Route("/api/v1/projects", api.apps.projects.Routes)
+		r.Mount("/api/v1/projects", api.apps.projects.Routes)
 	})
 
 	// Protected routes (requires JWT in header `Authorization: Bearer ___`)
