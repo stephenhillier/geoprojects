@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/namsral/flag"
 
+	"github.com/stephenhillier/geoprojects/api/field"
 	"github.com/stephenhillier/geoprojects/api/projects"
 )
 
@@ -28,6 +29,7 @@ type server struct {
 // that registers API routes that the application handles.
 type apps struct {
 	projects *projects.App
+	field    *field.App
 }
 
 // config holds server/database/auth service configuration
@@ -74,6 +76,7 @@ func main() {
 	api.router = chi.NewRouter()
 	api.apps = apps{
 		projects: projects.NewApp(db),
+		field:    field.NewApp(db),
 	}
 
 	// CORS settings

@@ -16,5 +16,10 @@ func (s *App) makeRoutes() chi.Router {
 		// 	r.Options("/", s.singleProgramOptions)
 		// })
 	})
+	router.Route("/boreholes", func(r chi.Router) {
+		r.Options("/", s.boreholeOptions)
+		r.Get("/", s.listBoreholes)
+		r.Post("/", s.createBorehole)
+	})
 	return router
 }

@@ -9,8 +9,9 @@ import (
 // Routes can be passed into a chi.Router Route() to provide an
 // access point to the handlers in this app.
 type App struct {
-	programs ProgramRepository
-	Routes   chi.Router
+	programs  ProgramRepository
+	boreholes BoreholeRepository
+	Routes    chi.Router
 }
 
 // NewApp takes a database and returns an App containing the
@@ -18,6 +19,7 @@ type App struct {
 func NewApp(db *sqlx.DB) *App {
 	app := &App{}
 	app.programs = &datastore{db}
+	app.boreholes = &datastore{db}
 	app.Routes = app.makeRoutes()
 	return app
 }

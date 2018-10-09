@@ -11,6 +11,7 @@ func (api *server) routes() {
 		// server health check
 		r.Get("/health", api.health)
 		r.Mount("/api/v1/projects", api.apps.projects.Routes)
+		r.Mount("/api/v1/field", api.apps.field.Routes)
 	})
 
 	// Protected routes (requires JWT in header `Authorization: Bearer ___`)

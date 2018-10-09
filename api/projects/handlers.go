@@ -17,6 +17,7 @@ func (s *App) listProjects(w http.ResponseWriter, req *http.Request) {
 	projects, err := s.repo.AllProjects()
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
+		return
 	}
 
 	render.JSON(w, req, projects)
@@ -30,6 +31,7 @@ func (s *App) createProject(w http.ResponseWriter, req *http.Request) {
 	err := req.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), 400)
+		return
 	}
 
 	// take input from POST request and store in a new Project type
@@ -60,6 +62,7 @@ func (s *App) projectOptions(w http.ResponseWriter, req *http.Request) {
 
 func (s *App) singleProjectOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, OPTIONS")
+	return
 }
 
 // projectDetail retrieves one project record from database

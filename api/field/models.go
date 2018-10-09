@@ -5,6 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/encoding/wkb"
 )
 
 // Program represents one fieldwork job within a project.
@@ -22,8 +23,22 @@ type Program struct {
 // ProgramCreateRequest is the data a user should submit to create a program
 type ProgramCreateRequest struct {
 	Project   int       `json:"project"`
-	StartDate time.Time `json:"start_date" db:"start_date"`
-	EndDate   time.Time `json:"end_date" db:"end_date"`
+	StartDate time.Time `json:"start_date" db:"start_date" schema:"start_date"`
+	EndDate   time.Time `json:"end_date" db:"end_date" schema:"end_date"`
+}
+
+// BoreholeCreateRequest is the data a user should submit to create a borehole.
+// A borehole can either be associated with an existing datapoint, or if a location
+// is supplied, a datapoint will be created.
+type BoreholeCreateRequest struct {
+	Project   int        `json:"project"`
+	Program   int        `json:"program"`
+	Datapoint int        `json:"datapoint"`
+	Name      string     `json:"name"`
+	StartDate time.Time  `json:"start_date" db:"start_date" schema:"start_date"`
+	EndDate   time.Time  `json:"end_date" db:"end_date" schema:"end_date"`
+	FieldEng  int        `json:"field_eng" db:"field_eng" schema:"field_eng"`
+	Location  [2]float64 `json:"location"`
 }
 
 // Datapoint is a geographic point that represents the location where data
@@ -41,7 +56,10 @@ type Datapoint struct {
 // There may be a number of samples/observations associated with one borehole.
 type Borehole struct {
 	ID        int       `json:"id"`
+	Project   int       `json:"project"`
+	Program   int       `json:"program"`
 	Datapoint int       `json:"datapoint"`
+	Name      string    `json:"name"`
 	StartDate time.Time `json:"start_date" db:"start_date"`
 	EndDate   time.Time `json:"end_date" db:"end_date"`
 	FieldEng  int       `json:"field_eng" db:"field_eng"`
@@ -65,7 +83,7 @@ type DatapointRepository interface {
 // BoreholeRepository is the set of methods available for interacting with Borehole records
 type BoreholeRepository interface {
 	ListBoreholes() ([]*Borehole, error)
-	CreateBorehole(bh Borehole) (Borehole, error)
+	CreateBorehole(bh BoreholeCreateRequest) (Borehole, error)
 	GetBorehole(boreholeID int) (Borehole, error)
 }
 
@@ -75,6 +93,9 @@ type datastore struct {
 	*sqlx.DB
 }
 
+// Field Program database methods
+
+// ListPrograms returns a list of field program records
 func (db *datastore) ListPrograms() ([]Program, error) {
 	programs := []Program{}
 	query := `SELECT id, project, start_date, end_date FROM field_program`
@@ -87,22 +108,87 @@ func (db *datastore) ListPrograms() ([]Program, error) {
 	return programs, nil
 }
 
+// CreateProgram creates a field program record
 func (db *datastore) CreateProgram(fp ProgramCreateRequest) (Program, error) {
 	query := `INSERT INTO field_program (project, start_date, end_date) VALUES ($1, $2, $3) RETURNING id, project, start_date, end_date`
 	created := Program{}
-	err := db.Get(&created, query)
+	err := db.Get(&created, query, fp.Project, fp.StartDate, fp.EndDate)
 	if err != nil {
 		return Program{}, err
 	}
 	return created, nil
 }
 
+// GetProgram retrieves a single field program record
 func (db *datastore) GetProgram(programID int) (Program, error) {
 	p := Program{}
-	query := `SELECT id, project, start_date, end_date FROM field_program`
-	err := db.Get(&p, query)
+	query := `SELECT id, project, start_date, end_date FROM field_program WHERE id=$1`
+	err := db.Get(&p, query, programID)
 	if err != nil {
 		return Program{}, err
+	}
+	return p, nil
+}
+
+// Datapoint database methods
+
+// CreateDatapoint creates a datapoint record.
+// It may be called while handling create requests for boreholes or instruments
+func (db *datastore) CreateDatapoint(dp Datapoint) (Datapoint, error) {
+	query := `INSERT INTO datapoint (location) VALUES ($1)`
+	created := Datapoint{}
+	err := db.Get(&created, query, wkb.Value(dp.Location))
+	if err != nil {
+		return Datapoint{}, err
+	}
+	return created, nil
+}
+
+// Borehole database methods
+
+func (db *datastore) ListBoreholes() ([]*Borehole, error) {
+	query := `SELECT id, project, program, start_date, end_date, field_eng FROM borehole`
+	boreholes := []*Borehole{}
+	err := db.Select(&boreholes, query)
+	if err != nil {
+		return []*Borehole{}, err
+	}
+	return boreholes, nil
+}
+
+// CreateBorehole creates a borehole record, as well as a Datapoint record if an existing
+// datapoint wasn't supplied.
+// Either a datapoint or a location should be supplied.
+func (db *datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) {
+
+	// If a datapoint wasn't supplied, create one.
+	// If a location also wasn't supplied, it will be created at the default location (0, 0?)
+	if bh.Datapoint == 0 {
+		newDP := Datapoint{Location: bh.Location}
+		createdDP, err := db.CreateDatapoint(newDP)
+		if err != nil {
+			return Borehole{}, err
+		}
+		bh.Datapoint = createdDP.ID
+	}
+
+	query := `INSERT INTO borehole (datapoint, program, project, start_date, end_date, field_eng) VALUES ($1, $2, $3, $4, $5, $6)`
+	created := Borehole{}
+	err := db.Get(&created, query, bh.Datapoint, bh.Program, bh.Project, bh.StartDate, bh.EndDate, bh.FieldEng)
+	if err != nil {
+		return Borehole{}, err
+	}
+
+	return created, nil
+}
+
+// GetBorehole retrieves a single borehole record.
+func (db *datastore) GetBorehole(boreholeID int) (Borehole, error) {
+	p := Borehole{}
+	query := `SELECT id, project, program, datapoint, name, start_date, end_date, field_eng FROM borehole WHERE id=$1`
+	err := db.Get(&p, query, boreholeID)
+	if err != nil {
+		return Borehole{}, err
 	}
 	return p, nil
 }

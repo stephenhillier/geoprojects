@@ -69,8 +69,10 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 
 	createBoreholeTable := `CREATE TABLE IF NOT EXISTS borehole(
 		id SERIAL PRIMARY KEY,
+		project INTEGER REFERENCES project(id) NOT NULL,
 		datapoint INTEGER REFERENCES datapoint(id) NOT NULL,
-		program INTEGER REFERENCES field_program(id) NOT NULL,
+		program INTEGER REFERENCES field_program(id),
+		name TEXT NOT NULL CHECK (char_length(name) < 40),
 		start_date DATE NOT NULL,
 		end_date DATE,
 		field_eng INTEGER REFERENCES users(id)
