@@ -65,9 +65,9 @@ func (s *App) listBoreholes(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *App) createBorehole(w http.ResponseWriter, req *http.Request) {
-
+	decoder := json.NewDecoder(req.Body)
 	borehole := BoreholeCreateRequest{}
-	err := json.Unmarshal(req.Body, &borehole)
+	err := decoder.Decode(&borehole)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
