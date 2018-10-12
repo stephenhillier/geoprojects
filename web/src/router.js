@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Dashboard from './views/Dashboard.vue'
-import ProjectList from './components/dashboard/projects/ProjectList.vue'
+import Home from './views/Home.vue'
+
+import ProjectDashboard from './views/ProjectDashboard.vue'
+import ProjectList from './views/ProjectList.vue'
 import NewProject from './components/dashboard/projects/NewProject.vue'
 import ProjectDetails from './components/dashboard/projects/ProjectDetails.vue'
 
@@ -12,27 +14,33 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'dashboard',
-      component: Dashboard,
+      path: '/projects/new',
+      name: 'new-project',
+      component: NewProject
+    },
+    {
+      path: '/projects/:id',
+      name: 'project-dashboard',
+      component: ProjectDashboard,
       children: [
         {
-          path: 'projects/new',
-          name: 'newProject',
-          component: NewProject
-        },
-        {
-          path: 'projects/:id',
+          path: '/',
           name: 'project-details',
           component: ProjectDetails
-        },
-        {
-          path: 'projects',
-          name: 'projects',
-          component: ProjectList
         }
       ]
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: ProjectList
+    },
+    {
+      path: '/',
+      name: 'home',
+      component: Home
     }
+
     // {
     //   path: '/about',
     //   name: 'about',

@@ -1,18 +1,19 @@
 <template>
-  <b-card>
-    <div><router-link :to='{name: "projects"}'>Select project</router-link></div>
-    <div>Field programs</div>
-    <div>Lab programs</div>
-    <div><strong>Data:</strong></div>
-    <div>Boreholes</div>
-    <div>Instrumentation</div>
-    <div>Soil samples</div>
-  </b-card>
+    <b-list-group>
+      <b-list-group-item>{{ projectName }}</b-list-group-item>
+      <b-list-group-item>Field programs</b-list-group-item>
+      <b-list-group-item>Lab programs</b-list-group-item>
+      <b-list-group-item><strong>Data:</strong></b-list-group-item>
+      <b-list-group-item>Boreholes</b-list-group-item>
+      <b-list-group-item>Instrumentation</b-list-group-item>
+      <b-list-group-item>Soil samples</b-list-group-item>
+    </b-list-group>
 </template>
 
 <script>
 export default {
-  name: 'DashboardMenu'
+  name: 'DashboardMenu',
+  props: ['projectName']
 }
 </script>
 

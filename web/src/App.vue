@@ -1,18 +1,18 @@
 <template>
   <div id="app">
-    <geo-header/>
-    <router-view/>
+    <geo-header class="mb-3"/>
+    <b-container fluid>
+      <router-view/>
+    </b-container>
   </div>
 </template>
 
 <script>
 import Header from '@/components/Header.vue'
-import Dashboard from '@/views/Dashboard.vue'
 export default {
   name: 'App',
   components: {
-    geoHeader: Header,
-    geoDashboard: Dashboard
+    geoHeader: Header
   }
 }
 </script>
