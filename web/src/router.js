@@ -20,13 +20,15 @@ export default new Router({
     },
     {
       path: '/projects/:id',
-      name: 'project-dashboard',
       component: ProjectDashboard,
       children: [
         {
           path: '/',
-          name: 'project-details',
-          component: ProjectDetails
+          name: 'project-dashboard',
+          component: ProjectDetails,
+          meta: {
+            breadcrumbs: []
+          }
         }
       ]
     },

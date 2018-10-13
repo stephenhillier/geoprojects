@@ -1,8 +1,5 @@
 <template>
     <b-list-group>
-      <b-list-group-item>{{ projectName }}</b-list-group-item>
-      <b-list-group-item>Field programs</b-list-group-item>
-      <b-list-group-item>Lab programs</b-list-group-item>
       <b-list-group-item><strong>Data:</strong></b-list-group-item>
       <b-list-group-item>Boreholes</b-list-group-item>
       <b-list-group-item>Instrumentation</b-list-group-item>

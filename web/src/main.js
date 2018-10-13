@@ -7,6 +7,13 @@ import './registerServiceWorker'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
 import qs from 'qs'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faSpinner)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(BootstrapVue)
 
