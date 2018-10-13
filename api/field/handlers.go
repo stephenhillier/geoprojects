@@ -3,6 +3,7 @@ package field
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/render"
 	"github.com/gorilla/schema"
@@ -56,9 +57,26 @@ func (s *App) createProgram(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *App) listBoreholes(w http.ResponseWriter, req *http.Request) {
-	boreholes, err := s.boreholes.ListBoreholes()
+
+	project := req.FormValue("project")
+
+	var projectID int
+	var err error
+
+	// if a project was supplied in querystring, set projectID so that the db query can
+	// list boreholes by project
+	if project != "" {
+		projectID, err = strconv.Atoi(project)
+		if err != nil {
+			// if project can't be converted to an int, make sure projectID is zero.
+			// this ignores the ?project query if it's not a valid integer.
+			projectID = 0
+		}
+	}
+
+	boreholes, err := s.boreholes.ListBoreholes(projectID)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, err.Error(), 500)
 		return
 	}
 	render.JSON(w, req, boreholes)

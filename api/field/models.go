@@ -105,7 +105,7 @@ type DatapointRepository interface {
 
 // BoreholeRepository is the set of methods available for interacting with Borehole records
 type BoreholeRepository interface {
-	ListBoreholes() ([]*Borehole, error)
+	ListBoreholes(projectID int) ([]*Borehole, error)
 	CreateBorehole(bh BoreholeCreateRequest) (Borehole, error)
 	GetBorehole(boreholeID int) (Borehole, error)
 }
@@ -169,10 +169,17 @@ func (db *datastore) CreateDatapoint(dp Datapoint) (Datapoint, error) {
 
 // Borehole database methods
 
-func (db *datastore) ListBoreholes() ([]*Borehole, error) {
+func (db *datastore) ListBoreholes(projectID int) ([]*Borehole, error) {
 	query := `SELECT id, project, program, start_date, end_date, field_eng FROM borehole`
+	queryByProject := `SELECT id, project, program, start_date, end_date, field_eng FROM borehole WHERE project=$1`
+	var err error
 	boreholes := []*Borehole{}
-	err := db.Select(&boreholes, query)
+	if projectID == 0 {
+		err = db.Select(&boreholes, query)
+	} else {
+		err = db.Select(&boreholes, queryByProject, projectID)
+	}
+
 	if err != nil {
 		return []*Borehole{}, err
 	}

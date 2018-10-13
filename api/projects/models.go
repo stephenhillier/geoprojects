@@ -6,10 +6,11 @@ import (
 
 // Project is an object that contains files and data associated with a single project
 type Project struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Location string `json:"location"`
-	PM       string `json:"pm"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Location      string `json:"location"`
+	PM            string `json:"pm"`
+	BoreholeCount int    `json:"borehole_count" db:"borehole_count"`
 }
 
 // Repository is the set of methods available to a collection of projects
@@ -61,7 +62,13 @@ func (db *Datastore) CreateProject(p Project) (Project, error) {
 // RetrieveProject fetches one project record from database (by project ID)
 func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
 	p := Project{}
-	query := `SELECT project.id, project.name, project.location, users.username AS pm FROM project LEFT JOIN users ON project.pm=users.id WHERE project.id=$1`
-	err := db.QueryRowx(query, projectID).StructScan(&p)
+	query := `SELECT project.id, project.name, project.location, users.username AS pm, COUNT(borehole.project) as borehole_count
+						FROM project
+						LEFT JOIN users ON project.pm=users.id 
+						LEFT JOIN borehole ON (borehole.project = project.id)
+						WHERE project.id=$1
+						GROUP BY project.id, users.username
+						`
+	err := db.Get(&p, query, projectID)
 	return p, err
 }
