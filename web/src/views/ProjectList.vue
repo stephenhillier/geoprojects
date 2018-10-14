@@ -22,7 +22,7 @@
               <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{ data.value }}</router-link>
             </template>
           </b-table>
-          <b-btn variant="success" size="sm" :to="{ name: 'new-project' }">New project</b-btn>
+          <b-btn variant="info" size="sm" :to="{ name: 'new-project' }">New project</b-btn>
         </div>
 
       </b-card>

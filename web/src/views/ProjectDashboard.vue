@@ -1,16 +1,16 @@
 <template>
   <b-container fluid id="dashboard" class="mb-3">
-    <b-row class="mb-3">
+    <b-row>
       <b-col>
         <b-breadcrumb :items="breadcrumbs"></b-breadcrumb>
       </b-col>
     </b-row>
-    <b-row v-if="!!project">
+    <b-row v-if="!!project && project != {}">
       <b-col cols="12" lg="3" xl="2">
-        <project-menu :project-name="project.name"></project-menu>
+        <project-menu :project="project" :project-id="project.id"></project-menu>
       </b-col>
       <b-col>
-        <router-view></router-view>
+        <router-view :project="project" @update-project="fetchProjectData"></router-view>
       </b-col>
       <b-col cols="12" lg="3" xl="2" class="d-none d-xl-block">
         <div>
@@ -41,12 +41,12 @@ export default {
   },
   data () {
     return {
-      project: null
+      project: {}
     }
   },
   computed: {
     breadcrumbs () {
-      return [
+      const crumbs = [
         {
           text: 'Projects',
           to: { name: 'projects' }
@@ -56,14 +56,30 @@ export default {
           to: { name: 'project-dashboard', params: { id: this.$route.params.id } }
         }
       ]
+
+      if (this.$route.meta && this.$route.meta.breadcrumbs) {
+        this.$route.meta.breadcrumbs.forEach((crumb) => {
+          if (crumb.to) {
+            crumb.to.params = { id: this.$route.params.id }
+          }
+          crumbs.push(crumb)
+        })
+      }
+
+      return crumbs
+    }
+  },
+  methods: {
+    fetchProjectData () {
+      this.$http.get(`api/v1/projects/${this.$route.params.id}`).then((response) => {
+        this.project = response.data
+      }).catch((e) => {
+        console.log(e)
+      })
     }
   },
   created () {
-    this.$http.get(`api/v1/projects/${this.$route.params.id}`).then((response) => {
-      this.project = response.data
-    }).catch((e) => {
-      console.log(e)
-    })
+    this.fetchProjectData()
   }
 }
 </script>

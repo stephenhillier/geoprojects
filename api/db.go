@@ -75,7 +75,8 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		name TEXT NOT NULL CHECK (char_length(name) < 40),
 		start_date DATE NOT NULL,
 		end_date DATE,
-		field_eng INTEGER REFERENCES users(id)
+		field_eng INTEGER REFERENCES users(id),
+		UNIQUE (project, name)
 	)`
 
 	// migrations

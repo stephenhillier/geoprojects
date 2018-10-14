@@ -2,10 +2,14 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 
-import ProjectDashboard from './views/ProjectDashboard.vue'
 import ProjectList from './views/ProjectList.vue'
 import NewProject from './components/dashboard/projects/NewProject.vue'
+
+import ProjectDashboard from './views/ProjectDashboard.vue'
 import ProjectDetails from './components/dashboard/projects/ProjectDetails.vue'
+
+import ProjectBoreholes from './components/dashboard/boreholes/ProjectBoreholes.vue'
+import NewBorehole from './components/dashboard/boreholes/NewBorehole.vue'
 
 Vue.use(Router)
 
@@ -22,6 +26,36 @@ export default new Router({
       path: '/projects/:id',
       component: ProjectDashboard,
       children: [
+        {
+          path: 'boreholes/new',
+          name: 'new-borehole',
+          component: NewBorehole,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Boreholes',
+                to: { name: 'project-boreholes' }
+              },
+              {
+                text: 'New borehole',
+                to: { name: 'new-project' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'boreholes',
+          name: 'project-boreholes',
+          component: ProjectBoreholes,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Boreholes',
+                to: { name: 'project-boreholes' }
+              }
+            ]
+          }
+        },
         {
           path: '/',
           name: 'project-dashboard',

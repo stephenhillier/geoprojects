@@ -1,10 +1,6 @@
 package field
 
 import (
-	"database/sql"
-	"encoding/json"
-	"time"
-
 	"github.com/jmoiron/sqlx"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkt"
@@ -16,17 +12,17 @@ import (
 // Datapoints (as well as Boreholes, Instruments) associated with that
 // individual Program.
 type Program struct {
-	ID        int64     `json:"id"`
-	Project   int64     `json:"project"`
-	StartDate time.Time `json:"start_date" db:"start_date"`
-	EndDate   time.Time `json:"end_date" db:"end_date"`
+	ID        int64    `json:"id"`
+	Project   int64    `json:"project"`
+	StartDate NullDate `json:"start_date" db:"start_date"`
+	EndDate   NullDate `json:"end_date" db:"end_date"`
 }
 
 // ProgramCreateRequest is the data a user should submit to create a program
 type ProgramCreateRequest struct {
-	Project   int64     `json:"project"`
-	StartDate time.Time `json:"start_date" db:"start_date" schema:"start_date"`
-	EndDate   time.Time `json:"end_date" db:"end_date" schema:"end_date"`
+	Project   int64    `json:"project"`
+	StartDate NullDate `json:"start_date" db:"start_date" schema:"start_date"`
+	EndDate   NullDate `json:"end_date" db:"end_date" schema:"end_date"`
 }
 
 // BoreholeCreateRequest is the data a user should submit to create a borehole.
@@ -37,10 +33,24 @@ type BoreholeCreateRequest struct {
 	Program   NullInt64  `json:"program"`
 	Datapoint NullInt64  `json:"datapoint"`
 	Name      string     `json:"name"`
-	StartDate time.Time  `json:"start_date" db:"start_date" schema:"start_date"`
-	EndDate   time.Time  `json:"end_date" db:"end_date" schema:"end_date"`
+	StartDate NullDate   `json:"start_date" db:"start_date" schema:"start_date"`
+	EndDate   NullDate   `json:"end_date" db:"end_date" schema:"end_date"`
 	FieldEng  NullInt64  `json:"field_eng" db:"field_eng" schema:"field_eng"`
 	Location  [2]float64 `json:"location"`
+}
+
+// BoreholeResponse is the data returned by the API after receiving a request for
+// a borehole's details
+// the FieldEng field is a string (users.username) instead of a primary key reference.
+type BoreholeResponse struct {
+	ID        int64      `json:"id"`
+	Project   NullInt64  `json:"project"`
+	Program   NullInt64  `json:"program"`
+	Datapoint NullInt64  `json:"datapoint"`
+	Name      string     `json:"name"`
+	StartDate NullDate   `json:"start_date" db:"start_date"`
+	EndDate   NullDate   `json:"end_date" db:"end_date"`
+	FieldEng  NullString `json:"field_eng" db:"field_eng"`
 }
 
 // Datapoint is a geographic point that represents the location where data
@@ -60,32 +70,11 @@ type Borehole struct {
 	ID        int64     `json:"id"`
 	Project   NullInt64 `json:"project"`
 	Program   NullInt64 `json:"program"`
-	Datapoint NullInt64 `json:"datapoint"`
+	Datapoint int64     `json:"datapoint"`
 	Name      string    `json:"name"`
-	StartDate time.Time `json:"start_date" db:"start_date"`
-	EndDate   time.Time `json:"end_date" db:"end_date"`
+	StartDate NullDate  `json:"start_date" db:"start_date"`
+	EndDate   NullDate  `json:"end_date" db:"end_date"`
 	FieldEng  NullInt64 `json:"field_eng" db:"field_eng"`
-}
-
-// NullInt64 is an alias for sql.NullInt64 data type
-type NullInt64 struct {
-	sql.NullInt64
-}
-
-// MarshalJSON represents NullInt64 as JSON
-func (v NullInt64) MarshalJSON() ([]byte, error) {
-	if !v.Valid {
-		return json.Marshal(nil)
-	}
-	return json.Marshal(v.Int64)
-
-}
-
-// UnmarshalJSON converts from JSON to NullInt64
-func (v *NullInt64) UnmarshalJSON(b []byte) error {
-	err := json.Unmarshal(b, &v.Int64)
-	v.Valid = (err == nil)
-	return err
 }
 
 // ProgramRepository is the set of methods that are available for interacting
@@ -105,7 +94,7 @@ type DatapointRepository interface {
 
 // BoreholeRepository is the set of methods available for interacting with Borehole records
 type BoreholeRepository interface {
-	ListBoreholes(projectID int) ([]*Borehole, error)
+	ListBoreholes(projectID int) ([]*BoreholeResponse, error)
 	CreateBorehole(bh BoreholeCreateRequest) (Borehole, error)
 	GetBorehole(boreholeID int) (Borehole, error)
 }
@@ -169,11 +158,26 @@ func (db *datastore) CreateDatapoint(dp Datapoint) (Datapoint, error) {
 
 // Borehole database methods
 
-func (db *datastore) ListBoreholes(projectID int) ([]*Borehole, error) {
-	query := `SELECT id, project, program, start_date, end_date, field_eng FROM borehole`
-	queryByProject := `SELECT id, project, program, start_date, end_date, field_eng FROM borehole WHERE project=$1`
+// ListBoreholes returns all boreholes, or, with optional projectID,
+// all boreholes for a given project.
+func (db *datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
+	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole`
+
+	queryByProject := `
+		SELECT borehole.id,
+			borehole.project,
+			borehole.program,
+			borehole.datapoint,
+			borehole.name,
+			borehole.start_date,
+			borehole.end_date,
+			users.username AS field_eng
+		FROM borehole LEFT JOIN users ON borehole.field_eng=users.id
+		WHERE project=$1
+	`
+
 	var err error
-	boreholes := []*Borehole{}
+	boreholes := []*BoreholeResponse{}
 	if projectID == 0 {
 		err = db.Select(&boreholes, query)
 	} else {
@@ -181,7 +185,7 @@ func (db *datastore) ListBoreholes(projectID int) ([]*Borehole, error) {
 	}
 
 	if err != nil {
-		return []*Borehole{}, err
+		return []*BoreholeResponse{}, err
 	}
 	return boreholes, nil
 }
@@ -202,7 +206,11 @@ func (db *datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) 
 		bh.Datapoint = createdDP.ID
 	}
 
-	query := `INSERT INTO borehole (datapoint, program, project, name, start_date, end_date, field_eng) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, project, program, name, start_date, end_date, field_eng`
+	query := `
+		INSERT INTO borehole (datapoint, program, project, name, start_date, end_date, field_eng)
+		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, project, program, name, datapoint, start_date, end_date, field_eng
+	`
+
 	created := Borehole{}
 	err := db.Get(
 		&created,

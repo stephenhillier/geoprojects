@@ -6,14 +6,16 @@ import BootstrapVue from 'bootstrap-vue'
 import './registerServiceWorker'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
-import qs from 'qs'
+// import qs from 'qs'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import FormInput from '@/components/common/FormInput.vue'
 
-library.add(faSpinner)
+library.add(faSpinner, faInfoCircle)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('form-input', FormInput)
 
 Vue.use(BootstrapVue)
 
@@ -21,13 +23,13 @@ const axiosClient = axios.create({
   baseURL: 'http://localhost:8000/'
 })
 
-axiosClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+// axiosClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 
 axiosClient.interceptors.request.use(function (config) {
   console.log(config)
-  if (config.data) {
-    config.data = qs.stringify(config.data)
-  }
+  // if (config.data) {
+  //   config.data = qs.stringify(config.data)
+  // }
   return config
 }, function (error) {
   console.log(error)
