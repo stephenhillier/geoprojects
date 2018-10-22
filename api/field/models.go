@@ -25,34 +25,6 @@ type ProgramCreateRequest struct {
 	EndDate   NullDate `json:"end_date" db:"end_date" schema:"end_date"`
 }
 
-// BoreholeCreateRequest is the data a user should submit to create a borehole.
-// A borehole can either be associated with an existing datapoint, or if a location
-// is supplied, a datapoint will be created.
-type BoreholeCreateRequest struct {
-	Project   int64      `json:"project"`
-	Program   NullInt64  `json:"program"`
-	Datapoint NullInt64  `json:"datapoint"`
-	Name      string     `json:"name"`
-	StartDate NullDate   `json:"start_date" db:"start_date" schema:"start_date"`
-	EndDate   NullDate   `json:"end_date" db:"end_date" schema:"end_date"`
-	FieldEng  NullInt64  `json:"field_eng" db:"field_eng" schema:"field_eng"`
-	Location  [2]float64 `json:"location"`
-}
-
-// BoreholeResponse is the data returned by the API after receiving a request for
-// a borehole's details
-// the FieldEng field is a string (users.username) instead of a primary key reference.
-type BoreholeResponse struct {
-	ID        int64      `json:"id"`
-	Project   NullInt64  `json:"project"`
-	Program   NullInt64  `json:"program"`
-	Datapoint NullInt64  `json:"datapoint"`
-	Name      string     `json:"name"`
-	StartDate NullDate   `json:"start_date" db:"start_date"`
-	EndDate   NullDate   `json:"end_date" db:"end_date"`
-	FieldEng  NullString `json:"field_eng" db:"field_eng"`
-}
-
 // Datapoint is a geographic point that represents the location where data
 // was gathered or where boreholes/instruments are located. A single datapoint
 // may have a variety of data or records associated with it.
@@ -62,19 +34,6 @@ type BoreholeResponse struct {
 type Datapoint struct {
 	ID       NullInt64 `json:"id"`
 	Location orb.Point `json:"location"`
-}
-
-// Borehole is drilled geotechnical test hole located at a Datapoint.
-// There may be a number of samples/observations associated with one borehole.
-type Borehole struct {
-	ID        int64     `json:"id"`
-	Project   NullInt64 `json:"project"`
-	Program   NullInt64 `json:"program"`
-	Datapoint int64     `json:"datapoint"`
-	Name      string    `json:"name"`
-	StartDate NullDate  `json:"start_date" db:"start_date"`
-	EndDate   NullDate  `json:"end_date" db:"end_date"`
-	FieldEng  NullInt64 `json:"field_eng" db:"field_eng"`
 }
 
 // ProgramRepository is the set of methods that are available for interacting
@@ -90,13 +49,6 @@ type DatapointRepository interface {
 	ListDatapoints() ([]*Datapoint, error)
 	CreateDatapoint(dp Datapoint) (Datapoint, error)
 	GetDatapoint(datapointID int) (Datapoint, error)
-}
-
-// BoreholeRepository is the set of methods available for interacting with Borehole records
-type BoreholeRepository interface {
-	ListBoreholes(projectID int) ([]*BoreholeResponse, error)
-	CreateBorehole(bh BoreholeCreateRequest) (Borehole, error)
-	GetBorehole(boreholeID int) (Borehole, error)
 }
 
 // datastore is the database containing records related to the field module
@@ -154,89 +106,4 @@ func (db *datastore) CreateDatapoint(dp Datapoint) (Datapoint, error) {
 		return Datapoint{}, err
 	}
 	return created, nil
-}
-
-// Borehole database methods
-
-// ListBoreholes returns all boreholes, or, with optional projectID,
-// all boreholes for a given project.
-func (db *datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
-	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole`
-
-	queryByProject := `
-		SELECT borehole.id,
-			borehole.project,
-			borehole.program,
-			borehole.datapoint,
-			borehole.name,
-			borehole.start_date,
-			borehole.end_date,
-			users.username AS field_eng
-		FROM borehole LEFT JOIN users ON borehole.field_eng=users.id
-		WHERE project=$1
-	`
-
-	var err error
-	boreholes := []*BoreholeResponse{}
-	if projectID == 0 {
-		err = db.Select(&boreholes, query)
-	} else {
-		err = db.Select(&boreholes, queryByProject, projectID)
-	}
-
-	if err != nil {
-		return []*BoreholeResponse{}, err
-	}
-	return boreholes, nil
-}
-
-// CreateBorehole creates a borehole record, as well as a Datapoint record if an existing
-// datapoint wasn't supplied.
-// Either a datapoint or a location should be supplied.
-func (db *datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) {
-
-	// If a datapoint wasn't supplied, create one.
-	// If a location also wasn't supplied, it will be created at the default location (0, 0?)
-	if !bh.Datapoint.Valid {
-		newDP := Datapoint{Location: orb.Point{bh.Location[0], bh.Location[1]}}
-		createdDP, err := db.CreateDatapoint(newDP)
-		if err != nil {
-			return Borehole{}, err
-		}
-		bh.Datapoint = createdDP.ID
-	}
-
-	query := `
-		INSERT INTO borehole (datapoint, program, project, name, start_date, end_date, field_eng)
-		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, project, program, name, datapoint, start_date, end_date, field_eng
-	`
-
-	created := Borehole{}
-	err := db.Get(
-		&created,
-		query,
-		bh.Datapoint,
-		bh.Program,
-		bh.Project,
-		bh.Name,
-		bh.StartDate,
-		bh.EndDate,
-		bh.FieldEng,
-	)
-	if err != nil {
-		return Borehole{}, err
-	}
-
-	return created, nil
-}
-
-// GetBorehole retrieves a single borehole record.
-func (db *datastore) GetBorehole(boreholeID int) (Borehole, error) {
-	p := Borehole{}
-	query := `SELECT id, project, program, datapoint, name, start_date, end_date, field_eng FROM borehole WHERE id=$1`
-	err := db.Get(&p, query, boreholeID)
-	if err != nil {
-		return Borehole{}, err
-	}
-	return p, nil
 }

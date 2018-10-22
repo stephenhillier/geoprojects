@@ -13,6 +13,7 @@ func (s *App) makeRoutes() chi.Router {
 	router.Route("/{projectID}", func(r chi.Router) {
 		r.Get("/", s.projectDetail)
 		r.Options("/", s.singleProjectOptions)
+		r.Delete("/", s.deleteProject)
 	})
 
 	return router

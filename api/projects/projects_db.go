@@ -4,20 +4,12 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Project is an object that contains files and data associated with a single project
-type Project struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	Location      string `json:"location"`
-	PM            string `json:"pm"`
-	BoreholeCount int    `json:"borehole_count" db:"borehole_count"`
-}
-
 // Repository is the set of methods available to a collection of projects
 type Repository interface {
 	AllProjects() ([]*Project, error)
 	CreateProject(p Project) (Project, error)
 	RetrieveProject(projectID int) (Project, error)
+	DeleteProject(id int) error
 }
 
 // Datastore is a database, provided by the API service when this app was initialized
@@ -28,7 +20,7 @@ type Datastore struct {
 // AllProjects returns a list of all projects in the datastore
 func (db *Datastore) AllProjects() ([]*Project, error) {
 
-	query := `SELECT project.id, project.name, project.location, users.username FROM project LEFT JOIN users ON project.pm=users.id;`
+	query := `SELECT project.id, project.name, project.location FROM project WHERE expired_at IS NULL`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -39,7 +31,7 @@ func (db *Datastore) AllProjects() ([]*Project, error) {
 	projects := make([]*Project, 0)
 	for rows.Next() {
 		project := new(Project)
-		err := rows.Scan(&project.ID, &project.Name, &project.Location, &project.PM)
+		err := rows.Scan(&project.ID, &project.Name, &project.Location)
 		if err != nil {
 			return nil, err
 		}
@@ -53,22 +45,31 @@ func (db *Datastore) AllProjects() ([]*Project, error) {
 
 // CreateProject creates a new project record in the database
 func (db *Datastore) CreateProject(p Project) (Project, error) {
-	query := `INSERT INTO project (name, location, pm) VALUES ($1, $2, $3) RETURNING id, name, location, pm`
+	query := `INSERT INTO project (name, location) VALUES ($1, $2) RETURNING id, name, location`
 
-	err := db.QueryRowx(query, p.Name, p.Location, p.PM).StructScan(&p)
+	err := db.QueryRowx(query, p.Name, p.Location).StructScan(&p)
 	return p, err
 }
 
 // RetrieveProject fetches one project record from database (by project ID)
 func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
 	p := Project{}
-	query := `SELECT project.id, project.name, project.location, users.username AS pm, COUNT(borehole.project) as borehole_count
+	query := `SELECT project.id, project.name, project.location, COUNT(borehole.project) as borehole_count
 						FROM project
-						LEFT JOIN users ON project.pm=users.id 
 						LEFT JOIN borehole ON (borehole.project = project.id)
-						WHERE project.id=$1
-						GROUP BY project.id, users.username
+						WHERE project.id=$1 AND project.expired_at IS NULL
+						GROUP BY project.id
 						`
 	err := db.Get(&p, query, projectID)
 	return p, err
+}
+
+// DeleteProject sets a project's expiry to the current time
+func (db *Datastore) DeleteProject(id int) error {
+	query := `UPDATE project SET expired_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

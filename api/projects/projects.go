@@ -1,6 +1,7 @@
 package projects
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -10,6 +11,14 @@ import (
 )
 
 var decoder = schema.NewDecoder()
+
+// Project represents an engineering project. It holds files and data associated with a single project
+type Project struct {
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Location      string `json:"location"`
+	BoreholeCount int    `json:"borehole_count" db:"borehole_count"`
+}
 
 // listProjects returns a list of all project records
 func (s *App) listProjects(w http.ResponseWriter, req *http.Request) {
@@ -60,8 +69,9 @@ func (s *App) projectOptions(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
+// singleProjectOptions serves a response to an OPTIONS request with allowed methods
 func (s *App) singleProjectOptions(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Allow", "GET, OPTIONS")
+	w.Header().Set("Allow", "GET, OPTIONS, DELETE")
 	return
 }
 
@@ -80,4 +90,31 @@ func (s *App) projectDetail(w http.ResponseWriter, req *http.Request) {
 	}
 
 	render.JSON(w, req, project)
+}
+
+// deleteProject sets a project to be expired at the current time
+func (s *App) deleteProject(w http.ResponseWriter, req *http.Request) {
+	// get projectID from URL
+	projectID, err := strconv.Atoi(chi.URLParam(req, "projectID"))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	// check if project exists and/or not already expired
+	_, err = s.repo.RetrieveProject(projectID)
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	// if the project exists, go ahead and delete it
+	err = s.repo.DeleteProject(projectID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
