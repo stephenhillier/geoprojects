@@ -105,7 +105,7 @@ export default {
         this.formSubmitSuccess = true
         this.$emit('update-project')
         this.$router.push({ name: 'project-boreholes', params: { id: this.$route.params.id } })
-      }).error((e) => {
+      }).catch((e) => {
         this.formSubmitError = true
       })
     },

@@ -7,6 +7,7 @@ import NewProject from './components/dashboard/projects/NewProject.vue'
 
 import ProjectDashboard from './views/ProjectDashboard.vue'
 import ProjectDetails from './components/dashboard/projects/ProjectDetails.vue'
+import ProjectDetailActions from './components/dashboard/actions/ProjectDetailActions.vue'
 
 import ProjectBoreholes from './components/dashboard/boreholes/ProjectBoreholes.vue'
 import NewBorehole from './components/dashboard/boreholes/NewBorehole.vue'
@@ -59,7 +60,10 @@ export default new Router({
         {
           path: '/',
           name: 'project-dashboard',
-          component: ProjectDetails,
+          components: {
+            default: ProjectDetails,
+            actions: ProjectDetailActions
+          },
           meta: {
             breadcrumbs: []
           }

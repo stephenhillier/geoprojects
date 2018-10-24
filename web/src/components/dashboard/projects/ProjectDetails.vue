@@ -1,7 +1,6 @@
 <template>
   <b-card title="Project Details" :sub-title="project.name">
     <div>Location: {{ project.location }}</div>
-    <div>PM: {{ project.pm }}</div>
   </b-card>
 </template>
 

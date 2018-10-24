@@ -26,6 +26,10 @@
 
           </b-card>
         </div>
+        <div>
+          <!-- Actions -->
+          <router-view :project="project" name="actions"></router-view>
+        </div>
       </b-col>
     </b-row>
   </b-container>

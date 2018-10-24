@@ -28,15 +28,6 @@
               </b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" md="6" lg="4">
-                <form-input
-                  id="projectPM"
-                  label="Project manager"
-                  v-model="form.pm"
-                ></form-input>
-              </b-col>
-            </b-row>
-            <b-row>
               <b-col>
                 <b-btn type="submit">Submit</b-btn>
               </b-col>
@@ -70,8 +61,7 @@ export default {
       ],
       form: {
         name: '',
-        location: '',
-        pm: ''
+        location: ''
       }
     }
   },
