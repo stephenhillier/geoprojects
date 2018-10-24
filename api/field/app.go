@@ -14,6 +14,12 @@ type App struct {
 	Routes    chi.Router
 }
 
+// datastore is the database containing records related to the field module
+// e.g. field programs, datapoints, boreholes
+type datastore struct {
+	*sqlx.DB
+}
+
 // NewApp takes a database and returns an App containing the
 // routes that this application has been configured to handle
 func NewApp(db *sqlx.DB) *App {

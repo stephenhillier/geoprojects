@@ -1,16 +1,14 @@
 package projects
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
-	"github.com/gorilla/schema"
 )
-
-var decoder = schema.NewDecoder()
 
 // Project represents an engineering project. It holds files and data associated with a single project
 type Project struct {
@@ -37,15 +35,10 @@ func (s *App) listProjects(w http.ResponseWriter, req *http.Request) {
 // Requires details about the new project in the request body.
 func (s *App) createProject(w http.ResponseWriter, req *http.Request) {
 
-	err := req.ParseForm()
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
+	decoder := json.NewDecoder(req.Body)
 	// take input from POST request and store in a new Project type
 	project := Project{}
-	err = decoder.Decode(&project, req.PostForm)
+	err := decoder.Decode(&project)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

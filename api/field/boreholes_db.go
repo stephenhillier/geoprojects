@@ -17,16 +17,8 @@ func (db *datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
 	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole`
 
 	queryByProject := `
-		SELECT borehole.id,
-			borehole.project,
-			borehole.program,
-			borehole.datapoint,
-			borehole.name,
-			borehole.start_date,
-			borehole.end_date,
-			users.username AS field_eng
-		FROM borehole LEFT JOIN users ON borehole.field_eng=users.id
-		WHERE project=$1
+		SELECT id, project, program, datapoint, name, start_date, end_date, field_eng
+		FROM borehole WHERE project=$1
 	`
 
 	var err error

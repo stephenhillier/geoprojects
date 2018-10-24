@@ -2,6 +2,7 @@ package field
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -18,7 +19,7 @@ type BoreholeCreateRequest struct {
 	Name      string     `json:"name"`
 	StartDate NullDate   `json:"start_date" db:"start_date" schema:"start_date"`
 	EndDate   NullDate   `json:"end_date" db:"end_date" schema:"end_date"`
-	FieldEng  NullInt64  `json:"field_eng" db:"field_eng" schema:"field_eng"`
+	FieldEng  string     `json:"field_eng" db:"field_eng" schema:"field_eng"`
 	Location  [2]float64 `json:"location"`
 }
 
@@ -26,14 +27,14 @@ type BoreholeCreateRequest struct {
 // a borehole's details
 // the FieldEng field is a string (users.username) instead of a primary key reference.
 type BoreholeResponse struct {
-	ID        int64      `json:"id"`
-	Project   NullInt64  `json:"project"`
-	Program   NullInt64  `json:"program"`
-	Datapoint NullInt64  `json:"datapoint"`
-	Name      string     `json:"name"`
-	StartDate NullDate   `json:"start_date" db:"start_date"`
-	EndDate   NullDate   `json:"end_date" db:"end_date"`
-	FieldEng  NullString `json:"field_eng" db:"field_eng"`
+	ID        int64     `json:"id"`
+	Project   NullInt64 `json:"project"`
+	Program   NullInt64 `json:"program"`
+	Datapoint NullInt64 `json:"datapoint"`
+	Name      string    `json:"name"`
+	StartDate NullDate  `json:"start_date" db:"start_date"`
+	EndDate   NullDate  `json:"end_date" db:"end_date"`
+	FieldEng  string    `json:"field_eng" db:"field_eng"`
 }
 
 // Borehole is drilled geotechnical test hole located at a Datapoint.
@@ -46,7 +47,7 @@ type Borehole struct {
 	Name      string    `json:"name"`
 	StartDate NullDate  `json:"start_date" db:"start_date"`
 	EndDate   NullDate  `json:"end_date" db:"end_date"`
-	FieldEng  NullInt64 `json:"field_eng" db:"field_eng"`
+	FieldEng  string    `json:"field_eng" db:"field_eng"`
 }
 
 // boreholeOptions responds to OPTIONS requests (and pre-flight requests)
@@ -88,7 +89,10 @@ func (s *App) createBorehole(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	borehole := BoreholeCreateRequest{}
 	err := decoder.Decode(&borehole)
+	log.Println(borehole)
 	if err != nil {
+		log.Println(err)
+
 		http.Error(w, err.Error(), 400)
 		return
 	}
