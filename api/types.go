@@ -14,6 +14,11 @@ type Datastore struct {
 	*sqlx.DB
 }
 
+// Context Keys
+type contextKey struct{}
+
+var projectCtx contextKey
+
 // NullDate is an alias for pq.NullTime, and is meant to be used with dates only
 type NullDate struct {
 	pq.NullTime

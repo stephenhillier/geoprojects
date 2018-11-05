@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -70,15 +71,10 @@ func (s *server) singleProjectOptions(w http.ResponseWriter, req *http.Request) 
 
 // projectDetail retrieves one project record from database
 func (s *server) projectDetail(w http.ResponseWriter, req *http.Request) {
-	projectID, err := strconv.Atoi(chi.URLParam(req, "projectID"))
-	if err != nil {
-		http.Error(w, http.StatusText(404), 404)
-		return
-	}
-
-	project, err := s.datastore.RetrieveProject(projectID)
-	if err != nil {
-		http.Error(w, http.StatusText(404), 404)
+	ctx := req.Context()
+	project, ok := ctx.Value(projectCtx).(Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
 		return
 	}
 
@@ -87,27 +83,43 @@ func (s *server) projectDetail(w http.ResponseWriter, req *http.Request) {
 
 // deleteProject sets a project to be expired at the current time
 func (s *server) deleteProject(w http.ResponseWriter, req *http.Request) {
-	// get projectID from URL
-	projectID, err := strconv.Atoi(chi.URLParam(req, "projectID"))
-	if err != nil {
-		log.Println(err)
-		http.Error(w, http.StatusText(404), 404)
-		return
-	}
-
-	// check if project exists and/or not already expired
-	_, err = s.datastore.RetrieveProject(projectID)
-	if err != nil {
-		http.Error(w, http.StatusText(404), 404)
+	ctx := req.Context()
+	project, ok := ctx.Value(projectCtx).(*Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
 		return
 	}
 
 	// if the project exists, go ahead and delete it
-	err = s.datastore.DeleteProject(projectID)
+	err := s.datastore.DeleteProject(project.ID)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// projectCtxMiddleware is used by Project routes that have a projectID in the URL path.
+// it finds the specified project (returning 404 if the project is not found) and adds it
+// to the request context.
+func (s *server) projectCtxMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		projectID, err := strconv.Atoi(chi.URLParam(r, "projectID"))
+		if err != nil {
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+
+		project, err := s.datastore.RetrieveProject(projectID)
+		if err != nil {
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+
+		log.Println(project)
+
+		ctx := context.WithValue(r.Context(), projectCtx, project)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

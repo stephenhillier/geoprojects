@@ -19,6 +19,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 				r.Options("/", api.projectOptions)
 				r.Post("/", api.createProject)
 				r.Route("/{projectID}", func(r chi.Router) {
+					r.Use(api.projectCtxMiddleware)
 					r.Get("/", api.projectDetail)
 					r.Options("/", api.singleProjectOptions)
 					r.Delete("/", api.deleteProject)
