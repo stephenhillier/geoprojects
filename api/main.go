@@ -35,6 +35,9 @@ type config struct {
 
 func main() {
 
+	// set config parameters
+	// the flag library grabs values either from command line args, env variables, or the default specified here
+	// see github.com/namsral/flag
 	conf := config{}
 	flag.StringVar(&conf.dbuser, "dbuser", "geo", "database username")
 	flag.StringVar(&conf.dbpass, "dbpass", "", "database password")
