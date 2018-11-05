@@ -1,4 +1,4 @@
-package field
+package main
 
 import (
 	"github.com/paulmach/orb"

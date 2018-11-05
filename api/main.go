@@ -12,24 +12,13 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/namsral/flag"
-
-	"github.com/stephenhillier/geoprojects/api/field"
-	"github.com/stephenhillier/geoprojects/api/projects"
 )
 
 // server represents the server environment (db and router)
 type server struct {
-	router chi.Router
-	config config
-	apps   apps
-}
-
-// apps represents the applications available to the API.
-// Applications in this list should have a Routes property with a function
-// that registers API routes that the application handles.
-type apps struct {
-	projects *projects.App
-	field    *field.App
+	router    chi.Router
+	datastore Datastore
+	config    config
 }
 
 // config holds server/database/auth service configuration
@@ -73,11 +62,9 @@ func main() {
 		log.Panic(err)
 	}
 
-	api.router = chi.NewRouter()
-	api.apps = apps{
-		projects: projects.NewApp(db),
-		field:    field.NewApp(db),
-	}
+	api.datastore = Datastore{db}
+
+	router := chi.NewRouter()
 
 	// CORS settings
 	cors := cors.New(cors.Options{
@@ -89,13 +76,14 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
-	api.router.Use(cors.Handler)
+
+	router.Use(cors.Handler)
 
 	// register middleware
-	api.router.Use(middleware.Logger)
+	router.Use(middleware.Logger)
 
 	// register routes from routes.go
-	api.routes()
+	api.router = api.appRoutes(router)
 
 	h := http.Server{Addr: ":8000", Handler: api.router}
 

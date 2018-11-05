@@ -1,21 +1,12 @@
-package projects
+package main
 
-import (
-	"github.com/jmoiron/sqlx"
-)
-
-// Repository is the set of methods available to a collection of projects
-type Repository interface {
-	AllProjects() ([]*Project, error)
-	CreateProject(p Project) (Project, error)
-	RetrieveProject(projectID int) (Project, error)
-	DeleteProject(id int) error
-}
-
-// Datastore is a database, provided by the API service when this app was initialized
-type Datastore struct {
-	*sqlx.DB
-}
+// // ProjectsRepository is the set of methods available to a collection of projects
+// type ProjectsRepository interface {
+// 	AllProjects() ([]*Project, error)
+// 	CreateProject(p Project) (Project, error)
+// 	RetrieveProject(projectID int) (Project, error)
+// 	DeleteProject(id int) error
+// }
 
 // AllProjects returns a list of all projects in the datastore
 func (db *Datastore) AllProjects() ([]*Project, error) {

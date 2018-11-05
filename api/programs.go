@@ -1,4 +1,4 @@
-package field
+package main
 
 import (
 	"net/http"
@@ -9,13 +9,13 @@ import (
 
 var decoder = schema.NewDecoder()
 
-func (s *App) programOptions(w http.ResponseWriter, req *http.Request) {
+func (s *server) programOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, POST, OPTIONS")
 	return
 }
 
-func (s *App) listPrograms(w http.ResponseWriter, req *http.Request) {
-	programs, err := s.programs.ListPrograms()
+func (s *server) listPrograms(w http.ResponseWriter, req *http.Request) {
+	programs, err := s.datastore.ListPrograms()
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
@@ -24,7 +24,7 @@ func (s *App) listPrograms(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, programs)
 }
 
-func (s *App) createProgram(w http.ResponseWriter, req *http.Request) {
+func (s *server) createProgram(w http.ResponseWriter, req *http.Request) {
 	err := req.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -39,7 +39,7 @@ func (s *App) createProgram(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// create the new program record
-	newRecord, err := s.programs.CreateProgram(program)
+	newRecord, err := s.datastore.CreateProgram(program)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

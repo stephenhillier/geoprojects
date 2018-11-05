@@ -1,4 +1,4 @@
-package field
+package main
 
 // Program represents one fieldwork job within a project.
 // For example, a single trip that an engineer makes to collect field samples
@@ -30,7 +30,7 @@ type ProgramRepository interface {
 // Field Program database methods
 
 // ListPrograms returns a list of field program records
-func (db *datastore) ListPrograms() ([]Program, error) {
+func (db *Datastore) ListPrograms() ([]Program, error) {
 	programs := []Program{}
 	query := `SELECT id, project, start_date, end_date FROM field_program`
 
@@ -43,7 +43,7 @@ func (db *datastore) ListPrograms() ([]Program, error) {
 }
 
 // CreateProgram creates a field program record
-func (db *datastore) CreateProgram(fp ProgramCreateRequest) (Program, error) {
+func (db *Datastore) CreateProgram(fp ProgramCreateRequest) (Program, error) {
 	query := `INSERT INTO field_program (project, start_date, end_date) VALUES ($1, $2, $3) RETURNING id, project, start_date, end_date`
 	created := Program{}
 	err := db.Get(&created, query, fp.Project, fp.StartDate, fp.EndDate)
@@ -54,7 +54,7 @@ func (db *datastore) CreateProgram(fp ProgramCreateRequest) (Program, error) {
 }
 
 // GetProgram retrieves a single field program record
-func (db *datastore) GetProgram(programID int) (Program, error) {
+func (db *Datastore) GetProgram(programID int) (Program, error) {
 	p := Program{}
 	query := `SELECT id, project, start_date, end_date FROM field_program WHERE id=$1`
 	err := db.Get(&p, query, programID)

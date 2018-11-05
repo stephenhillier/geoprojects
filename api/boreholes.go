@@ -1,4 +1,4 @@
-package field
+package main
 
 import (
 	"encoding/json"
@@ -51,14 +51,14 @@ type Borehole struct {
 }
 
 // boreholeOptions responds to OPTIONS requests (and pre-flight requests)
-func (s *App) boreholeOptions(w http.ResponseWriter, req *http.Request) {
+func (s *server) boreholeOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, POST, OPTIONS")
 	return
 }
 
 // listBoreholes returns a list of boreholes for a specified project
 // the project should be specified in a URL query string e.g. api/v1/boreholes?project=1
-func (s *App) listBoreholes(w http.ResponseWriter, req *http.Request) {
+func (s *server) listBoreholes(w http.ResponseWriter, req *http.Request) {
 
 	project := req.FormValue("project")
 
@@ -76,7 +76,7 @@ func (s *App) listBoreholes(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	boreholes, err := s.boreholes.ListBoreholes(projectID)
+	boreholes, err := s.datastore.ListBoreholes(projectID)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -85,7 +85,7 @@ func (s *App) listBoreholes(w http.ResponseWriter, req *http.Request) {
 }
 
 // createBorehole creates a new borehole
-func (s *App) createBorehole(w http.ResponseWriter, req *http.Request) {
+func (s *server) createBorehole(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	borehole := BoreholeCreateRequest{}
 	err := decoder.Decode(&borehole)
@@ -97,7 +97,7 @@ func (s *App) createBorehole(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	newBorehole, err := s.boreholes.CreateBorehole(borehole)
+	newBorehole, err := s.datastore.CreateBorehole(borehole)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

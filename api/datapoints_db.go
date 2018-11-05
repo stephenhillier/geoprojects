@@ -1,4 +1,4 @@
-package field
+package main
 
 import "github.com/paulmach/orb/encoding/wkt"
 
@@ -13,12 +13,13 @@ type DatapointRepository interface {
 
 // CreateDatapoint creates a datapoint record.
 // It may be called while handling create requests for boreholes or instruments
-func (db *datastore) CreateDatapoint(dp Datapoint) (Datapoint, error) {
+func (db *Datastore) CreateDatapoint(dp Datapoint) (Datapoint, error) {
 	query := `INSERT INTO datapoint (location) VALUES ($1) RETURNING id`
 	created := Datapoint{}
 	err := db.Get(&created, query, wkt.MarshalString(dp.Location))
 	if err != nil {
 		return Datapoint{}, err
 	}
+
 	return created, nil
 }

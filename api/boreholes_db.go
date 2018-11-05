@@ -1,4 +1,4 @@
-package field
+package main
 
 import "github.com/paulmach/orb"
 
@@ -13,7 +13,7 @@ type BoreholeRepository interface {
 
 // ListBoreholes returns all boreholes, or, with optional projectID,
 // all boreholes for a given project.
-func (db *datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
+func (db *Datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
 	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole`
 
 	queryByProject := `
@@ -38,7 +38,7 @@ func (db *datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
 // CreateBorehole creates a borehole record, as well as a Datapoint record if an existing
 // datapoint wasn't supplied.
 // Either a datapoint or a location should be supplied.
-func (db *datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) {
+func (db *Datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) {
 
 	// If a datapoint wasn't supplied, create one.
 	// If a location also wasn't supplied, it will be created at the default location (0, 0?)
@@ -76,7 +76,7 @@ func (db *datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) 
 }
 
 // GetBorehole retrieves a single borehole record.
-func (db *datastore) GetBorehole(boreholeID int) (Borehole, error) {
+func (db *Datastore) GetBorehole(boreholeID int) (Borehole, error) {
 	p := Borehole{}
 	query := `SELECT id, project, program, datapoint, name, start_date, end_date, field_eng FROM borehole WHERE id=$1`
 	err := db.Get(&p, query, boreholeID)
