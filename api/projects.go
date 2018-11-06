@@ -19,16 +19,38 @@ type Project struct {
 	BoreholeCount int    `json:"borehole_count" db:"borehole_count"`
 }
 
+// PaginatedProjectResponse is a paginated API response containing a count of all projects
+// and the current page of projects
+type PaginatedProjectResponse struct {
+	Count   int       `json:"count"`
+	Results []Project `json:"results"`
+}
+
 // listProjects returns a list of all project records
 func (s *server) listProjects(w http.ResponseWriter, req *http.Request) {
 
-	projects, err := s.datastore.AllProjects()
+	limit, err := strconv.Atoi(req.FormValue("limit"))
+	if err != nil || limit > s.config.maxPageLimit || limit < 0 {
+		limit = s.config.defaultPageLimit
+	}
+
+	offset, err := strconv.Atoi(req.FormValue("offset"))
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	projects, count, err := s.datastore.AllProjects(limit, offset)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
 
-	render.JSON(w, req, projects)
+	page := PaginatedProjectResponse{
+		Count:   count,
+		Results: projects,
+	}
+
+	render.JSON(w, req, page)
 }
 
 // createProject handles a post request to the projects endpoint and

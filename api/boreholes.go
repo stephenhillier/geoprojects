@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 )
 
@@ -37,6 +39,12 @@ type BoreholeResponse struct {
 	FieldEng  string    `json:"field_eng" db:"field_eng"`
 }
 
+// PaginatedBoreholeResponse contains a count of all borehole records and paginated results from the database
+type PaginatedBoreholeResponse struct {
+	Count   int64               `json:"count"`
+	Results []*BoreholeResponse `json:"results"`
+}
+
 // Borehole is drilled geotechnical test hole located at a Datapoint.
 // There may be a number of samples/observations associated with one borehole.
 type Borehole struct {
@@ -61,9 +69,17 @@ func (s *server) boreholeOptions(w http.ResponseWriter, req *http.Request) {
 func (s *server) listBoreholes(w http.ResponseWriter, req *http.Request) {
 
 	project := req.FormValue("project")
+	limit, err := strconv.Atoi(req.FormValue("limit"))
+	if err != nil || limit > s.config.maxPageLimit || limit < 0 {
+		limit = s.config.defaultPageLimit
+	}
+
+	offset, err := strconv.Atoi(req.FormValue("offset"))
+	if err != nil || offset < 0 {
+		offset = 0
+	}
 
 	var projectID int
-	var err error
 
 	// if a project was supplied in querystring, set projectID so that the db query can
 	// list boreholes by project
@@ -76,12 +92,18 @@ func (s *server) listBoreholes(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	boreholes, err := s.datastore.ListBoreholes(projectID)
+	boreholes, count, err := s.datastore.ListBoreholes(projectID, limit, offset)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	render.JSON(w, req, boreholes)
+
+	page := PaginatedBoreholeResponse{
+		Count:   count,
+		Results: boreholes,
+	}
+
+	render.JSON(w, req, page)
 }
 
 // createBorehole creates a new borehole
@@ -110,3 +132,26 @@ func (s *server) createBorehole(w http.ResponseWriter, req *http.Request) {
 // func getBorehole(w http.ResponseWriter, req *http.Request) {
 
 // }
+
+// boreholeCtxMiddleware is used by borehole routes that have a boreholeID in the URL path.
+// it passes borehole information into the request context
+func (s *server) boreholeCtxMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		boreholeID, err := strconv.Atoi(chi.URLParam(r, "boreholeID"))
+		if err != nil {
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+
+		borehole, err := s.datastore.GetBorehole(boreholeID)
+		if err != nil {
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+
+		log.Println(borehole)
+
+		ctx := context.WithValue(r.Context(), boreholeCtx, borehole)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}

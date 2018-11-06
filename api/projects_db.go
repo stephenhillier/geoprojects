@@ -9,29 +9,21 @@ package main
 // }
 
 // AllProjects returns a list of all projects in the datastore
-func (db *Datastore) AllProjects() ([]*Project, error) {
+func (db *Datastore) AllProjects(limit int, offset int) ([]Project, int, error) {
+	countQuery := `SELECT count(id) FROM project WHERE expired_at IS NULL`
+	query := `SELECT project.id, project.name, project.location FROM project WHERE expired_at IS NULL LIMIT $1 OFFSET $2`
 
-	query := `SELECT project.id, project.name, project.location FROM project WHERE expired_at IS NULL`
+	var count int
+	projects := []Project{}
 
-	rows, err := db.Query(query)
+	err := db.Get(&count, countQuery)
+
+	err = db.Select(&projects, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return []Project{}, 0, err
 	}
-	defer rows.Close()
 
-	projects := make([]*Project, 0)
-	for rows.Next() {
-		project := new(Project)
-		err := rows.Scan(&project.ID, &project.Name, &project.Location)
-		if err != nil {
-			return nil, err
-		}
-		projects = append(projects, project)
-	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-	return projects, nil
+	return projects, count, nil
 }
 
 // CreateProject creates a new project record in the database

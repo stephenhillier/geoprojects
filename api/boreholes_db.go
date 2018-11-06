@@ -13,26 +13,46 @@ type BoreholeRepository interface {
 
 // ListBoreholes returns all boreholes, or, with optional projectID,
 // all boreholes for a given project.
-func (db *Datastore) ListBoreholes(projectID int) ([]*BoreholeResponse, error) {
-	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole`
+func (db *Datastore) ListBoreholes(projectID int, limit int, offset int) ([]*BoreholeResponse, int64, error) {
+	countQuery := `SELECT count(id) FROM borehole`
+	countByProjectQuery := `SELECT count(id) FROM borehole WHERE project=$1`
+
+	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole LIMIT $1 OFFSET $2`
 
 	queryByProject := `
 		SELECT id, project, program, datapoint, name, start_date, end_date, field_eng
 		FROM borehole WHERE project=$1
+		LIMIT $2 OFFSET $3
 	`
 
 	var err error
+	var count int64
 	boreholes := []*BoreholeResponse{}
+
+	// Get counts from database
+	// queries are split up this way to handle errors one at a time (counts then select queries)
 	if projectID == 0 {
-		err = db.Select(&boreholes, query)
+		err = db.Get(&count, countQuery)
 	} else {
-		err = db.Select(&boreholes, queryByProject, projectID)
+		err = db.Get(&count, countByProjectQuery, projectID)
+	}
+	if err != nil {
+		// count failed
+		return []*BoreholeResponse{}, 0, err
+	}
+
+	// select boreholes from DB
+	if projectID == 0 {
+		err = db.Select(&boreholes, query, limit, offset)
+	} else {
+		err = db.Select(&boreholes, queryByProject, projectID, limit, offset)
 	}
 
 	if err != nil {
-		return []*BoreholeResponse{}, err
+		// borehole query failed
+		return []*BoreholeResponse{}, 0, err
 	}
-	return boreholes, nil
+	return boreholes, count, nil
 }
 
 // CreateBorehole creates a borehole record, as well as a Datapoint record if an existing

@@ -31,6 +31,8 @@ type config struct {
 	dbpass           string
 	dbname           string
 	dbhost           string
+	defaultPageLimit int
+	maxPageLimit     int
 }
 
 func main() {
@@ -49,6 +51,9 @@ func main() {
 
 	api := &server{}
 	api.config = conf
+
+	api.config.defaultPageLimit = 10
+	api.config.maxPageLimit = 100
 
 	// get new certificate when server initially starts
 	// see auth.go
