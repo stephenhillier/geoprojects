@@ -42,6 +42,16 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 				r.Options("/", api.boreholeOptions)
 				r.Get("/", api.listBoreholes)
 				r.Post("/", api.createBorehole)
+				r.Route("/{boreholeID}", func(r chi.Router) {
+					r.Use(api.boreholeCtxMiddleware)
+					r.Get("/strata", api.listStrataByBorehole)
+				})
+			})
+
+			// Soil strata routes
+			r.Route("/strata", func(r chi.Router) {
+				r.Options("/", api.strataOptions)
+				r.Post("/", api.createStrata)
 			})
 		})
 

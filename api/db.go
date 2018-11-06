@@ -79,6 +79,19 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		UNIQUE (project, name)
 	)`
 
+	createStrataTable := `
+		CREATE TABLE IF NOT EXISTS strata(
+			id SERIAL PRIMARY KEY,
+			borehole INTEGER REFERENCES borehole(id),
+			start_depth DOUBLE PRECISION NOT NULL,
+			end_depth DOUBLE PRECISION NOT NULL,
+			description TEXT NOT NULL CHECK (char_length(description) < 800),
+			soils TEXT NOT NULL CHECK (char_length(soils) < 200),
+			moisture TEXT CHECK (char_length(moisture) < 50),
+			consistency TEXT CHECK (char_length(consistency) < 50)
+		)
+	`
+
 	// migrations
 	createMigrationsTable := `CREATE TABLE IF NOT EXISTS migration(
 		id INTEGER PRIMARY KEY,
@@ -97,6 +110,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	tx.MustExec(createFieldProgramTable)
 	tx.MustExec(createDatapointTable)
 	tx.MustExec(createBoreholeTable)
+	tx.MustExec(createStrataTable)
 
 	tx.MustExec(registerMigration)
 	err = tx.Commit()
