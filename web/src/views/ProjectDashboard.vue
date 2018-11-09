@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     fetchProjectData () {
-      this.$http.get(`api/v1/projects/${this.$route.params.id}`).then((response) => {
+      this.$http.get(`projects/${this.$route.params.id}`).then((response) => {
         this.project = response.data
       }).catch((e) => {
         console.log(e)

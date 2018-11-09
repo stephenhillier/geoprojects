@@ -4,7 +4,6 @@
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
     <b-collapse is-nav id="nav_collapse">
       <b-navbar-nav>
-        <b-nav-item :to="{ name: 'home'}">Home</b-nav-item>
         <b-nav-item :to="{ name: 'projects'}">Projects</b-nav-item>
       </b-navbar-nav>
       <!-- Right aligned nav items -->

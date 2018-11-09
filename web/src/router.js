@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
 
 import ProjectList from './views/ProjectList.vue'
 import NewProject from './components/dashboard/projects/NewProject.vue'
@@ -71,14 +70,9 @@ export default new Router({
       ]
     },
     {
-      path: '/projects',
+      path: '/',
       name: 'projects',
       component: ProjectList
-    },
-    {
-      path: '/',
-      name: 'home',
-      component: Home
     }
 
     // {

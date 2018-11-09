@@ -101,7 +101,7 @@ export default {
     handleFormSubmit () {
       this.formSubmitSuccess = false
       this.formSubmitError = false
-      this.$http.post('api/v1/field/boreholes', this.form).then((resp) => {
+      this.$http.post('boreholes', this.form).then((resp) => {
         this.formSubmitSuccess = true
         this.$emit('update-project')
         this.$router.push({ name: 'project-boreholes', params: { id: this.$route.params.id } })

@@ -9,11 +9,12 @@ import axios from 'axios'
 // import qs from 'qs'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
-import { faTrashAlt, faPlusSquare } from '@fortawesome/free-regular-svg-icons'
+import { faTrashAlt, faPlusSquare, faTimesCircle } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import FormInput from '@/components/common/FormInput.vue'
+import '@/components/common/readableFilter.js'
 
-library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare)
+library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
@@ -21,13 +22,12 @@ Vue.component('form-input', FormInput)
 Vue.use(BootstrapVue)
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:8000/'
+  baseURL: 'http://localhost:8000/api/v1/'
 })
 
 // axiosClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 
 axiosClient.interceptors.request.use(function (config) {
-  console.log(config)
   // if (config.data) {
   //   config.data = qs.stringify(config.data)
   // }
@@ -38,7 +38,6 @@ axiosClient.interceptors.request.use(function (config) {
 })
 
 axiosClient.interceptors.response.use(function (response) {
-  console.log(response)
   return response
 }, function (error) {
   console.log(error)

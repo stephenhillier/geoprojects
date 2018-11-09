@@ -106,7 +106,7 @@ func (s *server) projectDetail(w http.ResponseWriter, req *http.Request) {
 // deleteProject sets a project to be expired at the current time
 func (s *server) deleteProject(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	project, ok := ctx.Value(projectCtx).(*Project)
+	project, ok := ctx.Value(projectCtx).(Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

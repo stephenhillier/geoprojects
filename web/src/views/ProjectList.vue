@@ -1,30 +1,82 @@
 <template>
 <div>
-  <b-row class="mb-3">
+  <!-- <b-row class="mb-3">
     <b-col>
       <b-breadcrumb :items="breadcrumbs"></b-breadcrumb>
     </b-col>
+  </b-row> -->
+  <b-row>
+    <b-col class="m-3">
+      <h1>Projects</h1>
+    </b-col>
   </b-row>
   <b-row>
-    <b-col cols="12" md="4" lg="3" xl="2">
-      <b-card title="Actions">
-        <div><router-link :to="{name: 'new-project'}">New project</router-link></div>
+    <b-col cols="12" md="3" lg="2" xl="2">
+      <b-card>
+        <div class="card-title">
+          <span class="h4">Search</span>
+        </div>
+        <b-form @submit.prevent="onSearchHandler">
+          <div>
+            <form-input id="projectSearchNumber" label="Project number" v-model="searchParamsInput.project_number"></form-input>
+          </div>
+          <div>
+            <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
+          </div>
+          <b-btn type="submit">Search</b-btn>
+        </b-form>
       </b-card>
     </b-col>
-    <b-col>
-      <b-card title="Projects">
-        <div v-if="loading" class="my-5 text-center">
-          <font-awesome-icon icon="spinner"></font-awesome-icon>
+    <b-col cols="12" md="6" lg="6" xl="6">
+      <b-card>
+        <div class="card-title">
+          <span class="h2">Projects</span>
+          <div class="float-right">Filters:
+
+            <span
+              v-for="(value, key) in searchParams"
+              :key="`searchFilterChip${key}`"
+            >
+              <b-badge
+                  variant="info"
+                  v-if="value"
+                  class="ml-2 pr-1"
+                  pill
+                  href="#"
+                  @click="clearSearchFilter(key)"
+                  :id="`searchFilterChip${key}`"
+              >
+                {{ key | readable }}: {{ value }}
+                <font-awesome-icon :icon="['far', 'times-circle']" size="lg" class="m-0 p-0 ml-2"></font-awesome-icon>
+              </b-badge>
+            </span>
+          </div>
         </div>
-        <div v-else>
-          <b-table :items="projects" :fields="fields">
-            <template slot="name" slot-scope="data">
-              <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{ data.value }}</router-link>
+        <div>
+          <b-table
+            id="projectSearchTable"
+            ref="projectSearchTable"
+            :busy.sync="isBusy"
+            :items="projectSearch"
+            :fields="fields"
+            :per-page="perPage"
+            :current-page="currentPage"
+            >
+            <template slot="project" slot-scope="data">
+              <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
             </template>
           </b-table>
-          <b-btn variant="info" size="sm" :to="{ name: 'new-project' }">New project</b-btn>
-        </div>
 
+          <div>
+            <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage"></b-pagination>
+            <b-btn variant="info" size="sm" :to="{ name: 'new-project' }">New project</b-btn>
+          </div>
+        </div>
+      </b-card>
+    </b-col>
+    <b-col cols="12" md="3" lg="2" xl="2">
+      <b-card title="Actions">
+        <div><router-link :to="{name: 'new-project'}">New project</router-link></div>
       </b-card>
     </b-col>
   </b-row>
@@ -33,13 +85,27 @@
 </template>
 
 <script>
+import querystring from 'querystring'
+import FormInput from '@/components/common/FormInput.vue'
 export default {
   name: 'ProjectList',
+  components: {
+    FormInput
+  },
   data () {
     return {
       projects: [],
       loading: false,
-      fields: [ 'id', 'name', 'location', 'pm' ],
+      fields: [ 'project', 'location', 'borehole_count' ],
+      currentPage: 1,
+      perPage: 10,
+      isBusy: false,
+      numberOfRecords: 0,
+      searchParamsInput: {
+        project_number: null,
+        project_name: null
+      },
+      searchParams: {},
       breadcrumbs: [
         {
           text: 'Projects',
@@ -48,15 +114,40 @@ export default {
       ]
     }
   },
-  created () {
-    this.loading = true
-    this.$http.get('api/v1/projects/').then((r) => {
-      this.projects = r.data
-    }).catch((e) => {
-      console.log(e)
-    }).finally(() => {
-      this.loading = false
-    })
+  methods: {
+    projectSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
+      /**
+      * projectSearch() is a table items provider function
+      * https://bootstrap-vue.js.org/docs/components/table/
+      *
+      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'projectSearchTable')
+      */
+
+      const params = {
+        limit: ctx.perPage,
+        offset: ctx.perPage * (ctx.currentPage - 1)
+      }
+
+      // add other search parameters into the params object.
+      // these will be urlencoded and the API will filter on these values.
+      Object.assign(params, this.searchParams)
+
+      return this.$http.get('projects' + '?' + querystring.stringify(params)).then((response) => {
+        this.numberOfRecords = response.data.count
+        return response.data.results || []
+      }).catch((e) => {
+        return []
+      })
+    },
+    onSearchHandler () {
+      this.searchParams = Object.assign({}, this.searchParamsInput)
+      this.$root.$emit('bv::refresh::table', 'projectSearchTable')
+    },
+    clearSearchFilter (key) {
+      this.searchParams[key] = null
+      this.searchParamsInput[key] = ''
+      this.$root.$emit('bv::refresh::table', 'projectSearchTable')
+    }
   }
 }
 </script>

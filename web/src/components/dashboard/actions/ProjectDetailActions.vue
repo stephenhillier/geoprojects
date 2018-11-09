@@ -20,8 +20,7 @@ export default {
   },
   methods: {
     deleteProject () {
-      console.log('deleting!!')
-      this.$http.delete(`api/v1/projects/${this.$route.params.id}`).then(() => {
+      this.$http.delete(`projects/${this.$route.params.id}`).then(() => {
         this.$router.push({ name: 'projects' })
       }).catch(() => {
         this.deleteError = true
