@@ -29,14 +29,15 @@ type BoreholeCreateRequest struct {
 // a borehole's details
 // the FieldEng field is a string (users.username) instead of a primary key reference.
 type BoreholeResponse struct {
-	ID        int64     `json:"id"`
-	Project   NullInt64 `json:"project"`
-	Program   NullInt64 `json:"program"`
-	Datapoint NullInt64 `json:"datapoint"`
-	Name      string    `json:"name"`
-	StartDate NullDate  `json:"start_date" db:"start_date"`
-	EndDate   NullDate  `json:"end_date" db:"end_date"`
-	FieldEng  string    `json:"field_eng" db:"field_eng"`
+	ID        int64         `json:"id"`
+	Project   NullInt64     `json:"project"`
+	Program   NullInt64     `json:"program"`
+	Datapoint NullInt64     `json:"datapoint"`
+	Name      string        `json:"name"`
+	StartDate NullDate      `json:"start_date" db:"start_date"`
+	EndDate   NullDate      `json:"end_date" db:"end_date"`
+	FieldEng  string        `json:"field_eng" db:"field_eng"`
+	Location  PointLocation `json:"location"`
 }
 
 // PaginatedBoreholeResponse contains a count of all borehole records and paginated results from the database

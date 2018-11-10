@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     submit () {
-      this.$http.post('/api/v1/projects/', this.form)
+      this.$http.post('projects/', this.form)
         .then(() => {
           this.$router.push({ name: 'projects' })
         }).catch((e) => {

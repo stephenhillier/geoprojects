@@ -7,6 +7,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/encoding/wkb"
 )
 
 // Datastore represents a database
@@ -33,6 +35,10 @@ type NullInt64 struct {
 // NullString is an alias for sql.NullString
 type NullString struct {
 	sql.NullString
+}
+
+type PointLocation struct {
+	orb.Point
 }
 
 // MarshalJSON represents NullInt64 as JSON
@@ -87,4 +93,26 @@ func (v *NullString) UnmarshalJSON(b []byte) error {
 	err := json.Unmarshal(b, &v.String)
 	v.Valid = (err == nil)
 	return err
+}
+
+// MarshalJSON represents PointLocation (orb.Point) as JSON
+func (v *PointLocation) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]float64{v.Lat(), v.Lon()})
+}
+
+// Scan allows scanning of PostGIS binary locations
+func (v *PointLocation) Scan(src interface{}) error {
+	var err error
+	source := src.([]byte)
+	geom, err := wkb.Unmarshal(source)
+
+	if err != nil {
+		return err
+	}
+
+	point := geom.(orb.Point)
+
+	*v = PointLocation{point}
+
+	return nil
 }

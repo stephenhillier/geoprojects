@@ -1,6 +1,10 @@
 package main
 
-import "github.com/paulmach/orb"
+import (
+	"log"
+
+	"github.com/paulmach/orb"
+)
 
 // BoreholeRepository is the set of methods available for interacting with Borehole records
 type BoreholeRepository interface {
@@ -17,11 +21,19 @@ func (db *Datastore) ListBoreholes(projectID int, limit int, offset int) ([]*Bor
 	countQuery := `SELECT count(id) FROM borehole`
 	countByProjectQuery := `SELECT count(id) FROM borehole WHERE project=$1`
 
-	query := `SELECT id, project, program, datapoint, name, start_date, end_date, field_eng FROM borehole LIMIT $1 OFFSET $2`
-
+	query := `
+		SELECT borehole.id, borehole.project, borehole.program, borehole.datapoint, borehole.name, borehole.start_date, borehole.end_date, borehole.field_eng,
+			datapoint.location AS location
+		FROM borehole
+		LEFT JOIN datapoint ON (datapoint.id = borehole.datapoint)
+		LIMIT $1 OFFSET $2
+	`
 	queryByProject := `
-		SELECT id, project, program, datapoint, name, start_date, end_date, field_eng
-		FROM borehole WHERE project=$1
+		SELECT borehole.id, borehole.project, borehole.program, borehole.datapoint, borehole.name, borehole.start_date, borehole.end_date, borehole.field_eng,
+			ST_AsBinary(datapoint.location) AS location
+		FROM borehole
+		LEFT JOIN datapoint ON (datapoint.id = borehole.datapoint)
+		WHERE project=$1
 		LIMIT $2 OFFSET $3
 	`
 
@@ -50,6 +62,8 @@ func (db *Datastore) ListBoreholes(projectID int, limit int, offset int) ([]*Bor
 
 	if err != nil {
 		// borehole query failed
+
+		log.Println(err)
 		return []*BoreholeResponse{}, 0, err
 	}
 	return boreholes, count, nil

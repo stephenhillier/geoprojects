@@ -7,7 +7,7 @@
                 <h6 class="text-muted">{{project.name}}</h6>
         </b-col>
         <b-col>
-          <ew-map></ew-map>
+          <multi-marker-map :locations="locations"></multi-marker-map>
         </b-col>
       </b-row>
     <b-table
@@ -22,6 +22,9 @@
       <template slot="project" slot-scope="data">
         <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
       </template>
+      <template slot="location" slot-scope="data">
+        {{ data.value[0].toFixed(6) }}, {{ data.value[1].toFixed(6) }}
+      </template>
     </b-table>
     <b-btn variant="info" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
 
@@ -30,20 +33,21 @@
 
 <script>
 import querystring from 'querystring'
-import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
+import MultiMarkerMap from '@/components/common/MultiMarkerMap.vue'
 export default {
   name: 'Boreholes',
   props: ['project'],
   components: {
-    'ew-map': SingleMarkerMap
+    MultiMarkerMap
   },
   data () {
     return {
+      locations: [],
       currentPage: 1,
       perPage: 10,
       isBusy: false,
       numberOfRecords: 0,
-      fields: ['name', 'start_date', 'end_date', 'field_eng', 'latitude', 'longitude']
+      fields: ['name', 'start_date', 'end_date', 'field_eng', 'location']
     }
   },
   methods: {
@@ -67,6 +71,7 @@ export default {
 
       return this.$http.get('boreholes' + '?' + querystring.stringify(params)).then((response) => {
         this.numberOfRecords = response.data.count
+        this.locations = response.data.results || []
         return response.data.results || []
       }).catch((e) => {
         return []

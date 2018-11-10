@@ -22,7 +22,7 @@ export default {
   computed: {
     filteredLocations () {
       return this.locations.filter((point) => {
-        return ((!!point.latitude || point.latitude === 0) && (!!point.longitude || point.longitude === 0))
+        return ((!!point.location[0] || point.location[0] === 0) && (!!point.location[1] || point.location[1] === 0))
       })
     },
     centroid () {
@@ -33,8 +33,8 @@ export default {
       let latSum = 0
       let lngSum = 0
       for (let i = 0; i < this.filteredLocations.length; i++) {
-        latSum = latSum + Number(this.filteredLocations[i].latitude)
-        lngSum = lngSum + Number(this.filteredLocations[i].longitude)
+        latSum = latSum + Number(this.filteredLocations[i].location[0])
+        lngSum = lngSum + Number(this.filteredLocations[i].location[1])
       }
 
       const latAvg = latSum / this.filteredLocations.length
@@ -57,15 +57,16 @@ export default {
       })
     },
     initMap () {
-      this.map = L.map('map').setView([this.lat, this.long], 5)
+      this.map = L.map('map').setView([this.centroid.lat, this.centroid.lng], 7)
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?').addTo(this.map)
     },
     createMarkers (latlng) {
       this.filteredLocations.forEach((item) => {
-        this.markers.push({
-
-        })
+        const loc = L.latLng(item.location[0], item.location[1])
+        const marker = L.marker(loc)
+        this.markers.push(marker)
+        marker.addTo(this.map)
       })
     }
   },
@@ -73,6 +74,7 @@ export default {
     centroid () {
       this.markers = []
       this.createMarkers()
+      this.map.panTo(this.centroid)
     }
   },
   created () {
