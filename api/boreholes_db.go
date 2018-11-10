@@ -17,7 +17,7 @@ func (db *Datastore) ListBoreholes(projectID int, limit int, offset int) ([]*Bor
 	countQuery := `SELECT count(id) FROM borehole`
 	countByProjectQuery := `SELECT count(id) FROM borehole WHERE project=$1`
 
-	query := `SELECT id, project, program, datapoint, start_date, end_date, field_eng FROM borehole LIMIT $1 OFFSET $2`
+	query := `SELECT id, project, program, datapoint, name, start_date, end_date, field_eng FROM borehole LIMIT $1 OFFSET $2`
 
 	queryByProject := `
 		SELECT id, project, program, datapoint, name, start_date, end_date, field_eng

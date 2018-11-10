@@ -11,7 +11,16 @@ package main
 // AllProjects returns a list of all projects in the datastore
 func (db *Datastore) AllProjects(limit int, offset int) ([]Project, int, error) {
 	countQuery := `SELECT count(id) FROM project WHERE expired_at IS NULL`
-	query := `SELECT project.id, project.name, project.location FROM project WHERE expired_at IS NULL LIMIT $1 OFFSET $2`
+
+	// query := `SELECT project.id, project.name, project.location FROM project WHERE expired_at IS NULL LIMIT $1 OFFSET $2`
+
+	query := `SELECT project.id, project.name, project.location, COUNT(borehole.project) as borehole_count
+						FROM project
+						LEFT JOIN borehole ON (borehole.project = project.id)
+						WHERE project.expired_at IS NULL
+						GROUP BY project.id
+						LIMIT $1 OFFSET $2
+						`
 
 	var count int
 	projects := []Project{}

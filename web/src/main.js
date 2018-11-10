@@ -14,6 +14,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import FormInput from '@/components/common/FormInput.vue'
 import '@/components/common/readableFilter.js'
 
+import 'leaflet/dist/leaflet.css'
+
 library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)

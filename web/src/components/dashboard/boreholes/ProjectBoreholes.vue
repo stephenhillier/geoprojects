@@ -1,5 +1,15 @@
 <template>
-  <b-card title="Boreholes" :sub-title="project.name">
+  <b-card>
+
+      <b-row class="mb-3">
+        <b-col cols="12" xl="6">
+                <h4>Boreholes</h4>
+                <h6 class="text-muted">{{project.name}}</h6>
+        </b-col>
+        <b-col>
+          <ew-map></ew-map>
+        </b-col>
+      </b-row>
     <b-table
       id="boreholeSearchTable"
       ref="boreholeSearchTable"
@@ -20,16 +30,20 @@
 
 <script>
 import querystring from 'querystring'
+import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 export default {
   name: 'Boreholes',
   props: ['project'],
+  components: {
+    'ew-map': SingleMarkerMap
+  },
   data () {
     return {
       currentPage: 1,
       perPage: 10,
       isBusy: false,
       numberOfRecords: 0,
-      fields: ['name', 'start_date', 'end_date', 'field_eng']
+      fields: ['name', 'start_date', 'end_date', 'field_eng', 'latitude', 'longitude']
     }
   },
   methods: {
