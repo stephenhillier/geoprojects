@@ -8,15 +8,15 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
 // import qs from 'qs'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
-import { faTrashAlt, faPlusSquare, faTimesCircle } from '@fortawesome/free-regular-svg-icons'
+import { faSpinner, faInfoCircle, faPrint, faLink } from '@fortawesome/free-solid-svg-icons'
+import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import FormInput from '@/components/common/FormInput.vue'
 import '@/components/common/readableFilter.js'
 
 import 'leaflet/dist/leaflet.css'
 
-library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle)
+library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)

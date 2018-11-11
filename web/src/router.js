@@ -10,6 +10,8 @@ import ProjectDetailActions from './components/dashboard/actions/ProjectDetailAc
 
 import ProjectBoreholes from './components/dashboard/boreholes/ProjectBoreholes.vue'
 import NewBorehole from './components/dashboard/boreholes/NewBorehole.vue'
+import BoreholeDetail from './components/dashboard/boreholes/BoreholeDetail.vue'
+import BoreholeDetailActions from './components/dashboard/actions/BoreholeDetailActions.vue'
 
 Vue.use(Router)
 
@@ -39,6 +41,26 @@ export default new Router({
               {
                 text: 'New borehole',
                 to: { name: 'new-project' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'boreholes/:bh',
+          name: 'borehole-detail',
+          components: {
+            default: BoreholeDetail,
+            actions: BoreholeDetailActions
+          },
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Boreholes',
+                to: { name: 'project-boreholes' }
+              },
+              {
+                text: 'Borehole Details',
+                to: { name: 'project-boreholes' }
               }
             ]
           }

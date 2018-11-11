@@ -42,3 +42,14 @@ func (db *Datastore) CreateStrata(strata Strata) (Strata, error) {
 	}
 	return created, nil
 }
+
+// CountStrataForBorehole returns a count of all strata (soil layers) in a given borehole
+func (db *Datastore) CountStrataForBorehole(boreholeID int64) (int, error) {
+	var count int
+	query := `SELECT count(*) FROM strata WHERE borehole=$1`
+	err := db.Get(&count, query, boreholeID)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

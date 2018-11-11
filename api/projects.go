@@ -41,6 +41,7 @@ func (s *server) listProjects(w http.ResponseWriter, req *http.Request) {
 
 	projects, count, err := s.datastore.AllProjects(limit, offset)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
@@ -103,7 +104,7 @@ func (s *server) projectDetail(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, project)
 }
 
-// deleteProject sets a project to be expired at the current time
+// deleteProject deletes a project
 func (s *server) deleteProject(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	project, ok := ctx.Value(projectCtx).(Project)
@@ -138,8 +139,6 @@ func (s *server) projectCtxMiddleware(next http.Handler) http.Handler {
 			http.Error(w, http.StatusText(404), 404)
 			return
 		}
-
-		log.Println(project)
 
 		ctx := context.WithValue(r.Context(), projectCtx, project)
 		next.ServeHTTP(w, r.WithContext(ctx))

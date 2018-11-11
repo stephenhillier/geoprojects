@@ -23,7 +23,7 @@ func (db *Datastore) ListBoreholes(projectID int, limit int, offset int) ([]*Bor
 
 	query := `
 		SELECT borehole.id, borehole.project, borehole.program, borehole.datapoint, borehole.name, borehole.start_date, borehole.end_date, borehole.field_eng,
-			datapoint.location AS location
+			ST_AsBinary(datapoint.location) AS location
 		FROM borehole
 		LEFT JOIN datapoint ON (datapoint.id = borehole.datapoint)
 		LIMIT $1 OFFSET $2
@@ -110,12 +110,18 @@ func (db *Datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) 
 }
 
 // GetBorehole retrieves a single borehole record.
-func (db *Datastore) GetBorehole(boreholeID int) (Borehole, error) {
-	p := Borehole{}
-	query := `SELECT id, project, program, datapoint, name, start_date, end_date, field_eng FROM borehole WHERE id=$1`
+func (db *Datastore) GetBorehole(boreholeID int) (BoreholeResponse, error) {
+	p := BoreholeResponse{}
+	query := `
+		SELECT borehole.id, borehole.project, borehole.program, borehole.datapoint, borehole.name, borehole.start_date, borehole.end_date, borehole.field_eng,
+			ST_AsBinary(datapoint.location) AS location
+		FROM borehole 
+		LEFT JOIN datapoint ON (datapoint.id = borehole.datapoint)
+		WHERE borehole.id=$1	
+		`
 	err := db.Get(&p, query, boreholeID)
 	if err != nil {
-		return Borehole{}, err
+		return BoreholeResponse{}, err
 	}
 	return p, nil
 }

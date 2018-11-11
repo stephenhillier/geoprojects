@@ -42,12 +42,10 @@
                   v-if="value"
                   class="ml-2 pr-1"
                   pill
-                  href="#"
-                  @click="clearSearchFilter(key)"
                   :id="`searchFilterChip${key}`"
               >
                 {{ key | readable }}: {{ value }}
-                <font-awesome-icon :icon="['far', 'times-circle']" size="lg" class="m-0 p-0 ml-2"></font-awesome-icon>
+                <a href="#" @click="clearSearchFilter(key)" class="text-white"><font-awesome-icon :icon="['far', 'times-circle']" size="lg" class="m-0 p-0 ml-2"></font-awesome-icon></a>
               </b-badge>
             </span>
           </div>
@@ -61,6 +59,7 @@
             :fields="fields"
             :per-page="perPage"
             :current-page="currentPage"
+            show-empty
             >
             <template slot="project" slot-scope="data">
               <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
@@ -76,7 +75,14 @@
     </b-col>
     <b-col cols="12" md="3" lg="2" xl="2">
       <b-card title="Actions">
-        <div><router-link :to="{name: 'new-project'}">New project</router-link></div>
+        <b-row class="mt-2">
+          <b-col>
+            <b-btn variant="outline-dark" size="sm" :to="{name: 'new-project'}">
+              <font-awesome-icon :icon="['far', 'plus-square']" class="text-muted"></font-awesome-icon>
+              New project
+            </b-btn>
+          </b-col>
+        </b-row>
       </b-card>
     </b-col>
   </b-row>

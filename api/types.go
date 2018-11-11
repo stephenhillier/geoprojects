@@ -37,6 +37,7 @@ type NullString struct {
 	sql.NullString
 }
 
+// PointLocation is an alias for orb.Point
 type PointLocation struct {
 	orb.Point
 }
@@ -96,7 +97,7 @@ func (v *NullString) UnmarshalJSON(b []byte) error {
 }
 
 // MarshalJSON represents PointLocation (orb.Point) as JSON
-func (v *PointLocation) MarshalJSON() ([]byte, error) {
+func (v PointLocation) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]float64{v.Lat(), v.Lon()})
 }
 

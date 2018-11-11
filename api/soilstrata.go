@@ -25,9 +25,9 @@ type Strata struct {
 // StrataRequest is a struct containing fields required to create a new strata layer
 type StrataRequest struct {
 	ID          int64   `json:"id"`
-	Borehole    int64   `json:"borehole"`
-	Start       float64 `json:"start"`
-	End         float64 `json:"end"`
+	Borehole    int64   `json:"borehole,string"`
+	Start       float64 `json:"start,string"`
+	End         float64 `json:"end,string"`
 	Description string  `json:"description"`
 }
 
@@ -40,7 +40,7 @@ func (s *server) strataOptions(w http.ResponseWriter, req *http.Request) {
 // the borehole must be passed in the request context with the contextKey "boreholeCtx"
 func (s *server) listStrataByBorehole(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	borehole, ok := ctx.Value(boreholeCtx).(Borehole)
+	borehole, ok := ctx.Value(boreholeCtx).(BoreholeResponse)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

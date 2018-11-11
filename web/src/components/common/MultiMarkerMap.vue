@@ -58,8 +58,8 @@ export default {
     },
     initMap () {
       this.map = L.map('map').setView([this.centroid.lat, this.centroid.lng], 7)
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?').addTo(this.map)
+      const osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?', { attribution: osmAttrib }).addTo(this.map)
     },
     createMarkers (latlng) {
       this.filteredLocations.forEach((item) => {
@@ -67,6 +67,7 @@ export default {
         const marker = L.marker(loc)
         this.markers.push(marker)
         marker.addTo(this.map)
+        marker.bindPopup(item.name)
       })
     }
   },

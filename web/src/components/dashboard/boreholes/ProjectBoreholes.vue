@@ -19,8 +19,8 @@
       :per-page="perPage"
       :current-page="currentPage"
       >
-      <template slot="project" slot-scope="data">
-        <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
+      <template slot="name" slot-scope="data">
+        <router-link :to="{ name: 'borehole-detail', params: { bh: data.item.id }}">{{ data.item.name }}</router-link>
       </template>
       <template slot="location" slot-scope="data">
         {{ data.value[0].toFixed(6) }}, {{ data.value[1].toFixed(6) }}
@@ -53,10 +53,10 @@ export default {
   methods: {
     boreholeSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
       /**
-      * projectSearch() is a table items provider function
+      * table items provider function
       * https://bootstrap-vue.js.org/docs/components/table/
       *
-      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'projectSearchTable')
+      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'boreholeSearchTable')
       */
 
       const params = {

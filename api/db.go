@@ -49,8 +49,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	createProjectTable := `CREATE TABLE IF NOT EXISTS project(
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL CHECK (char_length(name) < 255),
-		location TEXT NOT NULL CHECK (char_length(location) < 255),
-		expired_at DATE
+		location TEXT NOT NULL CHECK (char_length(location) < 255)
 	)`
 
 	// 2018-10-1
@@ -69,7 +68,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 
 	createBoreholeTable := `CREATE TABLE IF NOT EXISTS borehole(
 		id SERIAL PRIMARY KEY,
-		project INTEGER REFERENCES project(id) NOT NULL,
+		project INTEGER NOT NULL REFERENCES project(id) ON DELETE CASCADE,
 		datapoint INTEGER REFERENCES datapoint(id) NOT NULL,
 		program INTEGER REFERENCES field_program(id),
 		name TEXT NOT NULL CHECK (char_length(name) < 40),
@@ -82,7 +81,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	createStrataTable := `
 		CREATE TABLE IF NOT EXISTS strata(
 			id SERIAL PRIMARY KEY,
-			borehole INTEGER REFERENCES borehole(id),
+			borehole INTEGER NOT NULL REFERENCES borehole(id) ON DELETE CASCADE,
 			start_depth DOUBLE PRECISION NOT NULL,
 			end_depth DOUBLE PRECISION NOT NULL,
 			description TEXT NOT NULL CHECK (char_length(description) < 800),

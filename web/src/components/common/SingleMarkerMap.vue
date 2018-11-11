@@ -56,8 +56,8 @@ export default {
     },
     initMap () {
       this.map = L.map('map').setView([this.lat, this.long], 5)
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?').addTo(this.map)
+      const osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?', { attribution: osmAttrib }).addTo(this.map)
 
       // we only need double click to add marker functionality when not in multiple mode
       if (this.addMode) {

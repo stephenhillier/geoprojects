@@ -1,7 +1,7 @@
 <template>
             <b-card title="Actions">
-              <b-btn variant="outline-dark" size="sm" @click="deleteProject">
-                <font-awesome-icon :icon="['far', 'trash-alt']" class="text-muted"></font-awesome-icon>
+              <b-btn variant="outline-danger" size="sm" @click="deleteProject">
+                <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
                 Delete project
               </b-btn>
               <b-alert variant="danger" dismissible v-if="deleteError" @dismissed="deleteError=false">

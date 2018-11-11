@@ -10,14 +10,11 @@ package main
 
 // AllProjects returns a list of all projects in the datastore
 func (db *Datastore) AllProjects(limit int, offset int) ([]Project, int, error) {
-	countQuery := `SELECT count(id) FROM project WHERE expired_at IS NULL`
-
-	// query := `SELECT project.id, project.name, project.location FROM project WHERE expired_at IS NULL LIMIT $1 OFFSET $2`
+	countQuery := `SELECT count(id) FROM project`
 
 	query := `SELECT project.id, project.name, project.location, COUNT(borehole.project) as borehole_count
 						FROM project
 						LEFT JOIN borehole ON (borehole.project = project.id)
-						WHERE project.expired_at IS NULL
 						GROUP BY project.id
 						LIMIT $1 OFFSET $2
 						`
@@ -49,7 +46,7 @@ func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
 	query := `SELECT project.id, project.name, project.location, COUNT(borehole.project) as borehole_count
 						FROM project
 						LEFT JOIN borehole ON (borehole.project = project.id)
-						WHERE project.id=$1 AND project.expired_at IS NULL
+						WHERE project.id=$1
 						GROUP BY project.id
 						`
 	err := db.Get(&p, query, projectID)
@@ -58,7 +55,7 @@ func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
 
 // DeleteProject sets a project's expiry to the current time
 func (db *Datastore) DeleteProject(id int) error {
-	query := `UPDATE project SET expired_at = NOW() WHERE id = $1`
+	query := `DELETE FROM project WHERE id = $1`
 	_, err := db.Exec(query, id)
 	if err != nil {
 		return err

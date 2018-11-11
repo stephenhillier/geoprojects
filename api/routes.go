@@ -26,17 +26,6 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 				})
 			})
 
-			// Programs routes
-			r.Route("/programs", func(r chi.Router) {
-				r.Get("/", api.listPrograms)
-				r.Options("/", api.programOptions)
-				r.Post("/", api.createProgram)
-				// r.Route("/{programID}", func(r chi.Router) {
-				// 	r.Get("/", api.programDetail)
-				// 	r.Options("/", api.singleProgramOptions)
-				// })
-			})
-
 			// Boreholes routes
 			r.Route("/boreholes", func(r chi.Router) {
 				r.Options("/", api.boreholeOptions)
@@ -44,6 +33,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 				r.Post("/", api.createBorehole)
 				r.Route("/{boreholeID}", func(r chi.Router) {
 					r.Use(api.boreholeCtxMiddleware)
+					r.Get("/", api.getBorehole)
 					r.Get("/strata", api.listStrataByBorehole)
 				})
 			})
@@ -58,7 +48,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 		// Authenticated routes
 		r.Group(func(r chi.Router) {
 			r.Use(api.jwtAuthentication().Handler)
-			// projects endpoints (list/create/retrieve/update/delete project records)
+			// routes added here require authentication
 		})
 	})
 	return r

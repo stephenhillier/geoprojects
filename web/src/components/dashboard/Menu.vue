@@ -2,7 +2,7 @@
 <div>
   <b-card no-body class="mb-3">
     <b-list-group flush>
-      <b-list-group-item class="menu-heading">{{ project.name }}</b-list-group-item>
+      <b-list-group-item class="menu-heading font-weight-bold">{{ project.name }}</b-list-group-item>
       <b-list-group-item exact :to="{ name: 'project-dashboard', params: { id: this.$route.params.id } }">Project Details</b-list-group-item>
     </b-list-group>
   </b-card>

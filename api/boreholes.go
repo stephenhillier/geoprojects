@@ -29,15 +29,16 @@ type BoreholeCreateRequest struct {
 // a borehole's details
 // the FieldEng field is a string (users.username) instead of a primary key reference.
 type BoreholeResponse struct {
-	ID        int64         `json:"id"`
-	Project   NullInt64     `json:"project"`
-	Program   NullInt64     `json:"program"`
-	Datapoint NullInt64     `json:"datapoint"`
-	Name      string        `json:"name"`
-	StartDate NullDate      `json:"start_date" db:"start_date"`
-	EndDate   NullDate      `json:"end_date" db:"end_date"`
-	FieldEng  string        `json:"field_eng" db:"field_eng"`
-	Location  PointLocation `json:"location"`
+	ID          int64         `json:"id"`
+	Project     NullInt64     `json:"project"`
+	Program     NullInt64     `json:"program"`
+	Datapoint   NullInt64     `json:"datapoint"`
+	Name        string        `json:"name"`
+	StartDate   NullDate      `json:"start_date" db:"start_date"`
+	EndDate     NullDate      `json:"end_date" db:"end_date"`
+	FieldEng    string        `json:"field_eng" db:"field_eng"`
+	Location    PointLocation `json:"location"`
+	StrataCount int           `json:"strata_count,omitempty"`
 }
 
 // PaginatedBoreholeResponse contains a count of all borehole records and paginated results from the database
@@ -112,7 +113,6 @@ func (s *server) createBorehole(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 	borehole := BoreholeCreateRequest{}
 	err := decoder.Decode(&borehole)
-	log.Println(borehole)
 	if err != nil {
 		log.Println(err)
 
@@ -130,9 +130,23 @@ func (s *server) createBorehole(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, newBorehole)
 }
 
-// func getBorehole(w http.ResponseWriter, req *http.Request) {
+func (s *server) getBorehole(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	borehole, ok := ctx.Value(boreholeCtx).(BoreholeResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
 
-// }
+	strataCount, err := s.datastore.CountStrataForBorehole(borehole.ID)
+	if err != nil {
+		log.Println("error fetching strata count:", err)
+	}
+
+	borehole.StrataCount = strataCount
+
+	render.JSON(w, req, borehole)
+}
 
 // boreholeCtxMiddleware is used by borehole routes that have a boreholeID in the URL path.
 // it passes borehole information into the request context
@@ -149,8 +163,6 @@ func (s *server) boreholeCtxMiddleware(next http.Handler) http.Handler {
 			http.Error(w, http.StatusText(404), 404)
 			return
 		}
-
-		log.Println(borehole)
 
 		ctx := context.WithValue(r.Context(), boreholeCtx, borehole)
 		next.ServeHTTP(w, r.WithContext(ctx))
