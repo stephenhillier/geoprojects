@@ -1,7 +1,5 @@
 package main
 
-import "log"
-
 // ListStrataByBorehole retrieves a list of soil strata records associated with a given borehole
 func (db *Datastore) ListStrataByBorehole(boreholeID int64) ([]*Strata, error) {
 	query := `SELECT id, borehole, start_depth, end_depth, description, soils, moisture, consistency FROM strata WHERE borehole=$1`
@@ -24,7 +22,6 @@ func (db *Datastore) CreateStrata(strata Strata) (Strata, error) {
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, borehole, start_depth, end_depth, description, soils, moisture, consistency
 	`
-	log.Println(strata)
 	created := Strata{}
 	err := db.Get(
 		&created,
