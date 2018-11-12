@@ -21,6 +21,7 @@
       :busy.sync="isBusy"
       :items="boreholeSearch"
       :fields="fields"
+      responsive
       :per-page="perPage"
       :current-page="currentPage"
       >

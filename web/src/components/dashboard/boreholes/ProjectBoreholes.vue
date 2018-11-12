@@ -14,6 +14,7 @@
       id="boreholeSearchTable"
       ref="boreholeSearchTable"
       :busy.sync="isBusy"
+      responsive
       :items="boreholeSearch"
       :fields="fields"
       :per-page="perPage"

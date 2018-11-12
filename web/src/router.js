@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import Login from './views/Login.vue'
+
 import ProjectList from './views/ProjectList.vue'
 import NewProject from './components/dashboard/projects/NewProject.vue'
 
@@ -90,6 +92,11 @@ export default new Router({
           }
         }
       ]
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
     },
     {
       path: '/',

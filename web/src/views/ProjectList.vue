@@ -12,7 +12,7 @@
   </b-row>
   <b-row>
     <b-col cols="12" md="3" lg="2" xl="2">
-      <b-card>
+      <b-card class="mb-3">
         <div class="card-title">
           <span class="h4">Search</span>
         </div>
@@ -27,8 +27,8 @@
         </b-form>
       </b-card>
     </b-col>
-    <b-col cols="12" md="6" lg="6" xl="6">
-      <b-card>
+    <b-col cols="12" md="6" lg="8" xl="8">
+      <b-card class="mb-3">
         <div class="card-title">
           <span class="h2">Projects</span>
           <div class="float-right">Filters:
@@ -55,6 +55,7 @@
             id="projectSearchTable"
             ref="projectSearchTable"
             :busy.sync="isBusy"
+            responsive
             :items="projectSearch"
             :fields="fields"
             :per-page="perPage"
@@ -68,16 +69,18 @@
 
           <div>
             <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage"></b-pagination>
-            <b-btn variant="info" size="sm" :to="{ name: 'new-project' }">New project</b-btn>
+            <b-btn variant="primary" size="sm" :to="{ name: 'new-project' }">
+              New project
+            </b-btn>
           </div>
         </div>
       </b-card>
     </b-col>
     <b-col cols="12" md="3" lg="2" xl="2">
-      <b-card title="Actions">
+      <b-card title="Actions" class="mb-3">
         <b-row class="mt-2">
           <b-col>
-            <b-btn variant="outline-dark" size="sm" :to="{name: 'new-project'}">
+            <b-btn variant="link" size="sm" :to="{name: 'new-project'}">
               <font-awesome-icon :icon="['far', 'plus-square']" class="text-muted"></font-awesome-icon>
               New project
             </b-btn>

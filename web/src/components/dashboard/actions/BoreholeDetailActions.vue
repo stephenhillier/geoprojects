@@ -2,7 +2,7 @@
   <b-card title="Actions">
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="outline-dark" size="sm">
+        <b-btn variant="link" size="sm">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
           View PDF
         </b-btn>
@@ -10,7 +10,7 @@
     </b-row>
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="outline-dark" size="sm">
+        <b-btn variant="link" size="sm">
           <font-awesome-icon :icon="['fas', 'link']" class="text-muted"></font-awesome-icon>
           Share link
         </b-btn>
@@ -18,7 +18,7 @@
     </b-row>
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="outline-dark" size="sm">
+        <b-btn variant="link" size="sm">
           <font-awesome-icon :icon="['fas', 'print']" class="text-muted"></font-awesome-icon>
           Print borehole log
         </b-btn>

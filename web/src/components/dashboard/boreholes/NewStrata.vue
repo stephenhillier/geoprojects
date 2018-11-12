@@ -26,7 +26,7 @@
             label="Description"
             required
             v-model="form.description"
-            hint="Depth (m)"
+            hint="Soil visual description"
           ></form-input>
         </b-col>
       </b-row>
