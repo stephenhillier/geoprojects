@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
@@ -16,13 +17,18 @@ type DB struct {
 
 // NewDB initializes the database connection
 func NewDB(connectionConfig string) (*sqlx.DB, error) {
-	db, err := sqlx.Open("postgres", connectionConfig)
-	if err != nil {
-		return nil, err
-	}
 
-	if err = db.Ping(); err != nil {
-		return nil, err
+	var db *sqlx.DB
+
+	for {
+		db, err := sqlx.Open("postgres", connectionConfig)
+		err = db.Ping()
+
+		if err == nil {
+			break
+		}
+		log.Println("Waiting for database to become available")
+		time.Sleep(10 * time.Second)
 	}
 
 	migrate(db)

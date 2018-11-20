@@ -1,0 +1,31 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: earthworks-api
+    app: earthworks-api
+  name: earthworks-api
+  namespace: earthworks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: earthworks-api
+      app: earthworks-api
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: earthworks-api
+        app: earthworks-api
+        version: v1
+    spec:
+      containers:
+      - image: stephenhillier/earthworks-api
+        name: earthworks-api
+        ports:
+        - containerPort: 8000
+        resources: {}
+status: {}
