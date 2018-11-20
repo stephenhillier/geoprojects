@@ -23,9 +23,21 @@ spec:
         version: v1
     spec:
       containers:
-      - image: stephenhillier/earthworks-api
-        name: earthworks-api
+      - name: earthworks-api
+        image: stephenhillier/earthworks-api
         ports:
         - containerPort: 8000
         resources: {}
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/cloud_sql_proxy",
+                  "-instances=islandcivil-db=tcp:5432",
+                  "-credential_file=/secrets/cloudsql/credentials.json"]
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/cloudsql
+            readOnly: true
 status: {}
