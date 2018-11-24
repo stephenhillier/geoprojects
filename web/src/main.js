@@ -24,7 +24,7 @@ Vue.component('form-input', FormInput)
 Vue.use(BootstrapVue)
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v1/'
+  baseURL: 'https://earthworks.islandcivil.com/api/v1/'
 })
 
 // axiosClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'

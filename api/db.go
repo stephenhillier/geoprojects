@@ -19,14 +19,19 @@ type DB struct {
 func NewDB(connectionConfig string) (*sqlx.DB, error) {
 
 	var db *sqlx.DB
+	var err error
 
 	for {
-		db, err := sqlx.Open("postgres", connectionConfig)
-		err = db.Ping()
+		db, err = sqlx.Open("postgres", connectionConfig)
+		if err != nil {
+			log.Println(err)
+		}
 
+		err = db.Ping()
 		if err == nil {
 			break
 		}
+		log.Println(err)
 		log.Println("Waiting for database to become available")
 		time.Sleep(10 * time.Second)
 	}
@@ -46,6 +51,8 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		// indicate that the migration does not need to occur
 		return migrated, err
 	}
+
+	installPostGISExtension := `CREATE EXTENSION IF NOT EXISTS POSTGIS`
 
 	createUserTable := `CREATE TABLE IF NOT EXISTS users(
 		id SERIAL PRIMARY KEY,
@@ -106,6 +113,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	registerMigration := `INSERT INTO migration (id, migrated) VALUES (1, TRUE)`
 
 	tx := db.MustBegin()
+	tx.MustExec(installPostGISExtension)
 	tx.MustExec(createUserTable)
 	tx.MustExec(createProjectTable)
 	tx.MustExec(createMigrationsTable)

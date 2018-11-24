@@ -64,6 +64,9 @@ func main() {
 
 	api.config.authCert = cert
 
+	api.config.dbuser = os.Getenv("DBUSER")
+	api.config.dbpass = os.Getenv("DBPASS")
+
 	// create db connection and router and use them to create a new "Server" instance
 	db, err := NewDB(fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", api.config.dbuser, api.config.dbpass, api.config.dbhost, api.config.dbname))
 	if err != nil {

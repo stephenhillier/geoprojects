@@ -1,10 +1,10 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: earthworks-api-gateway
+  name: earthworks-web-gateway
   namespace: earthworks
   labels:
-    app: earthworks-api
+    app: earthworks-web
 spec:
   selector:
     istio: ingressgateway # use istio default controller
@@ -19,21 +19,21 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: earthworks-api
+  name: earthworks-web
   namespace: earthworks
   labels:
-    app: earthworks-api
+    app: earthworks-web
 spec:
   hosts:
   - earthworks.islandcivil.com
   gateways:
-  - earthworks-api-gateway
+  - earthworks-web-gateway
   http:
   - match:
     - uri:
-        prefix: "/api/v1"
+        prefix: "/"
     route:
     - destination:
-        host: earthworks-api
+        host: earthworks-web
         port:
-          number: 8000
+          number: 80

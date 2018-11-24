@@ -1,0 +1,28 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: earthworks-web
+  name: earthworks-web
+  namespace: earthworks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: earthworks-web
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: earthworks-web
+        version: v1
+    spec:
+      containers:
+      - image: stephenhillier/earthworks-web
+        name: earthworks-web
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
