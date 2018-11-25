@@ -65,6 +65,7 @@ func (s *server) createStrata(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	parsedSoil := soildesc.ParseSoilTerms(strataReq.Description)
 	parsedDescription, err := soildesc.ParseDescription(strataReq.Description)
 	if err != nil {
 		log.Println(err)
@@ -78,7 +79,7 @@ func (s *server) createStrata(w http.ResponseWriter, req *http.Request) {
 		Start:       strataReq.Start,
 		End:         strataReq.End,
 		Description: strataReq.Description,
-		Soils:       strings.Join(parsedDescription.Ordered, " "),
+		Soils:       strings.Join(parsedSoil, ", "),
 		Moisture:    parsedDescription.Moisture,
 		Consistency: parsedDescription.Consistency,
 	}
