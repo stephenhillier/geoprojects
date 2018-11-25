@@ -6,8 +6,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx:1.15.6-alpine
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-WORKDIR /etc/nginx/sites-enabled/default
-COPY default.conf /etc/nginx/sites-enabled/default/
+COPY --from=build-stage /app/dist /var/www
+COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 CMD ["nginx", "-c", "/etc/nginx/nginx.conf", "-g", "daemon off;"]
