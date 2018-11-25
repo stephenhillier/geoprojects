@@ -1,36 +1,42 @@
 <template>
 <div>
-  <!-- <b-row class="mb-3">
+  <b-row>
     <b-col>
       <b-breadcrumb :items="breadcrumbs"></b-breadcrumb>
-    </b-col>
-  </b-row> -->
-  <b-row>
-    <b-col class="m-3">
-      <h1>Projects</h1>
     </b-col>
   </b-row>
   <b-row>
     <b-col cols="12" md="3" lg="2" xl="2">
-      <b-card class="mb-3">
-        <div class="card-title">
-          <span class="h4">Search</span>
-        </div>
-        <b-form @submit.prevent="onSearchHandler">
-          <div>
-            <form-input id="projectSearchNumber" label="Project number" v-model="searchParamsInput.project_number"></form-input>
-          </div>
-          <div>
-            <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
-          </div>
-          <b-btn type="submit">Search</b-btn>
-        </b-form>
+      <b-card no-body class="mb-3">
+        <b-list-group flush>
+          <b-list-group-item exact :to="{name: 'projects'}">Project List</b-list-group-item>
+          <b-list-group-item exact :to="{name: 'new-project'}">New Project</b-list-group-item>
+        </b-list-group>
       </b-card>
     </b-col>
     <b-col cols="12" md="6" lg="8" xl="8">
       <b-card class="mb-3">
         <div class="card-title">
           <span class="h2">Projects</span>
+          <b-row no-gutters>
+            <b-col cols="12" lg="6">
+              <b-card class="my-3">
+                <div class="card-title">
+                  <span class="h4">Search</span>
+                </div>
+                <b-form @submit.prevent="onSearchHandler">
+                  <div>
+                    <form-input id="projectSearchNumber" label="Project number" v-model="searchParamsInput.project_number"></form-input>
+                  </div>
+                  <div>
+                    <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
+                  </div>
+                  <b-btn type="submit">Search</b-btn>
+                </b-form>
+              </b-card>
+            </b-col>
+          </b-row>
+
           <div class="float-right">Filters:
 
             <span
@@ -69,9 +75,6 @@
 
           <div>
             <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage"></b-pagination>
-            <b-btn variant="primary" size="sm" :to="{ name: 'new-project' }">
-              New project
-            </b-btn>
           </div>
         </div>
       </b-card>

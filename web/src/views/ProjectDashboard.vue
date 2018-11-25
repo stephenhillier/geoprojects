@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid id="dashboard" class="mb-3">
+  <div id="dashboard" class="mb-3">
     <b-row>
       <b-col>
         <b-breadcrumb :items="breadcrumbs"></b-breadcrumb>
@@ -32,7 +32,7 @@
         </div>
       </b-col>
     </b-row>
-  </b-container>
+  </div>
 </template>
 
 <script>

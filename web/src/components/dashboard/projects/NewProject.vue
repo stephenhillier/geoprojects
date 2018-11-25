@@ -1,12 +1,20 @@
 <template>
   <div>
-    <b-row class="mb-3">
+    <b-row>
       <b-col>
         <b-breadcrumb :items="breadcrumbs"></b-breadcrumb>
       </b-col>
     </b-row>
     <b-row>
-      <b-col>
+      <b-col cols="12" md="3" lg="2" xl="2">
+        <b-card no-body class="mb-3">
+          <b-list-group flush>
+            <b-list-group-item exact :to="{name: 'projects'}">Project List</b-list-group-item>
+            <b-list-group-item exact :to="{name: 'new-project'}">New Project</b-list-group-item>
+          </b-list-group>
+        </b-card>
+      </b-col>
+      <b-col cols="12" md="7" lg="8">
         <b-card title="Add New Project">
           <b-form @submit.prevent="submit">
             <b-row>
