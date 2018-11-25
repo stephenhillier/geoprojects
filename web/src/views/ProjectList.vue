@@ -31,8 +31,7 @@
     <b-col cols="12" md="6" lg="8" xl="8">
       <b-card class="mb-3">
         <div class="card-title">
-          <h1 class="h1">Projects</h1>
-          <b-row class="my-3">
+          <b-row class="mb-3">
             <b-col>
               <multi-marker-map :locations="locations"></multi-marker-map>
             </b-col>
