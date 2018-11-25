@@ -13,27 +13,28 @@
           <b-list-group-item exact :to="{name: 'new-project'}">New Project</b-list-group-item>
         </b-list-group>
       </b-card>
+      <b-card class="my-3">
+        <div class="card-title">
+          <span class="h4">Search</span>
+        </div>
+        <b-form @submit.prevent="onSearchHandler">
+          <div>
+            <form-input id="projectSearchNumber" label="Project number" v-model="searchParamsInput.project_number"></form-input>
+          </div>
+          <div>
+            <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
+          </div>
+          <b-btn type="submit">Search</b-btn>
+        </b-form>
+      </b-card>
     </b-col>
     <b-col cols="12" md="6" lg="8" xl="8">
       <b-card class="mb-3">
         <div class="card-title">
-          <span class="h2">Projects</span>
-          <b-row no-gutters>
-            <b-col cols="12" lg="6">
-              <b-card class="my-3">
-                <div class="card-title">
-                  <span class="h4">Search</span>
-                </div>
-                <b-form @submit.prevent="onSearchHandler">
-                  <div>
-                    <form-input id="projectSearchNumber" label="Project number" v-model="searchParamsInput.project_number"></form-input>
-                  </div>
-                  <div>
-                    <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
-                  </div>
-                  <b-btn type="submit">Search</b-btn>
-                </b-form>
-              </b-card>
+          <h1 class="h1">Projects</h1>
+          <b-row class="my-3">
+            <b-col>
+              <multi-marker-map :locations="locations"></multi-marker-map>
             </b-col>
           </b-row>
 
@@ -99,14 +100,18 @@
 <script>
 import querystring from 'querystring'
 import FormInput from '@/components/common/FormInput.vue'
+import MultiMarkerMap from '@/components/common/MultiMarkerMap.vue'
+
 export default {
   name: 'ProjectList',
   components: {
-    FormInput
+    FormInput,
+    MultiMarkerMap
   },
   data () {
     return {
       projects: [],
+      locations: [],
       loading: false,
       fields: [ 'project', 'location', 'borehole_count' ],
       currentPage: 1,
@@ -140,12 +145,19 @@ export default {
         offset: ctx.perPage * (ctx.currentPage - 1)
       }
 
+      this.locations = []
+
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
 
       return this.$http.get('projects' + '?' + querystring.stringify(params)).then((response) => {
         this.numberOfRecords = response.data.count
+        response.data.results.forEach((item) => {
+          if (item.centroid[0] !== 0 && item.centroid[1] !== 0) {
+            this.locations.push({ name: item.name, location: item.centroid })
+          }
+        })
         return response.data.results || []
       }).catch((e) => {
         return []

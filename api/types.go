@@ -103,8 +103,16 @@ func (v PointLocation) MarshalJSON() ([]byte, error) {
 
 // Scan allows scanning of PostGIS binary locations
 func (v *PointLocation) Scan(src interface{}) error {
+
+	if src == nil {
+		emptyPoint := orb.Point{}
+		*v = PointLocation{emptyPoint}
+		return nil
+	}
+
 	var err error
 	source := src.([]byte)
+
 	geom, err := wkb.Unmarshal(source)
 
 	if err != nil {

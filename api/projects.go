@@ -13,10 +13,17 @@ import (
 
 // Project represents an engineering project. It holds files and data associated with a single project
 type Project struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	Location      string `json:"location"`
-	BoreholeCount int    `json:"borehole_count" db:"borehole_count"`
+	ID               int           `json:"id"`
+	Name             string        `json:"name"`
+	Location         string        `json:"location"`
+	BoreholeCount    int           `json:"borehole_count" db:"borehole_count"`
+	CentroidLocation PointLocation `json:"centroid" db:"centroid"`
+}
+
+// ProjectRequest is the set of data required to accept a request for a new project
+type ProjectRequest struct {
+	Name     string `json:"name"`
+	Location string `json:"location"`
 }
 
 // PaginatedProjectResponse is a paginated API response containing a count of all projects
@@ -61,7 +68,7 @@ func (s *server) createProject(w http.ResponseWriter, req *http.Request) {
 
 	decoder := json.NewDecoder(req.Body)
 	// take input from POST request and store in a new Project type
-	project := Project{}
+	project := ProjectRequest{}
 	err := decoder.Decode(&project)
 	if err != nil {
 		http.Error(w, err.Error(), 400)

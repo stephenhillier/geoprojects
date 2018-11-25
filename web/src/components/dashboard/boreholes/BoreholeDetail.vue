@@ -117,6 +117,7 @@ export default {
         location: []
       },
       strataIsBusy: false,
+      samplesIsBusy: false,
       addNewStrata: false,
       addNewSample: false
     }

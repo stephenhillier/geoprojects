@@ -1,5 +1,7 @@
 <template>
-  <div id="map" class="map"></div>
+  <b-card no-body>
+    <div id="map" class="map"></div>
+  </b-card>
 </template>
 
 <script>
@@ -73,9 +75,11 @@ export default {
   },
   watch: {
     centroid () {
-      this.markers = []
-      this.createMarkers()
-      this.map.panTo(this.centroid)
+      if (this.map) {
+        this.markers = []
+        this.createMarkers()
+        this.map.panTo(this.centroid)
+      }
     }
   },
   created () {
