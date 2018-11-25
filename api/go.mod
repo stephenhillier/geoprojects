@@ -18,7 +18,7 @@ require (
 	github.com/paulmach/orb v0.1.0
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c // indirect
-	github.com/stephenhillier/soildesc v0.0.0-20181108225031-39a4109c96a8
+	github.com/stephenhillier/soildesc v0.0.0-20181125185753-dd914ff925d2
 	golang.org/x/net v0.0.0-20181114220301-adae6a3d119a // indirect
 	google.golang.org/appengine v1.3.0 // indirect
 )

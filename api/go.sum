@@ -39,6 +39,8 @@ github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c h1:Ho+uVpke
 github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c/go.mod h1:XDJAKZRPZ1CvBcN2aX5YOUTYGHki24fSF0Iv48Ibg0s=
 github.com/stephenhillier/soildesc v0.0.0-20181108225031-39a4109c96a8 h1:lBJYLfXXxGd4hAJUuJtmE9BUZ0PfhWu1lfFUEryT6NQ=
 github.com/stephenhillier/soildesc v0.0.0-20181108225031-39a4109c96a8/go.mod h1:AdUxtwN/gWoKBlU2l1VK2w5XpipXlo2z4XpfrvpOd0c=
+github.com/stephenhillier/soildesc v0.0.0-20181125185753-dd914ff925d2 h1:sZpTzUvzFlW1jna+Qbh2O3F4f1+10loPQ7zN3xp7yUA=
+github.com/stephenhillier/soildesc v0.0.0-20181125185753-dd914ff925d2/go.mod h1:AdUxtwN/gWoKBlU2l1VK2w5XpipXlo2z4XpfrvpOd0c=
 golang.org/x/net v0.0.0-20180724234803-3673e40ba225/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20181114220301-adae6a3d119a h1:gOpx8G595UYyvj8UK4+OFyY4rx037g3fmfhe5SasG3U=
 golang.org/x/net v0.0.0-20181114220301-adae6a3d119a/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
