@@ -52,44 +52,39 @@
     </b-row>
     <b-row class="mt-3">
       <b-col>
-        <h5>Soil Stratigraphy</h5>
-        <b-table
-          id="strataTable"
-          ref="strataTable"
-          responsive
-          :busy.sync="strataIsBusy"
-          :items="fetchStrata"
-          show-empty
-          :fields="['start', 'end', 'description', 'soils', 'moisture', 'consistency']"
-          >
-        </b-table>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-btn size="sm" :variant="addNewStrata ? 'secondary' : 'primary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add strata'}}</b-btn>
-      </b-col>
-    </b-row>
-    <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="refreshStrata" @strata-dismiss="addNewStrata = false"></new-strata>
-
-    <b-row class="mt-5">
-      <b-col>
-        <h5>Soil Samples</h5>
-        <b-table
-          id="sampleTable"
-          ref="sampleTable"
-          responsive
-          :busy.sync="samplesIsBusy"
-          :items="fetchSamples"
-          show-empty
-          :fields="['start', 'end', 'sample_name', 'sample_type', 'tests_ordered', 'tests_completed']"
-          >
-        </b-table>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-btn size="sm" :variant="addNewSample ? 'secondary' : 'primary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
+        <b-card no-body>
+          <b-tabs pills card>
+            <b-tab title="Stratigraphy" active>
+              <h5>Soil Stratigraphy</h5>
+              <b-table
+                id="strataTable"
+                ref="strataTable"
+                responsive
+                :busy.sync="strataIsBusy"
+                :items="fetchStrata"
+                show-empty
+                :fields="['start', 'end', 'description', 'soils', 'moisture', 'consistency']"
+                >
+              </b-table>
+              <b-btn size="sm" :variant="addNewStrata ? 'secondary' : 'primary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add strata'}}</b-btn>
+              <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="refreshStrata" @strata-dismiss="addNewStrata = false"></new-strata>
+            </b-tab>
+            <b-tab title="Samples">
+              <h5>Soil Samples</h5>
+              <b-table
+                id="sampleTable"
+                ref="sampleTable"
+                responsive
+                :busy.sync="samplesIsBusy"
+                :items="fetchSamples"
+                show-empty
+                :fields="['start', 'end', 'sample_name', 'sample_type', 'tests_ordered', 'tests_completed']"
+                >
+              </b-table>
+              <b-btn size="sm" :variant="addNewSample ? 'secondary' : 'primary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
+            </b-tab>
+          </b-tabs>
+        </b-card>
       </b-col>
     </b-row>
   </b-card>

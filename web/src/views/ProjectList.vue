@@ -15,7 +15,7 @@
       </b-card>
       <b-card class="my-3">
         <div class="card-title">
-          <span class="h4">Search</span>
+          <span class="h4">Filter</span>
         </div>
         <b-form @submit.prevent="onSearchHandler">
           <div>
@@ -24,7 +24,7 @@
           <div>
             <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
           </div>
-          <b-btn type="submit">Search</b-btn>
+          <b-btn type="submit">Apply</b-btn>
         </b-form>
       </b-card>
     </b-col>
