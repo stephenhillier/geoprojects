@@ -1,6 +1,6 @@
 <template>
   <b-navbar toggleable="sm" variant="primary" type="dark">
-    <b-navbar-brand href="#" class="earthworks-brand">Earthworks</b-navbar-brand>
+    <b-navbar-brand href="/" class="earthworks-brand">Earthworks</b-navbar-brand>
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
     <b-collapse is-nav id="nav_collapse">
       <b-navbar-nav>

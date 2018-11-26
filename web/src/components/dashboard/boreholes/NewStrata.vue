@@ -51,7 +51,8 @@ export default {
         end: '',
         description: ''
       },
-      success: false
+      success: false,
+      loading: false
     }
   },
   methods: {
