@@ -1,60 +1,34 @@
 <template>
   <b-card>
-    <b-row>
-      <b-col cols="12" lg="6" xl="6">
-        <b-row>
-          <b-col>
-            <h2>{{ borehole.name }}</h2>
-            <h6 class="text-muted">{{project.name}}</h6>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <div v-if="borehole.location && borehole.location.length">Location: {{ latitude.toFixed(6) }}, {{ longitude.toFixed(6) }}</div>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            Started: {{ borehole.start_date }}
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            Completed: {{ borehole.end_date }}
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            Logged by: {{ borehole.field_eng }}
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            Logged soil strata: {{ borehole.strata_count }}
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            Samples: 0
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            Lab tests: 0
-          </b-col>
-        </b-row>
-      </b-col>
-      <b-col cols="12" lg="6" xl="6">
-        <b-card no-body>
-          <single-marker-map :latitude="latitude" :longitude="longitude"></single-marker-map>
-        </b-card>
-      </b-col>
-    </b-row>
-    <b-row class="mt-3">
-      <b-col>
+    <h2>{{ borehole.name }}</h2>
+    <h6 class="text-muted">{{project.name}}</h6>
+    <b-row class="mt-3 no-gutters">
+      <b-col class="p-0 m-0">
         <b-card no-body>
           <b-tabs pills card>
-            <b-tab title="Stratigraphy" active>
+            <b-tab title="Summary" active>
+              <b-row>
+                <b-col cols="12" lg="6" xl="6">
+                  <h5>Summary</h5>
+                  <div v-if="borehole.location && borehole.location.length">Location: {{ latitude.toFixed(6) }}, {{ longitude.toFixed(6) }}</div>
+                  <div>
+                    Started: {{ borehole.start_date }}
+                  </div>
+                  <div>Completed: {{ borehole.end_date }}</div>
+                  <div>Logged by: {{ borehole.field_eng }}</div>
+                  <div>Logged soil strata: {{ borehole.strata_count }}</div>
+                  <div>Samples: 0</div>
+                  <div>Lab tests: 0</div>
+                </b-col>
+                <b-col cols="12" lg="6" xl="6">
+                  <b-card no-body>
+                    <single-marker-map :latitude="latitude" :longitude="longitude"></single-marker-map>
+                  </b-card>
+                </b-col>
+              </b-row>
+
+            </b-tab>
+            <b-tab title="Stratigraphy">
               <h5>Soil Stratigraphy</h5>
               <b-table
                 id="strataTable"
@@ -94,7 +68,7 @@
                 >
               </b-table> -->
 
-              <ag-grid-vue style="height: 500px;"
+              <ag-grid-vue style="height: 200px;"
                  class="ag-theme-balham"
                  :columnDefs="columnDefs"
                  :rowData="rowData">
@@ -135,14 +109,13 @@ export default {
       addNewStrata: false,
       addNewSample: false,
       columnDefs: [
-        { headerName: 'Make', field: 'make' },
-        { headerName: 'Model', field: 'model' },
-        { headerName: 'Price', field: 'price' }
+        { headerName: 'Sample', field: 'sample' },
+        { headerName: 'Test', field: 'test' }
       ],
       rowData: [
-        { make: 'Toyota', model: 'Celica', price: 35000 },
-        { make: 'Ford', model: 'Mondeo', price: 32000 },
-        { make: 'Porsche', model: 'Boxter', price: 72000 }
+        { sample: 'SA-1', test: 'Moisture content' },
+        { sample: 'SA-1', test: 'Grain size analysis' },
+        { sample: 'SA-1', test: 'Hydrometer' }
       ]
     }
   },

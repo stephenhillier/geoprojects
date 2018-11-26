@@ -26,57 +26,52 @@
           </div>
           <b-btn type="submit">Apply</b-btn>
         </b-form>
+        <!-- <div class="my-3">Filters:
+          <span
+            v-for="(value, key) in searchParams"
+            :key="`searchFilterChip${key}`"
+          >
+            <b-badge
+                variant="info"
+                v-if="value"
+                class="ml-2 pr-1"
+                pill
+                :id="`searchFilterChip${key}`"
+            >
+              {{ key | readable }}: {{ value }}
+              <a href="#" @click="clearSearchFilter(key)" class="text-white"><font-awesome-icon :icon="['far', 'times-circle']" size="lg" class="m-0 p-0 ml-2"></font-awesome-icon></a>
+            </b-badge>
+          </span>
+        </div> -->
       </b-card>
     </b-col>
     <b-col cols="12" md="6" lg="8" xl="8">
+      <b-card class="mb-3" no-body>
+        <b-row class="no-gutters">
+          <b-col>
+            <multi-marker-map :locations="locations"></multi-marker-map>
+          </b-col>
+        </b-row>
+      </b-card>
       <b-card class="mb-3">
-        <div class="card-title">
-          <b-row class="mb-3">
-            <b-col>
-              <multi-marker-map :locations="locations"></multi-marker-map>
-            </b-col>
-          </b-row>
-
-          <div class="float-right">Filters:
-
-            <span
-              v-for="(value, key) in searchParams"
-              :key="`searchFilterChip${key}`"
-            >
-              <b-badge
-                  variant="info"
-                  v-if="value"
-                  class="ml-2 pr-1"
-                  pill
-                  :id="`searchFilterChip${key}`"
-              >
-                {{ key | readable }}: {{ value }}
-                <a href="#" @click="clearSearchFilter(key)" class="text-white"><font-awesome-icon :icon="['far', 'times-circle']" size="lg" class="m-0 p-0 ml-2"></font-awesome-icon></a>
-              </b-badge>
-            </span>
-          </div>
-        </div>
-        <div>
-          <b-table
-            id="projectSearchTable"
-            ref="projectSearchTable"
-            :busy.sync="isBusy"
-            responsive
-            :items="projectSearch"
-            :fields="fields"
-            :per-page="perPage"
-            :current-page="currentPage"
-            show-empty
-            >
-            <template slot="project" slot-scope="data">
-              <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
-            </template>
-          </b-table>
-
-          <div>
-            <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage"></b-pagination>
-          </div>
-        </div>
+        <b-table
+          id="projectSearchTable"
+          ref="projectSearchTable"
+          :busy.sync="isBusy"
+          responsive
+          :items="projectSearch"
+          :fields="fields"
+          :per-page="perPage"
+          :current-page="currentPage"
+          show-empty
+          >
+          <template slot="project" slot-scope="data">
+            <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
+          </template>
+        </b-table>
+        <!-- <div>
+          <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage"></b-pagination>
+        </div> -->
       </b-card>
     </b-col>
     <b-col cols="12" md="3" lg="2" xl="2">
@@ -151,13 +146,13 @@ export default {
       Object.assign(params, this.searchParams)
 
       return this.$http.get('projects' + '?' + querystring.stringify(params)).then((response) => {
-        this.numberOfRecords = response.data.count
-        response.data.results.forEach((item) => {
+        this.numberOfRecords = response.data.length
+        response.data.forEach((item) => {
           if (item.centroid[0] !== 0 && item.centroid[1] !== 0) {
             this.locations.push({ name: item.name, location: item.centroid })
           }
         })
-        return response.data.results || []
+        return response.data || []
       }).catch((e) => {
         return []
       })

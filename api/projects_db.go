@@ -14,15 +14,8 @@ import (
 // }
 
 // AllProjects returns a list of all projects in the datastore
-func (db *Datastore) AllProjects(limit int, offset int, name string, number string) ([]Project, int, error) {
-	var count int
+func (db *Datastore) AllProjects(name string, number string) ([]Project, error) {
 	var err error
-
-	// count and query errors
-	var errC error
-	var errQ error
-
-	countQuery := `SELECT count(id) FROM project`
 
 	query := `SELECT
 			project.id,
@@ -52,7 +45,6 @@ func (db *Datastore) AllProjects(limit int, offset int, name string, number stri
 		searchProjectName := ` WHERE project.name ILIKE $` + strconv.Itoa(numParams)
 
 		query = query + searchProjectName
-		countQuery = countQuery + searchProjectName
 	}
 
 	if len(number) > 0 {
@@ -61,44 +53,33 @@ func (db *Datastore) AllProjects(limit int, offset int, name string, number stri
 		// check if name was also searched on
 		if searchOnName {
 			query = query + ` AND`
-			countQuery = countQuery + ` AND`
 		} else {
 			query = query + ` WHERE`
-			countQuery = countQuery + ` WHERE`
 		}
 
 		searchProjectNumber := ` CAST(project.id AS TEXT) LIKE $` + strconv.Itoa(numParams)
 
 		query = query + searchProjectNumber
-		countQuery = countQuery + searchProjectNumber
 	}
 
-	limitQuery := ` GROUP BY project.id LIMIT $` + strconv.Itoa(numParams+1) + ` OFFSET $` + strconv.Itoa(numParams+2) + ` `
-	query = query + limitQuery
+	groupByQuery := ` GROUP BY project.id`
+	query = query + groupByQuery
 
 	if searchOnName && searchOnNum {
-		errC = db.Get(&count, countQuery, "%"+name+"%", number+"%")
-		errQ = db.Select(&projects, query, "%"+name+"%", number+"%", limit, offset)
+		err = db.Select(&projects, query, "%"+name+"%", number+"%")
 	} else if searchOnName && !searchOnNum {
-		errC = db.Get(&count, countQuery, "%"+name+"%")
-		errQ = db.Select(&projects, query, "%"+name+"%", limit, offset)
+		err = db.Select(&projects, query, "%"+name+"%")
 	} else if !searchOnName && searchOnNum {
-		errC = db.Get(&count, countQuery, number+"%")
-		errQ = db.Select(&projects, query, number+"%", limit, offset)
+		err = db.Select(&projects, query, number+"%")
 	} else {
-		errC = db.Get(&count, countQuery)
-		errQ = db.Select(&projects, query, limit, offset)
+		err = db.Select(&projects, query)
 	}
 
-	if errQ != nil {
-		log.Println(query, name, number, limit, offset)
-		return []Project{}, 0, err
+	if err != nil {
+		log.Println(query, name, number)
+		return []Project{}, err
 	}
-	if errC != nil {
-		log.Println("error counting results:", err)
-	}
-
-	return projects, count, nil
+	return projects, nil
 }
 
 // CreateProject creates a new project record in the database

@@ -49,19 +49,14 @@ func (s *server) listProjects(w http.ResponseWriter, req *http.Request) {
 	projectName := req.FormValue("project_name")
 	projectNumber := req.FormValue("project_number")
 
-	projects, count, err := s.datastore.AllProjects(limit, offset, projectName, projectNumber)
+	projects, err := s.datastore.AllProjects(projectName, projectNumber)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
 
-	page := PaginatedProjectResponse{
-		Count:   count,
-		Results: projects,
-	}
-
-	render.JSON(w, req, page)
+	render.JSON(w, req, projects)
 }
 
 // createProject handles a post request to the projects endpoint and

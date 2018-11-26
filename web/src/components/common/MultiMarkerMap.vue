@@ -6,6 +6,9 @@
 
 <script>
 import L from 'leaflet'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 
 export default {
   name: 'Map',
@@ -18,7 +21,8 @@ export default {
   data () {
     return {
       map: null,
-      markers: []
+      markers: [],
+      cluster: null
     }
   },
   computed: {
@@ -59,24 +63,23 @@ export default {
       })
     },
     initMap () {
-      this.map = L.map('map').setView([this.centroid.lat, this.centroid.lng], 7)
+      this.map = L.map('map').setView([this.centroid.lat, this.centroid.lng], 3)
       const osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?', { attribution: osmAttrib }).addTo(this.map)
     },
     createMarkers (latlng) {
       // clear markers
-      this.markers.forEach((marker) => {
-        this.map.removeLayer(marker)
+
+      if (!this.cluster) {
+        this.cluster = L.markerClusterGroup()
+        this.map.addLayer(this.cluster)
+      }
+
+      this.cluster.clearLayers()
+      const markers = this.filteredLocations.map((item) => {
+        return L.marker(L.latLng(item.location[0], item.location[1])).bindPopup(item.name)
       })
-      this.markers = []
-      // add markers
-      this.filteredLocations.forEach((item) => {
-        const loc = L.latLng(item.location[0], item.location[1])
-        const marker = L.marker(loc)
-        marker.addTo(this.map)
-        marker.bindPopup(item.name)
-        this.markers.push(marker)
-      })
+      this.cluster.addLayers(markers)
     }
   },
   watch: {
