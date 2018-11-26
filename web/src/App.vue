@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <geo-header class="mb-3"/>
-    <b-container fluid>
+    <b-container fluid id="main-content">
       <router-view/>
     </b-container>
   </div>
@@ -27,10 +27,12 @@ $navbar-dark-hover-color:           rgba($white, .9);
 @import "~bootstrap/scss/bootstrap.scss";
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Open Sans", "Helvetica Neue", sans-serif;
   color: #333;
+}
+
+#main-content {
+  font-size: 14px;
 }
 
 .earthworks-brand {
