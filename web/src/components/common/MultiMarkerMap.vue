@@ -64,19 +64,24 @@ export default {
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?', { attribution: osmAttrib }).addTo(this.map)
     },
     createMarkers (latlng) {
+      // clear markers
+      this.markers.forEach((marker) => {
+        this.map.removeLayer(marker)
+      })
+      this.markers = []
+      // add markers
       this.filteredLocations.forEach((item) => {
         const loc = L.latLng(item.location[0], item.location[1])
         const marker = L.marker(loc)
-        this.markers.push(marker)
         marker.addTo(this.map)
         marker.bindPopup(item.name)
+        this.markers.push(marker)
       })
     }
   },
   watch: {
     centroid () {
       if (this.map) {
-        this.markers = []
         this.createMarkers()
         this.map.panTo(this.centroid)
       }

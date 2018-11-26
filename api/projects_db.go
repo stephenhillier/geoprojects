@@ -76,10 +76,6 @@ func (db *Datastore) AllProjects(limit int, offset int, name string, number stri
 	limitQuery := ` GROUP BY project.id LIMIT $` + strconv.Itoa(numParams+1) + ` OFFSET $` + strconv.Itoa(numParams+2) + ` `
 	query = query + limitQuery
 
-	log.Println(query)
-	log.Println(name)
-	log.Println(number)
-
 	if searchOnName && searchOnNum {
 		errC = db.Get(&count, countQuery, "%"+name+"%", number+"%")
 		errQ = db.Select(&projects, query, "%"+name+"%", number+"%", limit, offset)
@@ -95,6 +91,7 @@ func (db *Datastore) AllProjects(limit int, offset int, name string, number stri
 	}
 
 	if errQ != nil {
+		log.Println(query, name, number, limit, offset)
 		return []Project{}, 0, err
 	}
 	if errC != nil {
