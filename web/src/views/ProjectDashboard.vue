@@ -9,10 +9,10 @@
       <b-col cols="12" lg="3" xl="2">
         <project-menu :project="project" :project-id="project.id"></project-menu>
       </b-col>
-      <b-col>
+      <b-col class="mb-3">
         <router-view :project="project" @update-project="fetchProjectData"></router-view>
       </b-col>
-      <b-col cols="12" lg="3" xl="2" class="d-none d-xl-block">
+      <b-col cols="12" lg="3" xl="2">
         <div>
           <b-card title="Project stats" class="mb-3">
             <dl>

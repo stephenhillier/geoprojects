@@ -85,14 +85,20 @@
             </b-tab>
             <b-tab title="Lab testing">
               <h5>Lab Testing</h5>
-              <b-table
+              <!-- <b-table
                 id="labTable"
                 ref="labTable"
                 responsive
                 show-empty
                 :fields="['from', 'to', 'sample_name', 'test']"
                 >
-              </b-table>
+              </b-table> -->
+
+              <ag-grid-vue style="height: 500px;"
+                 class="ag-theme-balham"
+                 :columnDefs="columnDefs"
+                 :rowData="rowData">
+              </ag-grid-vue>
             </b-tab>
           </b-tabs>
         </b-card>
@@ -104,12 +110,14 @@
 <script>
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 import NewStrata from '@/components/dashboard/boreholes/NewStrata.vue'
+import { AgGridVue } from 'ag-grid-vue'
 
 export default {
   name: 'BoreholeDetails',
   components: {
     SingleMarkerMap,
-    NewStrata
+    NewStrata,
+    AgGridVue
   },
   props: {
     project: {
@@ -125,7 +133,17 @@ export default {
       strataIsBusy: false,
       samplesIsBusy: false,
       addNewStrata: false,
-      addNewSample: false
+      addNewSample: false,
+      columnDefs: [
+        { headerName: 'Make', field: 'make' },
+        { headerName: 'Model', field: 'model' },
+        { headerName: 'Price', field: 'price' }
+      ],
+      rowData: [
+        { make: 'Toyota', model: 'Celica', price: 35000 },
+        { make: 'Ford', model: 'Mondeo', price: 32000 },
+        { make: 'Porsche', model: 'Boxter', price: 72000 }
+      ]
     }
   },
   computed: {

@@ -15,6 +15,8 @@ import FormInput from '@/components/common/FormInput.vue'
 import '@/components/common/readableFilter.js'
 
 import 'leaflet/dist/leaflet.css'
+import 'ag-grid-community/dist/styles/ag-grid.css'
+import 'ag-grid-community/dist/styles/ag-theme-balham.css'
 
 library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt)
 
