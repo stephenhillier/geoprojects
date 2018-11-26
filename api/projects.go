@@ -46,7 +46,10 @@ func (s *server) listProjects(w http.ResponseWriter, req *http.Request) {
 		offset = 0
 	}
 
-	projects, count, err := s.datastore.AllProjects(limit, offset)
+	projectName := req.FormValue("project_name")
+	projectNumber := req.FormValue("project_number")
+
+	projects, count, err := s.datastore.AllProjects(limit, offset, projectName, projectNumber)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(500), 500)

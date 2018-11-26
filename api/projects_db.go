@@ -1,6 +1,9 @@
 package main
 
-import "log"
+import (
+	"log"
+	"strconv"
+)
 
 // // ProjectsRepository is the set of methods available to a collection of projects
 // type ProjectsRepository interface {
@@ -11,7 +14,14 @@ import "log"
 // }
 
 // AllProjects returns a list of all projects in the datastore
-func (db *Datastore) AllProjects(limit int, offset int) ([]Project, int, error) {
+func (db *Datastore) AllProjects(limit int, offset int, name string, number string) ([]Project, int, error) {
+	var count int
+	var err error
+
+	// count and query errors
+	var errC error
+	var errQ error
+
 	countQuery := `SELECT count(id) FROM project`
 
 	query := `SELECT
@@ -23,18 +33,72 @@ func (db *Datastore) AllProjects(limit int, offset int) ([]Project, int, error) 
 		FROM project
 		LEFT JOIN borehole ON (borehole.project = project.id)
 		LEFT JOIN datapoint ON (borehole.datapoint = datapoint.id)
-		GROUP BY project.id
-		LIMIT $1 OFFSET $2
 	`
 
-	var count int
 	projects := []Project{}
 
-	err := db.Get(&count, countQuery)
+	numParams := 0
 
-	err = db.Select(&projects, query, limit, offset)
-	if err != nil {
+	searchOnName := false
+	searchOnNum := false
+
+	// append WHERE statements
+	// TODO: figure out a better way to do this
+	// note: all input is parameterized.
+	if len(name) > 0 {
+		numParams++
+		searchOnName = true
+
+		searchProjectName := ` WHERE project.name ILIKE $` + strconv.Itoa(numParams)
+
+		query = query + searchProjectName
+		countQuery = countQuery + searchProjectName
+	}
+
+	if len(number) > 0 {
+		searchOnNum = true
+		numParams++
+		// check if name was also searched on
+		if searchOnName {
+			query = query + ` AND`
+			countQuery = countQuery + ` AND`
+		} else {
+			query = query + ` WHERE`
+			countQuery = countQuery + ` WHERE`
+		}
+
+		searchProjectNumber := ` CAST(project.id AS TEXT) LIKE $` + strconv.Itoa(numParams)
+
+		query = query + searchProjectNumber
+		countQuery = countQuery + searchProjectNumber
+	}
+
+	limitQuery := ` GROUP BY project.id LIMIT $` + strconv.Itoa(numParams+1) + ` OFFSET $` + strconv.Itoa(numParams+2) + ` `
+	query = query + limitQuery
+
+	log.Println(query)
+	log.Println(name)
+	log.Println(number)
+
+	if searchOnName && searchOnNum {
+		errC = db.Get(&count, countQuery, "%"+name+"%", number+"%")
+		errQ = db.Select(&projects, query, "%"+name+"%", number+"%", limit, offset)
+	} else if searchOnName && !searchOnNum {
+		errC = db.Get(&count, countQuery, "%"+name+"%")
+		errQ = db.Select(&projects, query, "%"+name+"%", limit, offset)
+	} else if !searchOnName && searchOnNum {
+		errC = db.Get(&count, countQuery, number+"%")
+		errQ = db.Select(&projects, query, number+"%", limit, offset)
+	} else {
+		errC = db.Get(&count, countQuery)
+		errQ = db.Select(&projects, query, limit, offset)
+	}
+
+	if errQ != nil {
 		return []Project{}, 0, err
+	}
+	if errC != nil {
+		log.Println("error counting results:", err)
 	}
 
 	return projects, count, nil
@@ -46,7 +110,6 @@ func (db *Datastore) CreateProject(p ProjectRequest) (Project, error) {
 
 	new := Project{}
 
-	log.Println("trying to insert")
 	err := db.QueryRowx(query, p.Name, p.Location).StructScan(&new)
 	if err != nil {
 		return Project{}, err

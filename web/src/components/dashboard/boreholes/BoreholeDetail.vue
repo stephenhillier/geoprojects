@@ -83,6 +83,17 @@
               </b-table>
               <b-btn size="sm" :variant="addNewSample ? 'secondary' : 'primary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
             </b-tab>
+            <b-tab title="Lab testing">
+              <h5>Lab Testing</h5>
+              <b-table
+                id="labTable"
+                ref="labTable"
+                responsive
+                show-empty
+                :fields="['from', 'to', 'sample_name', 'test']"
+                >
+              </b-table>
+            </b-tab>
           </b-tabs>
         </b-card>
       </b-col>
