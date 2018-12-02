@@ -42,6 +42,10 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 			r.Route("/strata", func(r chi.Router) {
 				r.Options("/", api.strataOptions)
 				r.Post("/", api.createStrata)
+				r.Route("/{strataID}", func(r chi.Router) {
+					r.Use(api.strataCtxMiddleware)
+					r.Put("/", api.putStrata)
+				})
 			})
 		})
 
