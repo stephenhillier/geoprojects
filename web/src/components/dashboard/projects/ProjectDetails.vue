@@ -12,83 +12,61 @@
           </b-row>
         </b-col>
         <b-col>
-          <multi-marker-map :locations="locations"></multi-marker-map>
+          <multi-marker-map :locations="boreholes"></multi-marker-map>
         </b-col>
       </b-row>
-    <b-table
-      id="boreholeSearchTable"
-      ref="boreholeSearchTable"
-      :busy.sync="isBusy"
-      :items="boreholeSearch"
-      :fields="fields"
-      responsive
-      :per-page="perPage"
-      :current-page="currentPage"
-      >
-      <template slot="name" slot-scope="data">
-        <router-link :to="{ name: 'borehole-detail', params: { bh: data.item.id }}">{{ data.item.name }}</router-link>
-      </template>
-      <template slot="location" slot-scope="data">
-        {{ data.value[0].toFixed(6) }}, {{ data.value[1].toFixed(6) }}
-      </template>
-    </b-table>
-
+      <ag-grid-vue style="height: 500px;"
+              :enableSorting="true"
+              :enableFilter="true"
+              rowHeight="32"
+              class="ag-theme-balham"
+              :columnDefs="columnDefs"
+              :rowData="boreholes"/>
   </b-card>
 </template>
 
 <script>
-import querystring from 'querystring'
+import { AgGridVue } from 'ag-grid-vue'
 import MultiMarkerMap from '@/components/common/MultiMarkerMap.vue'
+import BoreholeLink from '@/components/gridcells/BoreholeLink.vue'
+import Coords from '@/components/gridcells/Coords.vue'
+
 export default {
   name: 'ProjectDetails',
   props: ['project'],
   components: {
-    MultiMarkerMap
+    MultiMarkerMap,
+    AgGridVue
   },
   data () {
     return {
-      locations: [],
+      boreholes: [],
       currentPage: 1,
       perPage: 10,
       isBusy: false,
       numberOfRecords: 0,
-      fields: ['name', 'start_date', 'end_date', 'field_eng', 'location']
+      fields: ['name', 'start_date', 'end_date', 'field_eng', 'location'],
+      columnDefs: [
+        { headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', cellRendererFramework: BoreholeLink },
+        { headerName: 'Started Drilling', field: 'start_date', filter: 'agDateColumnFilter' },
+        { headerName: 'Finished Drilling', field: 'end_date', filter: 'agDateColumnFilter' },
+        { headerName: 'Field Engineer', field: 'field_eng', filter: 'agTextColumnFilter' },
+        { headerName: 'Location', field: 'location', cellRendererFramework: Coords }
+
+      ]
     }
   },
   methods: {
-    boreholeSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
-      /**
-      * table items provider function
-      * https://bootstrap-vue.js.org/docs/components/table/
-      *
-      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'boreholeSearchTable')
-      */
-
-      const params = {
-        project: this.$route.params.id,
-        limit: ctx.perPage,
-        offset: ctx.perPage * (ctx.currentPage - 1)
-      }
-
-      // add other search parameters into the params object.
-      // these will be urlencoded and the API will filter on these values.
-      Object.assign(params, this.searchParams)
-
-      return this.$http.get('boreholes' + '?' + querystring.stringify(params)).then((response) => {
-        this.numberOfRecords = response.data.count
-        this.locations = response.data.results || []
-        return response.data.results || []
+    fetchBoreholes () {
+      this.$http.get(`boreholes?project=${this.$route.params.id}`).then((response) => {
+        this.boreholes = response.data.results
       }).catch((e) => {
-        return []
+        console.log(e)
       })
     }
   },
   created () {
-    this.$http.get(`boreholes?project=${this.$route.params.id}`).then((response) => {
-      this.boreholes = response.data
-    }).catch((e) => {
-      console.log(e)
-    })
+    this.fetchBoreholes()
   }
 }
 </script>

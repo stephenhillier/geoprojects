@@ -1,0 +1,15 @@
+$icons-path: "~ag-grid-community/src/styles/icons/";
+$font-size: 14px;
+$grid-size: 5px;
+// Changes the font family
+// $font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+
+// Reverts the cell horizontal padding change between ag-fresh and ag-theme-fresh
+// $cell-horizontal-padding: 2px;
+
+// changes the icon color
+$icon-color: red;
+
+
+@import '~ag-grid-community/src/styles/ag-grid.scss';
+@import '~ag-grid-community/src/styles/ag-theme-balham.scss';

@@ -13,37 +13,6 @@
           <b-list-group-item exact :to="{name: 'new-project'}">New Project</b-list-group-item>
         </b-list-group>
       </b-card>
-      <b-card class="my-3">
-        <div class="card-title">
-          <span class="h4">Filter</span>
-        </div>
-        <b-form @submit.prevent="onSearchHandler">
-          <div>
-            <form-input id="projectSearchNumber" label="Project number" v-model="searchParamsInput.project_number"></form-input>
-          </div>
-          <div>
-            <form-input id="projectSearchName" label="Project name" v-model="searchParamsInput.project_name"></form-input>
-          </div>
-          <b-btn type="submit">Apply</b-btn>
-        </b-form>
-        <!-- <div class="my-3">Filters:
-          <span
-            v-for="(value, key) in searchParams"
-            :key="`searchFilterChip${key}`"
-          >
-            <b-badge
-                variant="info"
-                v-if="value"
-                class="ml-2 pr-1"
-                pill
-                :id="`searchFilterChip${key}`"
-            >
-              {{ key | readable }}: {{ value }}
-              <a href="#" @click="clearSearchFilter(key)" class="text-white"><font-awesome-icon :icon="['far', 'times-circle']" size="lg" class="m-0 p-0 ml-2"></font-awesome-icon></a>
-            </b-badge>
-          </span>
-        </div> -->
-      </b-card>
     </b-col>
     <b-col cols="12" md="6" lg="8" xl="8">
       <b-card class="mb-3" no-body>
@@ -53,25 +22,14 @@
           </b-col>
         </b-row>
       </b-card>
-      <b-card class="mb-3">
-        <b-table
-          id="projectSearchTable"
-          ref="projectSearchTable"
-          :busy.sync="isBusy"
-          responsive
-          :items="projectSearch"
-          :fields="fields"
-          :per-page="perPage"
-          :current-page="currentPage"
-          show-empty
-          >
-          <template slot="project" slot-scope="data">
-            <router-link :to="{ name: 'project-dashboard', params: { id: data.item.id }}">{{data.item.id}} - {{ data.item.name }}</router-link>
-          </template>
-        </b-table>
-        <!-- <div>
-          <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage"></b-pagination>
-        </div> -->
+      <b-card no-body class="mb-3">
+        <ag-grid-vue style="height: 500px;"
+            :enableSorting="true"
+            :enableFilter="true"
+            rowHeight="32"
+            class="ag-theme-balham"
+            :columnDefs="columnDefs"
+            :rowData="projects"/>
       </b-card>
     </b-col>
     <b-col cols="12" md="3" lg="2" xl="2">
@@ -92,15 +50,18 @@
 </template>
 
 <script>
-import querystring from 'querystring'
+import { AgGridVue } from 'ag-grid-vue'
+
 import FormInput from '@/components/common/FormInput.vue'
 import MultiMarkerMap from '@/components/common/MultiMarkerMap.vue'
+import NameWithLink from '@/components/gridcells/NameWithLink.vue'
 
 export default {
   name: 'ProjectList',
   components: {
     FormInput,
-    MultiMarkerMap
+    MultiMarkerMap,
+    AgGridVue
   },
   data () {
     return {
@@ -122,39 +83,26 @@ export default {
           text: 'Projects',
           to: { name: 'projects' }
         }
+      ],
+      columnDefs: [
+        { headerName: 'Project', field: 'name', filter: 'agTextColumnFilter', cellRendererFramework: NameWithLink, colId: 'params' },
+        { headerName: 'Location', field: 'location', filter: 'agTextColumnFilter' },
+        { headerName: 'Boreholes', field: 'borehole_count' }
       ]
     }
   },
   methods: {
-    projectSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
-      /**
-      * projectSearch() is a table items provider function
-      * https://bootstrap-vue.js.org/docs/components/table/
-      *
-      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'projectSearchTable')
-      */
-
-      const params = {
-        limit: ctx.perPage,
-        offset: ctx.perPage * (ctx.currentPage - 1)
-      }
-
-      this.locations = []
-
-      // add other search parameters into the params object.
-      // these will be urlencoded and the API will filter on these values.
-      Object.assign(params, this.searchParams)
-
-      return this.$http.get('projects' + '?' + querystring.stringify(params)).then((response) => {
+    fetchProjects () {
+      this.$http.get('projects').then((response) => {
         this.numberOfRecords = response.data.length
         response.data.forEach((item) => {
           if (item.centroid[0] !== 0 && item.centroid[1] !== 0) {
             this.locations.push({ name: item.name, location: item.centroid })
           }
         })
-        return response.data || []
+        this.projects = response.data || []
       }).catch((e) => {
-        return []
+        console.error(e)
       })
     },
     onSearchHandler () {
@@ -166,6 +114,9 @@ export default {
       this.searchParamsInput[key] = ''
       this.$root.$emit('bv::refresh::table', 'projectSearchTable')
     }
+  },
+  created () {
+    this.fetchProjects()
   }
 }
 </script>

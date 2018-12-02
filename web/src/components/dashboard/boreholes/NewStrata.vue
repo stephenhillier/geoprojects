@@ -67,6 +67,7 @@ export default {
         this.success = true
         this.loading = false
         this.$emit('strata-update')
+        this.$emit('strata-dismiss')
       }).catch((e) => {
         console.log(e)
       })

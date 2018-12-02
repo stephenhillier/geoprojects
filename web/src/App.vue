@@ -32,7 +32,7 @@ $navbar-dark-hover-color:           rgba($white, .9);
 }
 
 #main-content {
-  font-size: 14px;
+  font-size: 14px!important;
 }
 
 .earthworks-brand {
