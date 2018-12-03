@@ -96,3 +96,11 @@ func (db *Datastore) UpdateStrata(strata Strata) (Strata, error) {
 	}
 	return created, nil
 }
+
+// DeleteStrata deletes a strata record with a given ID
+func (db *Datastore) DeleteStrata(strataID int64) error {
+	query := `DELETE from strata WHERE id = $1`
+
+	_, err := db.Exec(query, strataID)
+	return err
+}

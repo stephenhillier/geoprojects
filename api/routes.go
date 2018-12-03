@@ -45,6 +45,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 				r.Route("/{strataID}", func(r chi.Router) {
 					r.Use(api.strataCtxMiddleware)
 					r.Put("/", api.putStrata)
+					r.Delete("/", api.deleteStrata)
 				})
 			})
 		})

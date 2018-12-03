@@ -34,7 +34,7 @@ type StrataRequest struct {
 }
 
 func (s *server) strataOptions(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Allow", "GET, POST, OPTIONS")
+	w.Header().Set("Allow", "GET, POST, PUT, DELETE, OPTIONS")
 	return
 }
 
@@ -140,6 +140,25 @@ func (s *server) putStrata(w http.ResponseWriter, req *http.Request) {
 
 	render.Status(req, http.StatusOK)
 	render.JSON(w, req, updatedStrata)
+}
+
+// deleteStrata asks the datastore to delete a given strata record
+func (s *server) deleteStrata(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	strata, ok := ctx.Value(strataCtx).(Strata)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	err := s.datastore.DeleteStrata(strata.ID)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	render.NoContent(w, req)
+	return
 }
 
 // strataCtxMiddleware is used by strata routes that have a strataID in the URL path.
