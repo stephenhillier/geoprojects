@@ -42,7 +42,7 @@
 
       </b-row>
 
-      <fieldset class="my-3">
+      <!-- <fieldset class="my-3">
         <legend class="mb-0">Soil strata</legend>
         <small class="mt-0">Note: you can add/modify soil strata later.</small>
         <div class="table-responsive">
@@ -76,7 +76,7 @@
           </table>
           <b-btn size="sm" variant="info" @click="addStrataRow"><font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon> Add soil unit</b-btn>
         </div>
-      </fieldset>
+      </fieldset> -->
 
       <div class="mb-3 mt-5">
         <b-btn type="submit" variant="dark">Submit</b-btn>

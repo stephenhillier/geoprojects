@@ -10,31 +10,14 @@
           <multi-marker-map :locations="boreholes"></multi-marker-map>
         </b-col>
       </b-row>
-    <!-- <b-table
-      id="boreholeSearchTable"
-      ref="boreholeSearchTable"
-      :busy.sync="isBusy"
-      responsive
-      :items="boreholeSearch"
-      :fields="fields"
-      :per-page="perPage"
-      :current-page="currentPage"
-      >
-      <template slot="name" slot-scope="data">
-        <router-link :to="{ name: 'borehole-detail', params: { bh: data.item.id }}">{{ data.item.name }}</router-link>
-      </template>
-      <template slot="location" slot-scope="data">
-        {{ data.value[0].toFixed(6) }}, {{ data.value[1].toFixed(6) }}
-      </template>
-    </b-table> -->
     <ag-grid-vue style="height: 500px;"
             :enableSorting="true"
             :enableFilter="true"
             rowHeight="32"
-            class="ag-theme-balham"
+            class="ag-theme-balham mb-3"
             :columnDefs="columnDefs"
             :rowData="boreholes"/>
-    <b-btn variant="info" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
+    <b-btn variant="primary" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
 
   </b-card>
 </template>
