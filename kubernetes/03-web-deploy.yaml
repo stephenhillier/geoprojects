@@ -21,7 +21,7 @@ spec:
         version: v1
     spec:
       containers:
-      - image: stephenhillier/earthworks-web
+      - image: stephenhillier/earthworks-web:latest
         name: earthworks-web
         ports:
         - containerPort: 80

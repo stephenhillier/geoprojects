@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: earthworks-api
-        image: stephenhillier/earthworks-api
+        image: stephenhillier/earthworks-api:latest
         ports:
         - containerPort: 8000
         resources: {}
