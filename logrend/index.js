@@ -1,13 +1,14 @@
 import React from 'react';
-import { Document, Page, View } from '@react-pdf/renderer'
-import ReactPDF from '@react-pdf/renderer'
+import ReactPDF, { Document, Page, View, Text } from '@react-pdf/renderer'
 
 
 const Doc = () => (
   <Document>
-    <Page wrap>
-      <View fixed>
-        Project: Steve's Mansion
+    <Page>
+      <View>
+        <Text>
+          Project: Steve's Mansion
+        </Text>
       </View>
     </Page>
   </Document>
