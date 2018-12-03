@@ -148,6 +148,25 @@ func (s *server) getBorehole(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, borehole)
 }
 
+// deleteBorehole asks the datastore to delete a given borehole record
+func (s *server) deleteBorehole(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	borehole, ok := ctx.Value(boreholeCtx).(BoreholeResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	err := s.datastore.DeleteBorehole(borehole.ID)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	render.NoContent(w, req)
+	return
+}
+
 // boreholeCtxMiddleware is used by borehole routes that have a boreholeID in the URL path.
 // it passes borehole information into the request context
 func (s *server) boreholeCtxMiddleware(next http.Handler) http.Handler {

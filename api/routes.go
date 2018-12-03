@@ -35,6 +35,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 					r.Use(api.boreholeCtxMiddleware)
 					r.Get("/", api.getBorehole)
 					r.Get("/strata", api.listStrataByBorehole)
+					r.Delete("/", api.deleteBorehole)
 				})
 			})
 
