@@ -37,7 +37,10 @@
                       :columnDefs="strataColumnDefs"
                       :rowData="strata"
                       :enableColResize="true"
-                      :cellValueChanged="onCellValueChanged"/>
+                      :cellValueChanged="onCellValueChanged"
+                      :gridReady="onStrataGridReady"
+                      :gridOptions="gridOptions"
+                      />
 
               <b-btn size="sm" :variant="addNewStrata ? 'secondary' : 'primary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add strata'}}</b-btn>
               <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
@@ -104,6 +107,7 @@ export default {
       borehole: {
         location: []
       },
+      gridOptions: {},
       strata: [],
       strataIsBusy: false,
       samplesIsBusy: false,
@@ -127,7 +131,8 @@ export default {
         { headerName: 'Consistency', field: 'consistency', filter: 'agTextColumnFilter', width: 140 },
         { headerName: 'Actions', width: 100, cellRendererFramework: StrataDelete }
 
-      ]
+      ],
+      strataGridApi: null
     }
   },
   computed: {
@@ -155,6 +160,11 @@ export default {
 
       this.$http.put(`strata/${evt.data.id}`, strataData).then((response) => {
         this.fetchStrata()
+
+        const rowNode = this.strataGridApi.getDisplayedRowAtIndex(evt.node.rowIndex)
+        this.strataGridApi.flashCells({
+          rowNodes: [rowNode]
+        })
       }).catch((e) => {
         console.error(e)
       })
@@ -186,12 +196,31 @@ export default {
       }).catch((e) => {
         return []
       })
+    },
+    onStrataGridReady (params) {
+      this.strataGridApi = params.api
+      this.strataColumnApi = params.columnApi
+    },
+    onDeleteStrataRow (id) {
+      this.$http.delete(`strata/${id}`).then((response) => {
+        this.fetchStrata()
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   },
   created () {
     this.fetchBorehole()
     this.fetchStrata()
+  },
+  beforeMount () {
+    this.gridOptions = {
+      context: {
+        componentParent: this
+      }
+    }
   }
+
 }
 </script>
 
