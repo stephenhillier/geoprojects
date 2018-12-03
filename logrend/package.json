@@ -1,0 +1,21 @@
+{
+  "name": "logrend",
+  "version": "1.0.0",
+  "description": "Borehole log PDF renderer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "logrend": "babel-node --presets=es2015,react index.js"
+  },
+  "author": "Steve Hillier stephenhillier@gmail.com",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@react-pdf/renderer": "^1.0.0-alpha.25",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3"
+  }
+}
