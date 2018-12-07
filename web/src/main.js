@@ -6,14 +6,21 @@ import BootstrapVue from 'bootstrap-vue'
 import './registerServiceWorker'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
-// import qs from 'qs'
+
+// Auth0 auth service
+import AuthService from '@/components/common/AuthService.js'
+
+// Icons
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSpinner, faInfoCircle, faPrint, faLink } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// custom helpers (forms, displaying data etc)
 import FormInput from '@/components/common/FormInput.vue'
 import '@/components/common/readableFilter.js'
 
+// 3rd party library css
 import 'leaflet/dist/leaflet.css'
 import './ag-grid.scss'
 
@@ -48,6 +55,7 @@ axiosClient.interceptors.response.use(function (response) {
 })
 
 Vue.prototype.$http = axiosClient
+Vue.prototype.$auth = AuthService
 
 Vue.config.productionTip = false
 

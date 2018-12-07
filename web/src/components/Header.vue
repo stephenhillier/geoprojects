@@ -8,10 +8,10 @@
       </b-navbar-nav>
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-        <b-nav-item-dropdown right>
+        <b-nav-item-dropdown right v-if="username">
           <!-- Using button-content slot -->
           <template slot="button-content">
-            User
+            {{ username }}
           </template>
           <b-dropdown-item href="#">Profile</b-dropdown-item>
           <b-dropdown-item href="#">Signout</b-dropdown-item>
@@ -24,7 +24,31 @@
 
 <script>
 export default {
-  name: 'Header'
+  name: 'Header',
+  data () {
+    return {
+      username: null,
+      authenticated: false
+    }
+  },
+  watch: {
+    $auth () {
+      this.username = this.$auth.name
+    }
+  },
+  created () {
+    this.$auth.authNotifier.on('authChange', authState => {
+      this.authenticated = authState.authenticated
+      this.username = authState.authenticated ? this.$auth.name : null
+    })
+
+    this.$auth.renewSession()
+    setTimeout(() => {
+      console.log(this.$auth.accessToken)
+      this.$auth.renewSession()
+      console.log(this.$auth.accessToken)
+    }, 5000)
+  }
 }
 </script>
 

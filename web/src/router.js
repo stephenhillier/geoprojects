@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Login from './views/Login.vue'
+import LoginCallback from '@/components/common/AuthCallback.vue'
 
 import ProjectList from './views/ProjectList.vue'
 import NewProject from './components/dashboard/projects/NewProject.vue'
@@ -17,18 +18,37 @@ import BoreholeDetailActions from './components/dashboard/actions/BoreholeDetail
 
 Vue.use(Router)
 
-export default new Router({
+const guard = (to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!router.app.$auth.isAuthenticated()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // make sure to always call next()!
+  }
+}
+
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '/projects/new',
       name: 'new-project',
-      component: NewProject
+      component: NewProject,
+      meta: { requiresAuth: true }
     },
     {
       path: '/projects/:id',
       component: ProjectDashboard,
+      meta: { requiresAuth: true },
       children: [
         {
           path: 'boreholes/new',
@@ -99,8 +119,14 @@ export default new Router({
       component: Login
     },
     {
+      path: '/callback',
+      name: 'login-callback',
+      component: LoginCallback
+    },
+    {
       path: '/',
       name: 'projects',
+      meta: { requiresAuth: true },
       component: ProjectList
     }
 
@@ -114,3 +140,7 @@ export default new Router({
     // }
   ]
 })
+
+router.beforeEach(guard)
+
+export default router
