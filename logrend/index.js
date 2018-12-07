@@ -30,10 +30,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   text: {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 20,
-    marginBottom: 10
   },
   headerSection: {
     margin: 10

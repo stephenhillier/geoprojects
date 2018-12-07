@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
 export default (props) => (
   <View style={styles.text}>
     <View style={styles.row}>
-      <View style={styles.col}><Text>CLIENT: {props.client}</Text></View>
-      <View style={styles.colRight}><Text>PROJECT NO.: {props.projectNumber}</Text></View>
+      <View style={styles.col60}><Text>CLIENT: {props.client}</Text></View>
+      <View style={styles.col40}><Text>PROJECT NO.: {props.projectNumber}</Text></View>
     </View>
     <View style={styles.row}>
       <View style={styles.col60}><Text>PROJECT: {props.project}</Text></View>

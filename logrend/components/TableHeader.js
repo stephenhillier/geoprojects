@@ -20,13 +20,14 @@ const styles = StyleSheet.create({
     borderRight: 1
   },
   colSm: {
-    flexBasis: '20px',
+    flexBasis: '75px',
     justifyContent: 'center',
     flexDirection: 'column',
     textAlign: 'center',
     borderRight: 1,
     padding: 0,
-    margin: 0
+    margin: 0,
+    width: 25
   },
   colEnd: {
     flex: 5,
@@ -59,17 +60,24 @@ const styles = StyleSheet.create({
   rotated: {
     transform: 'rotate(-90deg)',
     fontSize: 10,
+    flexDirection: 'column',
     padding: 0,
-    margin: 0
+    margin: 0,
   }
 });
 
 export default (props) => (
   <View style={styles.text}>
     <View style={styles.row}>
-      <View style={styles.colSm}><Text style={styles.rotated}>DEPTH</Text></View>
-      <View style={styles.colSm}><Text style={styles.rotated}>USCS</Text></View>
-      <View style={styles.colSm}><Text style={styles.rotated}>SYMBOL</Text></View>
+      <View style={styles.colSm}>
+        <View style={styles.rotated}>
+          <Text>DEPTH</Text>
+          <Text>DEPTH</Text>
+        </View>
+      </View>
+
+      {/* <View style={styles.colSm}><Text style={styles.rotated}>USCS</Text></View>
+      <View style={styles.colSm}><Text style={styles.rotated}>SYMBOL</Text></View> */}
 
       <View style={styles.col5}><Text>SOIL DESCRIPTION</Text></View>
       <View style={styles.colEnd}><Text>SAMPLES</Text></View>
