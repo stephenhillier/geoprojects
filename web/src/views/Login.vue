@@ -1,6 +1,7 @@
 <template>
-  <b-card title="Login to Earthworks" class="login-card mx-auto mt-5">
-  </b-card>
+  <div class="login-card mx-auto mt-5">
+    <font-awesome-icon :icon="['fas', 'spinner']" class="text-muted"></font-awesome-icon>
+  </div>
 </template>
 
 <script>

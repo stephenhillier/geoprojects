@@ -12,6 +12,11 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 		r.Group(func(r chi.Router) {
 			// server health check
 			r.Get("/health", api.health)
+		})
+
+		// Authenticated routes
+		r.Group(func(r chi.Router) {
+			r.Use(api.jwtAuthentication().Handler)
 
 			// Projects routes
 			r.Route("/projects", func(r chi.Router) {
@@ -49,12 +54,6 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 					r.Delete("/", api.deleteStrata)
 				})
 			})
-		})
-
-		// Authenticated routes
-		r.Group(func(r chi.Router) {
-			r.Use(api.jwtAuthentication().Handler)
-			// routes added here require authentication
 		})
 	})
 	return r

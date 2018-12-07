@@ -9,6 +9,7 @@ const redirectUri = process.env.VUE_APP_AUTH_CALLBACK || 'http://localhost:8080/
 class AuthService {
   auth0 = new auth0.WebAuth({
     domain: 'earthworks.auth0.com',
+    audience: 'https://earthworks.islandcivil.com',
     clientID: 'BYgv3PTBtCEtS76GFXF7uDv1vf4XT5N7',
     redirectUri: redirectUri,
     responseType: 'token id_token',
@@ -30,6 +31,7 @@ class AuthService {
   handleAuthentication () {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
+        console.log(authResult)
         this.setSession(authResult)
         router.push({ name: 'projects' })
       } else if (err) {
@@ -58,6 +60,7 @@ class AuthService {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
       } else if (err) {
+        console.log(err)
         this.logout()
       }
     })
@@ -76,7 +79,7 @@ class AuthService {
     delete router.app.$http.defaults.headers.common['Authorization']
 
     // navigate to the home route
-    router.push('/')
+    router.replace('/')
   }
 
   isAuthenticated () {

@@ -13,8 +13,7 @@
           <template slot="button-content">
             {{ username }}
           </template>
-          <b-dropdown-item href="#">Profile</b-dropdown-item>
-          <b-dropdown-item href="#">Signout</b-dropdown-item>
+          <b-dropdown-item href="#" @click="logout">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -36,6 +35,11 @@ export default {
       this.username = this.$auth.name
     }
   },
+  methods: {
+    logout () {
+      this.$auth.logout()
+    }
+  },
   created () {
     this.$auth.authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
@@ -43,11 +47,6 @@ export default {
     })
 
     this.$auth.renewSession()
-    setTimeout(() => {
-      console.log(this.$auth.accessToken)
-      this.$auth.renewSession()
-      console.log(this.$auth.accessToken)
-    }, 5000)
   }
 }
 </script>
