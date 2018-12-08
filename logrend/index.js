@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactPDF, { Document, Page, View, Text, Font, StyleSheet } from '@react-pdf/renderer'
 
-import Heading from './components/Heading'
 import Summary from './components/Summary'
-import TableHeader from './components/TableHeader'
+import SoilLayerTable from './components/SoilLayerTable'
+import TitleBlockBottom from './components/TitleBlockBottom';
 
 const summary = {
   project: "Esquimalt Towers",
@@ -16,7 +16,8 @@ const summary = {
   elevation: '2 m',
   company: 'Acme Drilling Co.',
   method: 'Auger',
-  date: 'Jan 1, 2018'
+  date: 'Jan 1, 2018',
+  totalDepth: '10 m'
 }
 
 const styles = StyleSheet.create({
@@ -24,7 +25,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Noto Sans',
     fontSize: 12,
     height: '100%',
-    border: 1
+    border: 1,
+    flex: 1,
+    flexDirection: 'column'
   },
   page: {
     padding: 20,
@@ -32,7 +35,8 @@ const styles = StyleSheet.create({
   text: {
   },
   headerSection: {
-    margin: 10
+    margin: 10,
+    height: 125,
   }
 });
 
@@ -43,7 +47,6 @@ const Doc = () => (
     <Page size="Letter" style={styles.page}>
       <View style={styles.body}>
         <View style={styles.headerSection}>
-          <Heading/>
           <Summary
             client={summary.client}
             project={summary.project}
@@ -58,7 +61,11 @@ const Doc = () => (
             date={summary.date}
           />
         </View>
-        <TableHeader/>
+        <SoilLayerTable/>
+        <TitleBlockBottom
+          date={summary.date}
+          totalDepth={summary.totalDepth}
+        />
       </View>
     </Page>
   </Document>
