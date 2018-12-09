@@ -2,14 +2,15 @@ import React from 'react';
 import ReactPDF, { Text, View, StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
-  row: {
-    height: 100
+  titleBlock: {
+    width: '100%',
+    height: '100%'
   },
   rowTitleBlock: {
     borderTop: 1,
-    marginTop: 'auto',
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    height: '100%'
   },
   summaryBlock: {
     flex: 1,
@@ -33,11 +34,14 @@ const styles = StyleSheet.create({
   companyDetailsRow: {
     flex: 1,
     flexDirection: 'row',
-    borderBottom: 0.5
+    borderBottom: 0.5,
+    padding: 5
+
   },
   clientDetailsRow: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    padding: 5
   },
   checkedByRow: {
     padding: 5,
@@ -51,26 +55,28 @@ const styles = StyleSheet.create({
 })
 
 export default (props) => (
-  <View style={styles.row}>
-    <View style={styles.rowTitleBlock}>
-      <View style={styles.companyLogoBlock}>
-        <Text>ISLAND CIVIL</Text>
+  <View fixed style={styles.titleBlock}>
+    <View fixed style={styles.rowTitleBlock}>
+      <View fixed style={styles.companyLogoBlock}>
+        <Text fixed>ISLAND CIVIL</Text>
       </View>
-      <View style={styles.companyBlock}>
-        <View style={styles.companyDetailsRow}><View><Text>Island Civil Ltd.</Text><Text>123 Main St, Victoria, BC</Text></View></View>
-        <View style={styles.clientDetailsRow}><View><Text>Prepared for:</Text><Text>Bigtime Engineering Inc</Text><Text>Esquimalt, BC</Text></View></View>
+      <View fixed style={styles.companyBlock}>
+        <View fixed style={styles.companyDetailsRow}><View fixed><Text fixed>Island Civil Ltd.</Text><Text fixed>Victoria, BC</Text></View></View>
+        <View fixed style={styles.clientDetailsRow}><View fixed><Text fixed>Prepared for:</Text><Text fixed>{props.client}</Text><Text fixed>{props.clientAddress}</Text></View></View>
 
       </View>
-      <View style={styles.summaryBlock}>
-        <View style={styles.checkedByRow}>
-          <Text>LOGGED BY: STH</Text>
-          <Text>CHECKED BY: STH</Text>
-          <Text>APPROVED BY: STH</Text>
+      <View fixed style={styles.summaryBlock}>
+        <View fixed style={styles.checkedByRow}>
+          <Text fixed>LOGGED BY: STH</Text>
+          <Text fixed>CHECKED BY: STH</Text>
+          <Text fixed>APPROVED BY: STH</Text>
         </View>
-        <View style={styles.totalDepthPagesRow}>
-          <Text>DRILLING DATE: {props.date}</Text>
-          <Text>TOTAL DEPTH: {props.totalDepth}</Text>
-          <Text>PAGE: 1 of 1</Text>
+        <View fixed style={styles.totalDepthPagesRow}>
+          <Text fixed>DRILLING DATE: {props.date}</Text>
+          <Text fixed>TOTAL DEPTH: {props.totalDepth}</Text>
+          <Text render={({ pageNumber, totalPages }) => (
+            `PAGE: ${pageNumber} OF ${totalPages}`
+          )} fixed />
         </View>
       </View>
     </View>

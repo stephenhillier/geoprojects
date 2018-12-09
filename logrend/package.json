@@ -5,16 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "logrend": "babel-node --presets=es2015,react index.js"
+    "logrend": "babel-node --presets=es2015,react boreholeLog.js",
+    "start": "babel-node --presets=es2015,react service.js"
   },
   "author": "Steve Hillier stephenhillier@gmail.com",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@react-pdf/renderer": "^1.0.0-alpha.25",
+    "@react-pdf/renderer": "^1.0.0",
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
+    "express-jwt-authz": "^1.0.0",
+    "jwks-rsa": "^1.3.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3"
   }

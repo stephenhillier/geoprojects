@@ -2,37 +2,19 @@ import React from 'react';
 import ReactPDF, { Text, View, StyleSheet } from '@react-pdf/renderer';
 
 
-const soils = [
-  {
-    desc: 'SAND and GRAVEL, some silt',
-    from: 0,
-    to: 2
-  },
-  {
-    desc: 'SAND, some gravel, some silt',
-    from: 2,
-    to: 6
-  },
-  {
-    desc: 'Silty CLAY',
-    from: 6,
-    to: 10
-  }
-]
 
 const styles = StyleSheet.create({
   wrapper: {
-    flex: 1,
-    flexDirection: 'row'
-  },
-  text: {
+    width: '100%',
     fontSize: 12,
-    flex: 1,
-    flexDirection: 'column'
+    borderLeft: 1,
+    borderRight: 1
+
   },
   row: {
     flex: 1,
     flexDirection: 'row',
+    width: '100%',
     borderTop: 1,
     borderBottom: 1
   },
@@ -44,7 +26,7 @@ const styles = StyleSheet.create({
     borderRight: 1
   },
   colSm: {
-    flexBasis: '55px',
+    flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
     textAlign: 'center',
@@ -53,12 +35,10 @@ const styles = StyleSheet.create({
     width: 20
   },
   col60: {
-    flex: 1,
-    flexBasis: '60%'
+    flex: 6,
   },
   col40: {
-    flex: 1,
-    flexBasis: '40%'
+    flex: 4,
   },
   col2: {
     flex: 2
@@ -74,20 +54,15 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'right'
   },
-  rotated: {
-    transform: 'rotate(-90deg)',
-    fontSize: 10,
-    flexDirection: 'column',
-    padding: 0,
-    margin: 0,
-  },
   rulerSegment: {
-    flexGrow: 1,
+    display: 'flex',
+    height: 45,
     flexDirection: 'row',
     borderBottom: 0.5
   },
   rulerSegmentLast: {
-    flexGrow: 1,
+    display: 'flex',
+    height: 45,
     flexDirection: 'row'
   },
   rulerText: {
@@ -100,30 +75,39 @@ const styles = StyleSheet.create({
   tableHeaderRow: {
     height: 65,
   },
+  soilRowWrapper: {
+    height: 452,
+    width: '100%',
+
+  },
   soilRow: {
     display: 'flex',
     flexGrow: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    width: '100%',
   },
   soilColSmLeft: {
-    flexBasis: '15px',
+
     justifyContent: 'center',
-    flexDirection: 'column',
     textAlign: 'right',
     padding: 0,
     margin: 0,
+    width: 15,
   },
   soilColSm: {
-    flexBasis: '40px',
     justifyContent: 'center',
-    flexDirection: 'column',
+    width: 40,
     textAlign: 'right',
     padding: 0,
     margin: 0,
   },
   soilCol: {
-    flex: 5,
+    width: 300,
     borderLeft: 1,
+  },
+  soilColSample: {
+    flex: 5,
+    borderLeft: 0.5,
     flexDirection: 'column'
   },
   soilText: {
@@ -145,44 +129,68 @@ const styles = StyleSheet.create({
 });
 
 export default (props) => (
-  <View style={styles.text}>
-    <View style={styles.tableHeaderRow}>
-      <View style={styles.row}>
-        <View style={styles.colSm}>
-          <View style={styles.rotated}>
-            <Text>DEPTH</Text>
+  <View style={styles.wrapper} wrap>
+    <View style={styles.text} wrap>
+
+      <View style={styles.soilRowWrapper}>
+        <View style={styles.soilRow}>
+          <View style={styles.soilColSmLeft}></View>
+          <View style={styles.soilColSm}>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>1.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>2.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>3.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>4.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>5.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>6.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>7.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>8.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>9.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegmentLast}><View style={styles.rulerText}><Text>10.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+          </View>
+          <View style={styles.soilCol}>
+          { props.soils.map((soil) => {
+              const height = (((Number(soil.to) - Number(soil.from)) / 10 * 452))
+
+              return (
+                <View style={{height: height, display: 'flex', flexDirection: 'row', padding: 5, borderBottom:0.5}} key={`${soil.from} ${soil.to}`}>
+                  <Text style={styles.soilText}>{soil.desc}</Text>
+                </View>
+              )  
+          }) }
+          </View>
+          <View style={styles.soilColSample}>
           </View>
         </View>
-        <View style={styles.col5}><Text>SOIL DESCRIPTION</Text></View>
-        <View style={styles.col5}><Text>SAMPLES</Text></View>
       </View>
-    </View>
-    <View style={styles.soilRow}>
-      <View style={styles.soilColSmLeft}></View>
-      <View style={styles.soilColSm}>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>1.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>2.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>3.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>4.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>5.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>6.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>7.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>8.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>9.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          <View style={styles.rulerSegmentLast}><View style={styles.rulerText}><Text>10.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-      </View>
-      <View style={styles.soilCol}>
-      { soils.map((soil) => {
-          const height = (Number(soil.to) - Number(soil.from)) * 10 - 4
+      <View style={styles.soilRowWrapper} break>
+        <View style={styles.soilRow}>
+          <View style={styles.soilColSmLeft}></View>
+          <View style={styles.soilColSm}>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>11.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>12.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>13.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>14.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>15.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>16.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>17.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>18.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>19.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+              <View style={styles.rulerSegmentLast}><View style={styles.rulerText}><Text>20.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
+          </View>
+          <View style={styles.soilCol}>
+          { props.soils.map((soil) => {
+              const height = (((Number(soil.to) - Number(soil.from)) / 10 * 452))
 
-          return (
-            <View style={{flex: height, flexDirection: 'row', borderBottom:0.5}} key={`${soil.from} ${soil.to}`}>
-              <Text style={styles.soilText}>{soil.desc}</Text>
-            </View>
-          )  
-      }) }
-      </View>
-      <View style={styles.soilCol}>
+              return (
+                <View style={{height: height, display: 'flex', flexDirection: 'row', padding: 5, borderBottom:0.5}} key={`${soil.from} ${soil.to}`}>
+                  <Text style={styles.soilText}>{soil.desc}</Text>
+                </View>
+              )  
+          }) }
+          </View>
+          <View style={styles.soilColSample}>
+          </View>
+        </View>
       </View>
     </View>
   </View>

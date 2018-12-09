@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: logrend
+  name: logrend
+  namespace: earthworks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logrend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: logrend
+        version: v1
+    spec:
+      containers:
+      - image: stephenhillier/logrend:latest
+        name: logrend
+        ports:
+        - containerPort: 8081
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: logrend
+  name: logrend
+  namespace: earthworks
+spec:
+  ports:
+  - port: 8081
+    name: http
+  selector:
+    app: logrend
+status:
+  loadBalancer: {}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: logrend-gateway
+  namespace: earthworks
+  labels:
+    app: logrend
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - earthworks.islandcivil.com
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: logrend
+  namespace: earthworks
+  labels:
+    app: logrend
+spec:
+  hosts:
+  - earthworks.islandcivil.com
+  gateways:
+  - logrend-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/logs"
+    route:
+    - destination:
+        host: logrend
+        port:
+          number: 8081

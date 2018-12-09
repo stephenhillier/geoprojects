@@ -2,7 +2,7 @@
   <b-card title="Actions">
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="link" size="sm">
+        <b-btn variant="link" size="sm" :href="`/logs/boreholes/${this.$route.params.id}`">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
           View PDF
         </b-btn>
@@ -58,6 +58,9 @@ export default {
       }).catch(() => {
         this.deleteError = true
       })
+    },
+    handleGetBoreholePdf () {
+
     }
   }
 }
