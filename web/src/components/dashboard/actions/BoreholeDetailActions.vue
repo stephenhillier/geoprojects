@@ -2,7 +2,7 @@
   <b-card title="Actions">
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="link" size="sm" :href="`/logs/boreholes/${this.$route.params.id}`">
+        <b-btn variant="link" size="sm" @click="handleGetBoreholePdf">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
           View PDF
         </b-btn>
@@ -60,7 +60,19 @@ export default {
       })
     },
     handleGetBoreholePdf () {
+      axios.get(`/logs/boreholes/${this.$route.params.id}.pdf`, {
+          responseType: 'blob'
+        })
+        .then(response => {
+          console.log(response)
 
+          let blob = new Blob([response.data], { type: 'application/pdf' }),
+            url = window.URL.createObjectURL(blob)
+
+          window.open(url)
+        }).catch((e) => {
+          console.error(e)
+        })
     }
   }
 }
