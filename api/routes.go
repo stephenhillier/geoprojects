@@ -40,6 +40,18 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 					r.Use(api.boreholeCtxMiddleware)
 					r.Get("/", api.getBorehole)
 					r.Get("/strata", api.listStrataByBorehole)
+					r.Route("/samples", func(r chi.Router) {
+						r.Options("/", api.sampleOptions)
+						r.Get("/", api.listSamplesByBorehole)
+						r.Post("/", api.createSample)
+						r.Route("/{sampleID}", func(r chi.Router) {
+							r.Use(api.sampleCtxMiddleware)
+							r.Get("/", api.retrieveSample)
+							r.Put("/", api.putSample)
+							r.Delete("/", api.deleteSample)
+						})
+					})
+
 					r.Delete("/", api.deleteBorehole)
 				})
 			})

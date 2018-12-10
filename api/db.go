@@ -104,6 +104,19 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		)
 	`
 
+	createSampleTable := `
+		CREATE TABLE IF NOT EXISTS soil_sample(
+			id SERIAL PRIMARY KEY,
+			name TEXT NOT NULL CHECK (char_length(name) < 100),
+			borehole INTEGER NOT NULL REFERENCES borehole(id) ON DELETE CASCADE,
+			start_depth DOUBLE PRECISION NOT NULL,
+			end_depth DOUBLE PRECISION NOT NULL,
+			description TEXT NOT NULL CHECK (char_length(description) < 800),
+			uscs TEXT NOT NULL CHECK (char_length(uscs) < 20),
+			UNIQUE (name, borehole)
+		)
+	`
+
 	// migrations
 	createMigrationsTable := `CREATE TABLE IF NOT EXISTS migration(
 		id INTEGER PRIMARY KEY,
@@ -124,6 +137,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	tx.MustExec(createDatapointTable)
 	tx.MustExec(createBoreholeTable)
 	tx.MustExec(createStrataTable)
+	tx.MustExec(createSampleTable)
 
 	tx.MustExec(registerMigration)
 	err = tx.Commit()

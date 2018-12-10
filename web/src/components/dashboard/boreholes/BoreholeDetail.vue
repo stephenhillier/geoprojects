@@ -27,8 +27,13 @@
         <b-card no-body>
           <b-tabs pills card>
             <b-tab title="Stratigraphy" class="p-2 p-lg-3">
-              <h5>Soil Stratigraphy</h5>
-
+              <h5>
+                Soil Stratigraphy
+                <b-btn class="ml-5" size="sm" :variant="addNewStrata ? 'primary' : 'secondary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add soil layer'}}</b-btn>
+                <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit layer</b-btn>
+                <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete layer</b-btn>
+              </h5>
+              <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
               <ag-grid-vue style="height: 500px;"
                       :enableSorting="true"
                       :enableFilter="true"
@@ -41,26 +46,29 @@
                       :gridReady="onStrataGridReady"
                       :gridOptions="gridOptions"
                       />
-
-              <b-btn size="sm" :variant="addNewStrata ? 'primary' : 'secondary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add soil layer'}}</b-btn>
-              <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
             </b-tab>
             <b-tab title="Samples" class="p-2 p-lg-3">
-              <h5>Soil Samples</h5>
-              <b-table
-                id="sampleTable"
-                ref="sampleTable"
-                responsive
-                :busy.sync="samplesIsBusy"
-                :items="fetchSamples"
-                show-empty
-                :fields="['start', 'end', 'sample_name', 'sample_type', 'tests_ordered', 'tests_completed']"
-                >
-              </b-table>
-              <b-btn size="sm" :variant="addNewSample ? 'primary' : 'secondary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
+              <h5>
+                Soil Samples
+                <b-btn size="sm" class="ml-5" :variant="addNewSample ? 'primary' : 'secondary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
+                <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit sample</b-btn>
+                <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete sample</b-btn>
+              </h5>
+              <new-sample v-if="addNewSample" :borehole="borehole.id" @sample-update="fetchSamples" @sample-dismiss="addNewSample = false"></new-sample>
+              <ag-grid-vue style="height: 500px;"
+                 class="ag-theme-balham mb-3"
+                 :columnDefs="sampleColumnDefs"
+                 :rowData="sampleRowData">
+              </ag-grid-vue>
+
             </b-tab>
             <b-tab title="Lab testing" class="p-2 p-lg-3">
-              <h5>Lab Testing</h5>
+              <h5>
+                Lab Testing
+                <b-btn size="sm" variant="secondary" class="ml-5">New test</b-btn>
+                <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit test</b-btn>
+                <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete test</b-btn>
+              </h5>
               <!-- <b-table
                 id="labTable"
                 ref="labTable"
@@ -86,6 +94,7 @@
 <script>
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 import NewStrata from '@/components/dashboard/boreholes/NewStrata.vue'
+import NewSample from '@/components/dashboard/boreholes/NewSample.vue'
 import StrataDelete from '@/components/gridcells/StrataDelete.vue'
 import { AgGridVue } from 'ag-grid-vue'
 
@@ -94,6 +103,7 @@ export default {
   components: {
     SingleMarkerMap,
     NewStrata,
+    NewSample,
     AgGridVue
   },
   props: {
@@ -123,8 +133,8 @@ export default {
         { sample: 'SA-1', test: 'Hydrometer' }
       ],
       strataColumnDefs: [
-        { headerName: 'From', field: 'start', filter: 'agNumberColumnFilter', width: 90, editable: true },
-        { headerName: 'To', field: 'end', filter: 'agNumberColumnFilter', width: 90, editable: true },
+        { headerName: 'From (m)', field: 'start', filter: 'agNumberColumnFilter', width: 110, editable: true },
+        { headerName: 'To (m)', field: 'end', filter: 'agNumberColumnFilter', width: 110, editable: true },
         { headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', width: 400, editable: true },
         { headerName: 'Soil tags', field: 'soils', filter: 'agTextColumnFilter' },
         { headerName: 'Moisture', field: 'moisture', filter: 'agTextColumnFilter', width: 140 },
@@ -132,7 +142,13 @@ export default {
         { headerName: 'Actions', width: 100, cellRendererFramework: StrataDelete }
 
       ],
-      strataGridApi: null
+      strataGridApi: null,
+      sampleColumnDefs: [
+        { headerName: 'From (m)', field: 'start', width: 110 },
+        { headerName: 'To (m)', field: 'end', width: 110 },
+        { headerName: 'Name', field: 'name', width: 150 }
+      ],
+      sampleRowData: []
     }
   },
   computed: {
@@ -183,18 +199,11 @@ export default {
         console.error(e)
       })
     },
-    fetchSamples (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
-      /**
-      * table items provider function
-      * https://bootstrap-vue.js.org/docs/components/table/
-      *
-      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'samplesTable')
-      */
-
-      return this.$http.get(`boreholes/${this.$route.params.bh}/samples`).then((response) => {
-        return response.data || []
+    fetchSamples () {
+      this.$http.get(`boreholes/${this.$route.params.bh}/samples`).then((response) => {
+        this.sampleRowData = response.data
       }).catch((e) => {
-        return []
+        console.error(e)
       })
     },
     onStrataGridReady (params) {
@@ -212,6 +221,7 @@ export default {
   created () {
     this.fetchBorehole()
     this.fetchStrata()
+    this.fetchSamples()
   },
   beforeMount () {
     this.gridOptions = {
