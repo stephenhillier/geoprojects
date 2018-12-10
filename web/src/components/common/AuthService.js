@@ -52,6 +52,8 @@ class AuthService {
 
     router.app.$http.defaults.headers.common['Authorization'] = `Bearer ${authResult.accessToken}`
 
+    document.cookie = `access_token=${authResult.accessToken}`
+
     localStorage.setItem('loggedIn', true)
   }
 

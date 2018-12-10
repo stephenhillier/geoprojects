@@ -19,9 +19,11 @@
               :enableSorting="true"
               :enableFilter="true"
               rowHeight="32"
-              class="ag-theme-balham"
+              class="ag-theme-balham mb-3"
               :columnDefs="columnDefs"
               :rowData="boreholes"/>
+      <b-btn variant="secondary" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
+
   </b-card>
 </template>
 

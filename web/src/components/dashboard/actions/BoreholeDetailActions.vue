@@ -2,25 +2,9 @@
   <b-card title="Actions">
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="link" size="sm" @click="handleGetBoreholePdf">
+        <b-btn variant="link" size="sm" :href="`${fileHost}/logs/boreholes/${$route.params.id}.pdf`" target="_blank">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
-          View PDF
-        </b-btn>
-      </b-col>
-    </b-row>
-    <b-row class="mt-2">
-      <b-col>
-        <b-btn variant="link" size="sm">
-          <font-awesome-icon :icon="['fas', 'link']" class="text-muted"></font-awesome-icon>
-          Share link
-        </b-btn>
-      </b-col>
-    </b-row>
-    <b-row class="mt-2">
-      <b-col>
-        <b-btn variant="link" size="sm">
-          <font-awesome-icon :icon="['fas', 'print']" class="text-muted"></font-awesome-icon>
-          Print borehole log
+          Publish to PDF
         </b-btn>
       </b-col>
     </b-row>
@@ -48,7 +32,8 @@ export default {
   name: 'BoreholeDetailActions',
   data () {
     return {
-      deleteError: false
+      deleteError: false,
+      fileHost: process.env.VUE_APP_FILE_URL || 'http://localhost:8081'
     }
   },
   methods: {
@@ -60,14 +45,12 @@ export default {
       })
     },
     handleGetBoreholePdf () {
-      axios.get(`/logs/boreholes/${this.$route.params.id}.pdf`, {
-          responseType: 'blob'
-        })
+      this.$file.get(`/logs/boreholes/${this.$route.params.id}.pdf`)
         .then(response => {
           console.log(response)
 
-          let blob = new Blob([response.data], { type: 'application/pdf' }),
-            url = window.URL.createObjectURL(blob)
+          let blob = new Blob([response.data], { type: 'application/pdf' })
+          let url = window.URL.createObjectURL(blob)
 
           window.open(url)
         }).catch((e) => {

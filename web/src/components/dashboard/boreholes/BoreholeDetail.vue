@@ -26,7 +26,7 @@
       <b-col class="p-0 m-0">
         <b-card no-body>
           <b-tabs pills card>
-            <b-tab title="Stratigraphy">
+            <b-tab title="Stratigraphy" class="p-2 p-lg-3">
               <h5>Soil Stratigraphy</h5>
 
               <ag-grid-vue style="height: 500px;"
@@ -42,10 +42,10 @@
                       :gridOptions="gridOptions"
                       />
 
-              <b-btn size="sm" :variant="addNewStrata ? 'secondary' : 'primary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add soil layer'}}</b-btn>
+              <b-btn size="sm" :variant="addNewStrata ? 'primary' : 'secondary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add soil layer'}}</b-btn>
               <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
             </b-tab>
-            <b-tab title="Samples">
+            <b-tab title="Samples" class="p-2 p-lg-3">
               <h5>Soil Samples</h5>
               <b-table
                 id="sampleTable"
@@ -57,9 +57,9 @@
                 :fields="['start', 'end', 'sample_name', 'sample_type', 'tests_ordered', 'tests_completed']"
                 >
               </b-table>
-              <b-btn size="sm" :variant="addNewSample ? 'secondary' : 'primary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
+              <b-btn size="sm" :variant="addNewSample ? 'primary' : 'secondary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
             </b-tab>
-            <b-tab title="Lab testing">
+            <b-tab title="Lab testing" class="p-2 p-lg-3">
               <h5>Lab Testing</h5>
               <!-- <b-table
                 id="labTable"

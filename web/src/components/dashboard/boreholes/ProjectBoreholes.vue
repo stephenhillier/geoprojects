@@ -17,7 +17,7 @@
             class="ag-theme-balham mb-3"
             :columnDefs="columnDefs"
             :rowData="boreholes"/>
-    <b-btn variant="primary" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
+    <b-btn variant="secondary" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
 
   </b-card>
 </template>

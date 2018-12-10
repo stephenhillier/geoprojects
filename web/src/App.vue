@@ -17,14 +17,15 @@ export default {
 }
 </script>
 <style lang="scss">
-$primary: #01579b;
-$secondary: #263238;
+$primary: #34495e;
+$secondary: #01579b;
 $dark: #002f6c;
 $white: #fff;
 $navbar-dark-color:                 rgba($white, .8);
 $navbar-dark-hover-color:           rgba($white, .9);
-
+@import '~bootswatch/dist/cosmo/_variables.scss';
 @import "~bootstrap/scss/bootstrap.scss";
+@import '~bootswatch/dist/cosmo/_bootswatch.scss';
 
 #app {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Open Sans", "Helvetica Neue", sans-serif;

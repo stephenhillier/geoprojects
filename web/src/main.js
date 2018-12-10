@@ -4,7 +4,9 @@ import router from './router'
 import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import './registerServiceWorker'
+
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 import axios from 'axios'
 
 // Auth0 auth service
@@ -32,7 +34,11 @@ Vue.component('form-input', FormInput)
 Vue.use(BootstrapVue)
 
 const axiosClient = axios.create({
-  baseURL: process.env.VUE_APP_BASE_URL || 'http://localhost:8000/api/v1/'
+  baseURL: process.env.VUE_APP_API_URL || 'http://localhost:8000/api/v1/'
+})
+
+const fileClient = axios.create({
+  baseURL: process.env.VUE_APP_BASE_URL || 'http://localhost:8081/'
 })
 
 // axiosClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -55,6 +61,7 @@ axiosClient.interceptors.response.use(function (response) {
 })
 
 Vue.prototype.$http = axiosClient
+Vue.prototype.$file = fileClient
 Vue.prototype.$auth = AuthService
 
 Vue.config.productionTip = false
