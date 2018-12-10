@@ -23,6 +23,7 @@ spec:
       containers:
       - image: stephenhillier/logrend:latest
         name: logrend
+        imagePullPolicy: Always
         ports:
         - containerPort: 8081
         resources: {}
