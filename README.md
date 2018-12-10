@@ -9,8 +9,6 @@ Folders:
 
 `web/` - Web frontend (Vue.JS)
 
-`web-react/` - React web frontend (unused, use Vue.js frontend instead)
-
 `logrend/` - Borehole log PDF renderer (Node.js)
 
 `kubernetes/` - Kubernetes resource definitions (yaml files for creating deployments, services etc.)
