@@ -87,7 +87,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		name TEXT NOT NULL CHECK (char_length(name) < 40),
 		start_date DATE NOT NULL,
 		end_date DATE,
-		field_eng TEXT NOT NULL CHECK (char_length(name) < 80),
+		field_eng TEXT NOT NULL CHECK (char_length(field_eng) < 80),
 		UNIQUE (project, name)
 	)`
 
@@ -103,7 +103,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 			consistency TEXT CHECK (char_length(consistency) < 50)
 		)
 	`
-
+	// 2018-12-09
 	createSampleTable := `
 		CREATE TABLE IF NOT EXISTS soil_sample(
 			id SERIAL PRIMARY KEY,
@@ -114,6 +114,24 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 			description TEXT NOT NULL CHECK (char_length(description) < 800),
 			uscs TEXT NOT NULL CHECK (char_length(uscs) < 20),
 			UNIQUE (name, borehole)
+		)
+	`
+
+	createTestType := `
+		CREATE TYPE lab_test_code AS ENUM (
+			'moisture', 'grainsize'
+		)
+	`
+
+	createLabTestTable := `
+		CREATE TABLE IF NOT EXISTS lab_test(
+			id SERIAL PRIMARY KEY,
+			name TEXT NULL CHECK (char_length(name) < 100),
+			type lab_test_code NOT NULL,
+			start_date DATE NULL,
+			end_date DATE NULL,
+			performed_by TEXT NULL CHECK (char_length(performed_by) < 80),
+			sample INTEGER NOT NULL REFERENCES soil_sample(id) ON DELETE CASCADE
 		)
 	`
 
@@ -137,7 +155,11 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	tx.MustExec(createDatapointTable)
 	tx.MustExec(createBoreholeTable)
 	tx.MustExec(createStrataTable)
+
+	// 2018-12-09
 	tx.MustExec(createSampleTable)
+	tx.MustExec(createTestType)
+	tx.MustExec(createLabTestTable)
 
 	tx.MustExec(registerMigration)
 	err = tx.Commit()
