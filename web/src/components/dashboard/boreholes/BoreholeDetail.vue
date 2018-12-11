@@ -48,19 +48,7 @@
                       />
             </b-tab>
             <b-tab title="Samples" class="p-2 p-lg-3">
-              <h5>
-                Soil Samples
-                <b-btn size="sm" class="ml-5" :variant="addNewSample ? 'primary' : 'secondary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
-                <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit sample</b-btn>
-                <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete sample</b-btn>
-              </h5>
-              <new-sample v-if="addNewSample" :borehole="borehole.id" @sample-update="fetchSamples" @sample-dismiss="addNewSample = false"></new-sample>
-              <ag-grid-vue style="height: 500px;"
-                 class="ag-theme-balham mb-3"
-                 :columnDefs="sampleColumnDefs"
-                 :rowData="sampleRowData">
-              </ag-grid-vue>
-
+              <sample-grid :sampleRowData="sampleRowData" @sample-update="fetchSamples"/>
             </b-tab>
             <b-tab title="Lab testing" class="p-2 p-lg-3">
               <h5>
@@ -94,8 +82,9 @@
 <script>
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 import NewStrata from '@/components/dashboard/boreholes/NewStrata.vue'
-import NewSample from '@/components/dashboard/boreholes/NewSample.vue'
 import StrataDelete from '@/components/gridcells/StrataDelete.vue'
+import SampleGrid from '@/components/dashboard/boreholes/grids/SampleGrid.vue'
+
 import { AgGridVue } from 'ag-grid-vue'
 
 export default {
@@ -103,8 +92,8 @@ export default {
   components: {
     SingleMarkerMap,
     NewStrata,
-    NewSample,
-    AgGridVue
+    AgGridVue,
+    SampleGrid
   },
   props: {
     project: {
@@ -143,11 +132,11 @@ export default {
 
       ],
       strataGridApi: null,
-      sampleColumnDefs: [
-        { headerName: 'From (m)', field: 'start', width: 110 },
-        { headerName: 'To (m)', field: 'end', width: 110 },
-        { headerName: 'Name', field: 'name', width: 150 }
-      ],
+      strataColumnApi: null,
+
+      labGridApi: null,
+      labColumnApi: null,
+
       sampleRowData: []
     }
   },
