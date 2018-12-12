@@ -36,8 +36,7 @@ action "GKE Docker" {
 action "Push to GCR.io" {
   uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["GKE Docker"]
-  runs = "sh -c"
-  args = "docker push gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
+  args = "docker -- push gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "Apply deployment config" {
