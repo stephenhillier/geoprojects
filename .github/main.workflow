@@ -4,7 +4,7 @@ workflow "Build & deploy to GKE" {
 }
 
 action "Filter for API folder" {
-  uses = "actions/bin/sh@master"
+  uses = "docker://gcr.io/cloud-builders/git"
   args = ["git diff-tree --name-only HEAD | grep api"]
 }
 
