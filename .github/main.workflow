@@ -33,13 +33,13 @@ action "Push to GCR.io" {
 }
 
 action "Apply deployment config" {
-  uses = "actions/bin/sh@master"
+  uses = "actions/aws/kubectl@master"
   needs = ["Push to GCR.io"]
   args = "kubectl apply -f kubernetes/02-api-deploy.yaml"
 }
 
 action "Rollout API server" {
-  uses = "actions/bin/sh@master"
+  uses = "actions/aws/kubectl@master"
   needs = ["Apply deployment config"]
   args = "kubectl rollout -n earthworks status deploy/earthworks-api"
 }
