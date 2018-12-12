@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: earthworks-api
-        image: stephenhillier/earthworks-api:latest
+        image: gcr.io/islandcivil-223001/earthworks-api:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
