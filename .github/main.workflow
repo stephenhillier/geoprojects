@@ -5,7 +5,7 @@ workflow "Build & deploy to GKE" {
 
 action "Build image" {
   uses = "actions/docker/cli@04185cf"
-  args = "build -t gcr.io/islandcivil-223001/earthworks-api ./api/"
+  args = ["build -t gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
 }
 
 action "Setup gcloud" {
@@ -29,13 +29,14 @@ action "GKE Docker" {
 action "Push to GCR.io" {
   uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["GKE Docker"]
-  args = "docker -- push gcr.io/islandcivil-223001/earthworks-api"
+  args = "docker -- push gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "Apply deployment config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Push to GCR.io"]
-  args = "apply -f kubernetes/02-api-deploy.yaml"
+  runs = "sh -l -c"
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/02-api-deploy.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
 }
 
 action "Rollout API server" {
