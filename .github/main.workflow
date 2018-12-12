@@ -1,6 +1,6 @@
 workflow "Build & deploy to GKE" {
   on = "push"
-  resolves = ["Push to GCR.io"]
+  resolves = ["Rollout API server"]
 }
 
 action "Build image" {
@@ -30,4 +30,16 @@ action "Push to GCR.io" {
   uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["GKE Docker"]
   args = "docker -- push gcr.io/islandcivil-223001/earthworks-api"
+}
+
+action "Apply deployment config" {
+  uses = "actions/bin/sh@master"
+  needs = ["Push to GCR.io"]
+  args = "kubectl apply -f kubernetes/02-api-deploy.yaml"
+}
+
+action "Rollout API server" {
+  uses = "actions/bin/sh@master"
+  needs = ["Apply deployment config"]
+  args = "kubectl rollout -n earthworks status deploy/earthworks-api"
 }
