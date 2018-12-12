@@ -3,7 +3,13 @@ workflow "Build & deploy to GKE" {
   resolves = ["Rollout API server"]
 }
 
+action "Filter for API folder" {
+  uses = "actions/bin/sh@master"
+  args = ["git diff-tree --name-only HEAD | grep api"]
+}
+
 action "Build image" {
+  needs = ["Filter for API folder"]
   uses = "actions/docker/cli@04185cf"
   args = ["build -t gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
 }
