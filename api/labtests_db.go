@@ -1,7 +1,7 @@
 package main
 
 // ListLabTestsByProject retrieves a list of soil lab tests records associated with a given borehole
-func (db *Datastore) ListLabTestsByProject(projectID int64) ([]*LabTest, error) {
+func (db *Datastore) ListLabTestsByProject(projectID int) ([]*LabTest, error) {
 	query := `
 		SELECT
 			lab_test.id,

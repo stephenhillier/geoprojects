@@ -17,7 +17,7 @@ type LabTest struct {
 
 // listLabTests returns lab tests from a project.
 // the project must be passed in the request context with the contextKey "projectCtx"
-func (s *server) listLabTestsByBorehole(w http.ResponseWriter, req *http.Request) {
+func (s *server) listLabTestsByProject(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	project, ok := ctx.Value(projectCtx).(Project)
 	if !ok {
