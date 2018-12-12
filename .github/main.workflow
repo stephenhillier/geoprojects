@@ -35,7 +35,7 @@ action "Push to GCR.io" {
 action "Apply deployment config" {
   uses = "actions/aws/kubectl@master"
   needs = ["Push to GCR.io"]
-  args = "apply -f kubernetes/02-api-deploy.yaml"
+  args = "config current-context"
 }
 
 action "Rollout API server" {
