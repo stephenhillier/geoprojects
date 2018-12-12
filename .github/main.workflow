@@ -1,4 +1,4 @@
-workflow "Build & deploy" {
+workflow "Build & deploy to GKE" {
   on = "push"
   resolves = ["Push to GCR.io"]
 }
