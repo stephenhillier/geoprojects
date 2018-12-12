@@ -27,7 +27,7 @@ action "GKE Docker" {
 }
 
 action "Push to GCR.io" {
-  uses = "actions/docker/cli@04185cf"
+  uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["GKE Docker"]
-  args = "push gcr.io/islandcivil-223001/earthworks-api"
+  args = "docker push gcr.io/islandcivil-223001/earthworks-api"
 }
