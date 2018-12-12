@@ -5,7 +5,8 @@ workflow "Build & deploy to GKE" {
 
 action "Filter for API folder" {
   uses = "docker://gcr.io/cloud-builders/git"
-  args = ["diff-tree --name-only HEAD | grep api"]
+  runs = "sh -l -c"
+  args = ["git diff-tree --name-only HEAD | grep api"]
 }
 
 action "Build image" {
@@ -35,7 +36,8 @@ action "GKE Docker" {
 action "Push to GCR.io" {
   uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["GKE Docker"]
-  args = "docker -- push gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
+  runs = "sh -c"
+  args = "docker push gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "Apply deployment config" {
