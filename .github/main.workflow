@@ -33,13 +33,13 @@ action "Push to GCR.io" {
 }
 
 action "Apply deployment config" {
-  uses = "actions/aws/kubectl@master"
+  uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Push to GCR.io"]
   args = "config current-context"
 }
 
 action "Rollout API server" {
-  uses = "actions/aws/kubectl@master"
+  uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Apply deployment config"]
   args = "rollout -n earthworks status deploy/earthworks-api"
 }
