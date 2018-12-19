@@ -28,6 +28,19 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 					r.Get("/", api.projectDetail)
 					r.Options("/", api.singleProjectOptions)
 					r.Delete("/", api.deleteProject)
+
+					// Lab test routes
+					r.Route("/lab/tests", func(r chi.Router) {
+						r.Options("/", api.labTestOptions)
+						r.Post("/", api.createLabTest)
+						r.Get("/", api.listLabTestsByProject)
+						r.Route("/{labTestID}", func(r chi.Router) {
+							r.Use(api.labTestCtxMiddleware)
+							r.Options("/", api.singleLabTestOptions)
+							r.Delete("/", api.deleteLabTest)
+							r.Put("/", api.putLabTest)
+						})
+					})
 				})
 			})
 

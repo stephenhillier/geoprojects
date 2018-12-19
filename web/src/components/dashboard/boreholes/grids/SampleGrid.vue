@@ -2,19 +2,92 @@
   <div>
     <h5>
       Soil Samples
-      <b-btn size="sm" class="ml-5" :variant="addNewSample ? 'primary' : 'secondary'" @click="addNewSample = !addNewSample">{{ addNewSample ? 'Cancel' : 'Add sample'}}</b-btn>
-      <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit sample</b-btn>
-      <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete sample</b-btn>
+      <b-btn v-b-modal.newSampleModal size="sm" class="ml-5" variant="primary">Add sample</b-btn>
+      <b-btn v-b-modal.editSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit sample</b-btn>
+      <b-btn v-b-modal.deleteSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete sample</b-btn>
       <b-btn size="sm" variant="dark" class="ml-2" disabled>New lab test</b-btn>
     </h5>
-    <new-sample v-if="addNewSample" :borehole="borehole.id" @sample-update="$emit('sample-update')" @sample-dismiss="addNewSample = false"></new-sample>
-      <ag-grid-vue style="height: 500px;"
+
+    <!-- New sample modal -->
+    <b-modal id="newSampleModal" title="Add a new sample" @ok="handleSubmit" @cancel="resetForm" @keydown.native.enter="handleSubmit">
+      <b-container fluid>
+        <b-form @submit.stop.prevent="handleSubmit">
+          <b-row>
+            <b-col cols="12" lg="12" xl="6">
+              <form-input
+                id="sampleStartInput"
+                label="From"
+                required
+                v-model="form.start"
+                hint="Depth (m)"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" lg="2" xl="6">
+              <form-input
+                id="sampleEndInput"
+                label="To"
+                required
+                v-model="form.end"
+                hint="Depth (m)"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" lg="12" xl="12">
+              <form-input
+                id="sampleNameInput"
+                label="Name"
+                hint="Sample name, e.g. SA-1"
+                required
+                v-model="form.name"
+              ></form-input>
+            </b-col>
+          </b-row>
+        </b-form>
+      </b-container>
+    </b-modal>
+
+    <b-modal id="editSampleModal" ref="editSampleModal" title="Edit sample" @ok="handleEdit" @cancel="handleResetEdit" @keydown.native.enter="handleEdit;$refs.editSampleModal.hide()">
+      <b-container fluid>
+        <b-form @submit.stop.prevent="">
+          <b-row>
+            <b-col cols="12" lg="12" xl="6">
+              <form-input
+                id="sampleStartInput"
+                label="From"
+                required
+                v-model="editForm.start"
+                hint="Depth (m)"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" lg="2" xl="6">
+              <form-input
+                id="sampleEndInput"
+                label="To"
+                required
+                v-model="editForm.end"
+                hint="Depth (m)"
+              ></form-input>
+            </b-col>
+            <b-col cols="12" lg="12" xl="12">
+              <form-input
+                id="sampleNameInput"
+                label="Name"
+                hint="Sample name, e.g. SA-1"
+                required
+                v-model="editForm.name"
+              ></form-input>
+            </b-col>
+          </b-row>
+        </b-form>
+      </b-container>
+    </b-modal>
+
+    <ag-grid-vue style="height: 500px;"
           class="ag-theme-balham mb-3"
           rowSelection="single"
           :columnDefs="sampleColumnDefs"
           :rowData="sampleRowData"
           :gridReady="onSampleGridReady"
-
+          :selectionChanged="onSelectionChanged"
           >
       </ag-grid-vue>
   </div>
@@ -22,20 +95,19 @@
 </template>
 
 <script>
-import NewSample from '@/components/dashboard/boreholes/NewSample.vue'
 import { AgGridVue } from 'ag-grid-vue'
 
 export default {
   name: 'SampleGrid',
   components: {
-    AgGridVue,
-    NewSample
+    AgGridVue
   },
   props: {
     sampleRowData: {
       type: Array,
       default: () => ([])
-    }
+    },
+    borehole: null
   },
   data () {
     return {
@@ -46,13 +118,90 @@ export default {
         { headerName: 'From (m)', field: 'start', width: 110 },
         { headerName: 'To (m)', field: 'end', width: 110 },
         { headerName: 'Name', field: 'name', width: 150 }
-      ]
+      ],
+      form: {
+        start: '',
+        end: '',
+        name: ''
+      },
+      success: false,
+      loading: false,
+      selectedRow: null,
+      editForm: {}
     }
   },
   methods: {
     onSampleGridReady (params) {
       this.sampleGridApi = params.api
       this.sampleColumnApi = params.columnApi
+    },
+    handleSubmit () {
+      const data = Object.assign({}, this.form)
+
+      this.loading = true
+      this.$http.post(`boreholes/${this.$route.params.bh}/samples`, data).then((response) => {
+        this.success = true
+        this.loading = false
+        this.resetForm()
+        this.$emit('sample-update')
+        this.$emit('sample-dismiss')
+      }).catch((e) => {
+        console.log(e)
+        this.loading = false
+      })
+    },
+    handleEdit () {
+      const data = Object.assign({}, this.toStrings(this.editForm))
+      const sampleId = data.id
+      delete data.id
+
+      this.loading = true
+      this.$http.put(`boreholes/${this.$route.params.bh}/samples/${sampleId}`, data).then((response) => {
+        this.success = true
+        this.loading = false
+        this.$emit('sample-update')
+      }).catch((e) => {
+        this.loading = false
+      })
+    },
+    resetForm () {
+      this.form = {
+        start: '',
+        end: '',
+        name: ''
+      }
+    },
+    onSelectionChanged () {
+      const selection = this.sampleGridApi.getSelectedNodes()
+      const rowData = selection.map((item) => (item.data))
+      if (rowData && rowData.length) {
+        this.selectedRow = rowData[0].id
+        this.editForm = Object.assign({}, rowData[0])
+      } else {
+        this.selectedRow = null
+      }
+    },
+    handleResetEdit () {
+      const selection = this.sampleGridApi.getSelectedNodes()
+      const rowData = selection.map((item) => (item.data))
+      if (rowData && rowData.length) {
+        this.editForm = Object.assign({}, rowData[0])
+      }
+    },
+    handleDelete () {
+      this.loading = true
+      this.$http.delete(`boreholes/${this.$route.params.bh}/samples/${this.selectedRow}`).then((response) => {
+        this.$emit('sample-update')
+        this.loading = false
+      }).catch((e) => {
+        this.loading = false
+      })
+    },
+    toStrings (o) {
+      Object.keys(o).forEach((k) => {
+        o[k] = '' + o[k]
+      })
+      return o
     }
   }
 }

@@ -20,6 +20,7 @@ type Sample struct {
 	End         float64 `json:"end" db:"end_depth"`
 	Description string  `json:"description"`
 	USCS        string  `json:"uscs" db:"uscs"`
+	Tests       int     `json:"test_count"`
 }
 
 // SampleRequest is a struct containing fields required to create a new sample

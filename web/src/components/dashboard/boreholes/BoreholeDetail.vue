@@ -51,26 +51,7 @@
               <sample-grid :sampleRowData="sampleRowData" @sample-update="fetchSamples"/>
             </b-tab>
             <b-tab title="Lab testing" class="p-2 p-lg-3">
-              <h5>
-                Lab Testing
-                <b-btn size="sm" variant="secondary" class="ml-5">New test</b-btn>
-                <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit test</b-btn>
-                <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete test</b-btn>
-              </h5>
-              <!-- <b-table
-                id="labTable"
-                ref="labTable"
-                responsive
-                show-empty
-                :fields="['from', 'to', 'sample_name', 'test']"
-                >
-              </b-table> -->
-
-              <ag-grid-vue style="height: 500px;"
-                 class="ag-theme-balham"
-                 :columnDefs="labTestingColumnDefs"
-                 :rowData="labTestingRowData">
-              </ag-grid-vue>
+              <lab-test-grid :labTestRowData="labTestingRowData" :sampleOptions="sampleRowData" @labtest-update="fetchLabTests" />
             </b-tab>
           </b-tabs>
         </b-card>
@@ -84,6 +65,7 @@ import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 import NewStrata from '@/components/dashboard/boreholes/NewStrata.vue'
 import StrataDelete from '@/components/gridcells/StrataDelete.vue'
 import SampleGrid from '@/components/dashboard/boreholes/grids/SampleGrid.vue'
+import LabTestGrid from '@/components/dashboard/boreholes/grids/LabTestGrid.vue'
 
 import { AgGridVue } from 'ag-grid-vue'
 
@@ -92,6 +74,7 @@ export default {
   components: {
     SingleMarkerMap,
     NewStrata,
+    LabTestGrid,
     AgGridVue,
     SampleGrid
   },
@@ -112,15 +95,6 @@ export default {
       samplesIsBusy: false,
       addNewStrata: false,
       addNewSample: false,
-      labTestingColumnDefs: [
-        { headerName: 'Sample', field: 'sample' },
-        { headerName: 'Test', field: 'test' }
-      ],
-      labTestingRowData: [
-        { sample: 'SA-1', test: 'Moisture content' },
-        { sample: 'SA-1', test: 'Grain size analysis' },
-        { sample: 'SA-1', test: 'Hydrometer' }
-      ],
       strataColumnDefs: [
         { headerName: 'From (m)', field: 'start', filter: 'agNumberColumnFilter', width: 110, editable: true },
         { headerName: 'To (m)', field: 'end', filter: 'agNumberColumnFilter', width: 110, editable: true },
@@ -134,9 +108,7 @@ export default {
       strataGridApi: null,
       strataColumnApi: null,
 
-      labGridApi: null,
-      labColumnApi: null,
-
+      labTestingRowData: [],
       sampleRowData: []
     }
   },
@@ -195,6 +167,13 @@ export default {
         console.error(e)
       })
     },
+    fetchLabTests () {
+      this.$http.get(`projects/${this.$route.params.id}/lab/tests`).then((response) => {
+        this.labTestingRowData = response.data
+      }).catch((e) => {
+        console.error(e)
+      })
+    },
     onStrataGridReady (params) {
       this.strataGridApi = params.api
       this.strataColumnApi = params.columnApi
@@ -211,6 +190,7 @@ export default {
     this.fetchBorehole()
     this.fetchStrata()
     this.fetchSamples()
+    this.fetchLabTests()
   },
   beforeMount () {
     this.gridOptions = {

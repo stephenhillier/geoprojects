@@ -101,3 +101,14 @@ func (db *Datastore) DeleteSample(sampleID int64) error {
 	_, err := db.Exec(query, sampleID)
 	return err
 }
+
+// CountTestForSample returns a count of all sample (soil layers) in a given sample
+func (db *Datastore) CountTestForSample(sampleID int64) (int, error) {
+	var count int
+	query := `SELECT count(*) FROM soil_sample WHERE sample=$1`
+	err := db.Get(&count, query, sampleID)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

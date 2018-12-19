@@ -23,6 +23,7 @@ var projectCtx contextKey
 var boreholeCtx contextKey
 var strataCtx contextKey
 var sampleCtx contextKey
+var labTestCtx contextKey
 
 // NullDate is an alias for pq.NullTime, and is meant to be used with dates only
 type NullDate struct {
@@ -72,7 +73,7 @@ func (v *NullDate) UnmarshalJSON(b []byte) error {
 	v.Time = date
 	v.Valid = (err == nil)
 
-	return err
+	return nil
 }
 
 // MarshalJSON represents NullString as JSON
