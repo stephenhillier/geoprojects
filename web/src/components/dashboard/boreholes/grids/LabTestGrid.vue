@@ -117,9 +117,13 @@ export default {
       labGridApi: null,
       labColumnApi: null,
       labColumnDefs: [
-        { headerName: 'Sample', field: 'sample_name' },
-        { headerName: 'Borehole', field: 'borehole_name' },
-        { headerName: 'Test', field: 'test_type' }
+        { headerName: 'Sample', field: 'sample_name', width: 120 },
+        { headerName: 'Borehole', field: 'borehole_name', width: 120 },
+        { headerName: 'Test', field: 'test_type' },
+        { headerName: 'Started', field: 'result_inputted', width: 120 },
+        { headerName: 'Completed', field: 'result_completed', width: 120 },
+        { headerName: 'Checked', field: 'result_checked', width: 120 }
+
       ],
       form: {
         name: '',

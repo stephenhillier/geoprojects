@@ -32,6 +32,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 					r.Get("/samples", api.listSamplesByProject)
 
 					// Lab test routes
+
 					r.Route("/lab/tests", func(r chi.Router) {
 						r.Options("/", api.labTestOptions)
 						r.Post("/", api.createLabTest)
@@ -41,6 +42,11 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 							r.Options("/", api.singleLabTestOptions)
 							r.Delete("/", api.deleteLabTest)
 							r.Put("/", api.putLabTest)
+							r.Route("/moisture", func(r chi.Router) {
+								r.Get("/", api.retrieveMoistureTest)
+								r.Post("/", api.createMoistureTest)
+								r.Put("/", api.putMoistureTest)
+							})
 						})
 					})
 				})

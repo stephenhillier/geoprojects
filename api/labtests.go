@@ -37,6 +37,34 @@ type LabTestResponse struct {
 	SampleName   string     `json:"sample_name" db:"sample_name"`
 }
 
+// MoistureTestRequest is the data needed to create a moisture test record
+type MoistureTestRequest struct {
+	StartDate      NullDate   `json:"start_date" db:"start_date"`
+	EndDate        NullDate   `json:"end_date" db:"end_date"`
+	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
+	TareMass       float64    `json:"tare_mass,string" db:"tare_mass"`
+	SamplePlusTare float64    `json:"sample_plus_tare,string" db:"sample_plus_tare"`
+	DryPlusTare    float64    `json:"dry_plus_tare,string" db:"dry_plus_tare"`
+}
+
+// MoistureTestResponse contains all the data relating to a moisture content test
+type MoistureTestResponse struct {
+	// ID is the ID of the lab_test and moisture_test (1 : 0..1)
+	ID             int        `json:"id"`
+	Name           NullString `json:"name"`
+	Type           string     `json:"test_type" db:"type"`
+	Sample         int        `json:"sample" db:"sample"`
+	Borehole       int        `json:"borehole" db:"borehole"`
+	BoreholeName   string     `json:"borehole_name" db:"borehole_name"`
+	StartDate      NullDate   `json:"start_date" db:"start_date"`
+	EndDate        NullDate   `json:"end_date" db:"end_date"`
+	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
+	SampleName     string     `json:"sample_name" db:"sample_name"`
+	TareMass       float64    `json:"tare_mass" db:"tare_mass"`
+	SamplePlusTare float64    `json:"sample_plus_tare" db:"sample_plus_tare"`
+	DryPlusTare    float64    `json:"dry_plus_tare" db:"dry_plus_tare"`
+}
+
 func (s *server) labTestOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, POST, OPTIONS")
 	return
@@ -99,6 +127,53 @@ func (s *server) createLabTest(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, newTest)
 }
 
+func (s *server) createMoistureTest(w http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	moistureTest := MoistureTestRequest{}
+	err := decoder.Decode(&moistureTest)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	// Get test base object from context
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	// create the moisture content record
+	newMoistureTest, err := s.datastore.CreateMoistureTest(moistureTest, labTest.ID)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	render.Status(req, http.StatusCreated)
+	render.JSON(w, req, newMoistureTest)
+}
+
+func (s *server) retrieveMoistureTest(w http.ResponseWriter, req *http.Request) {
+	labTestID, err := strconv.Atoi(chi.URLParam(req, "labTestID"))
+	if err != nil {
+		log.Println("test id not supplied")
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	moistureTest, err := s.datastore.RetrieveMoistureTest(labTestID)
+	if err != nil {
+		log.Println("test was not found in DB", err)
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+	render.Status(req, http.StatusOK)
+	render.JSON(w, req, moistureTest)
+}
+
 // putLabTest allows updating a lab test with a PUT request
 func (s *server) putLabTest(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
@@ -135,6 +210,33 @@ func (s *server) putLabTest(w http.ResponseWriter, req *http.Request) {
 
 	render.Status(req, http.StatusOK)
 	render.JSON(w, req, updatedLabTest)
+}
+
+func (s *server) putMoistureTest(w http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	moistureTestReq := MoistureTestRequest{}
+	err := decoder.Decode(&moistureTestReq)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	updated, err := s.datastore.UpdateMoistureTest(moistureTestReq, labTest.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	render.Status(req, http.StatusOK)
+	render.JSON(w, req, updated)
 }
 
 // deleteLabTest asks the datastore to delete a test record

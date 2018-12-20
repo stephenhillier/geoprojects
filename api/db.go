@@ -139,7 +139,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 
 	createMoistureTestTable := `
 		CREATE TABLE IF NOT EXISTS moisture_test(
-			id INTEGER REFERENCES lab_test(id) PRIMARY KEY,
+			id INTEGER REFERENCES lab_test(id) ON DELETE CASCADE PRIMARY KEY,
 			tare_mass DOUBLE PRECISION NOT NULL,
 			sample_plus_tare DOUBLE PRECISION NOT NULL,
 			dry_plus_tare DOUBLE PRECISION NOT NULL
