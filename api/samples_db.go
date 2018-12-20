@@ -15,6 +15,33 @@ func (db *Datastore) ListSamplesByBorehole(boreholeID int64) ([]*Sample, error) 
 	return sample, nil
 }
 
+// ListSamplesByProject lists all samples in a project
+func (db *Datastore) ListSamplesByProject(projectID int) ([]*Sample, error) {
+	query := `
+		SELECT
+			soil_sample.id,
+			soil_sample.borehole,
+			soil_sample.name,
+			soil_sample.start_depth,
+			soil_sample.end_depth,
+			soil_sample.description,
+			soil_sample.uscs
+		FROM soil_sample
+		LEFT JOIN borehole ON (soil_sample.borehole = borehole.id)
+		WHERE borehole.project=$1
+		ORDER BY start_depth`
+
+	var err error
+	samples := []*Sample{}
+
+	err = db.Select(&samples, query, projectID)
+
+	if err != nil {
+		return []*Sample{}, err
+	}
+	return samples, nil
+}
+
 // CreateSample inserts a sample record into the datastore
 func (db *Datastore) CreateSample(sample Sample) (Sample, error) {
 	query := `

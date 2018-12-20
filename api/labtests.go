@@ -25,14 +25,16 @@ type LabTest struct {
 
 // LabTestResponse is the data returned by the API containing info about a lab test.
 type LabTestResponse struct {
-	ID          int        `json:"id"`
-	Name        NullString `json:"name"`
-	Type        string     `json:"test_type" db:"type"`
-	Sample      int        `json:"sample" db:"sample"`
-	StartDate   NullDate   `json:"start_date" db:"start_date"`
-	EndDate     NullDate   `json:"end_date" db:"end_date"`
-	PerformedBy NullString `json:"performed_by" db:"performed_by"`
-	SampleName  string     `json:"sample_name" db:"sample_name"`
+	ID           int        `json:"id"`
+	Name         NullString `json:"name"`
+	Type         string     `json:"test_type" db:"type"`
+	Sample       int        `json:"sample" db:"sample"`
+	Borehole     int        `json:"borehole" db:"borehole"`
+	BoreholeName string     `json:"borehole_name" db:"borehole_name"`
+	StartDate    NullDate   `json:"start_date" db:"start_date"`
+	EndDate      NullDate   `json:"end_date" db:"end_date"`
+	PerformedBy  NullString `json:"performed_by" db:"performed_by"`
+	SampleName   string     `json:"sample_name" db:"sample_name"`
 }
 
 func (s *server) labTestOptions(w http.ResponseWriter, req *http.Request) {
@@ -48,6 +50,7 @@ func (s *server) singleLabTestOptions(w http.ResponseWriter, req *http.Request) 
 // listLabTests returns lab tests from a project.
 // the project must be passed in the request context with the contextKey "projectCtx"
 func (s *server) listLabTestsByProject(w http.ResponseWriter, req *http.Request) {
+	var err error
 	ctx := req.Context()
 	project, ok := ctx.Value(projectCtx).(Project)
 	if !ok {
@@ -55,7 +58,18 @@ func (s *server) listLabTestsByProject(w http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	labTests, err := s.datastore.ListLabTestsByProject(project.ID)
+	var boreholeID int
+	borehole := req.FormValue("borehole")
+	if borehole != "" {
+		boreholeID, err = strconv.Atoi(borehole)
+		if err != nil {
+			// if borehole can't be converted to an int, make sure boreholeID is zero.
+			// this ignores the ?borehole query if it's not a valid integer.
+			boreholeID = 0
+		}
+	}
+
+	labTests, err := s.datastore.ListLabTestsByProject(project.ID, boreholeID)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return

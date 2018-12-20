@@ -3,7 +3,7 @@
     <h5>
       Lab Testing
       <b-btn v-b-modal.newLabTestModal size="sm" variant="secondary" class="ml-5">New test</b-btn>
-      <b-btn v-b-modal.editLabTestModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit test</b-btn>
+      <b-btn :to="{ name: 'lab-moisture', params: { id: $route.params.id, test: selectedRow }}" size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Test details</b-btn>
       <b-btn v-b-modal.deleteLabTestModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete test</b-btn>
     </h5>
 
@@ -47,7 +47,7 @@
         <b-row>
           <b-col cols="12">
             <form-input
-              id="labTestSample"
+              id="labTestEditSample"
               label="Sample"
               disabled
               required
@@ -61,7 +61,7 @@
           </b-col>
           <b-col cols="12">
             <form-input
-              id="labTestType"
+              id="labTestEditType"
               label="Type of test"
               required
               select
@@ -118,6 +118,7 @@ export default {
       labColumnApi: null,
       labColumnDefs: [
         { headerName: 'Sample', field: 'sample_name' },
+        { headerName: 'Borehole', field: 'borehole_name' },
         { headerName: 'Test', field: 'test_type' }
       ],
       form: {

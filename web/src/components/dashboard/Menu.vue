@@ -11,6 +11,12 @@
       <b-list-group-item class="menu-heading">Data:</b-list-group-item>
       <b-list-group-item class="d-flex justify-content-between align-items-center" :to="{ name: 'project-boreholes', params: { id: this.$route.params.id } }">Boreholes<b-badge variant="light" pill>{{ project.borehole_count }}</b-badge></b-list-group-item>
       <b-list-group-item>Instrumentation</b-list-group-item>
+    </b-list-group>
+  </b-card>
+  <b-card no-body class="mb-3">
+    <b-list-group flush>
+      <b-list-group-item class="menu-heading">Lab testing:</b-list-group-item>
+      <b-list-group-item class="d-flex justify-content-between align-items-center" :to="{ name: 'lab-home', params: { id: this.$route.params.id } }">Lab tests<b-badge variant="light" pill></b-badge></b-list-group-item>
       <b-list-group-item>Soil Samples</b-list-group-item>
     </b-list-group>
   </b-card>

@@ -57,6 +57,23 @@ func (s *server) listSamplesByBorehole(w http.ResponseWriter, req *http.Request)
 	render.JSON(w, req, samples)
 }
 
+func (s *server) listSamplesByProject(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	project, ok := ctx.Value(projectCtx).(Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	samples, err := s.datastore.ListSamplesByProject(project.ID)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	render.JSON(w, req, samples)
+}
+
 // createSample parses a sample request and passes a sample object to the datastore to be created.
 // if successful, it returns a new Sample object with the stored data
 func (s *server) createSample(w http.ResponseWriter, req *http.Request) {

@@ -3,7 +3,7 @@ package main
 import "log"
 
 // ListLabTestsByProject retrieves a list of soil lab tests records associated with a given borehole
-func (db *Datastore) ListLabTestsByProject(projectID int) ([]*LabTestResponse, error) {
+func (db *Datastore) ListLabTestsByProject(projectID int, boreholeID int) ([]*LabTestResponse, error) {
 	query := `
 		SELECT
 			lab_test.id,
@@ -13,17 +13,27 @@ func (db *Datastore) ListLabTestsByProject(projectID int) ([]*LabTestResponse, e
 			lab_test.end_date,
 			lab_test.type,
 			lab_test.performed_by,
-			soil_sample.name AS sample_name
+			soil_sample.name AS sample_name,
+			borehole.id AS borehole,
+			borehole.name AS borehole_name
 		FROM lab_test
 		LEFT JOIN soil_sample ON (lab_test.sample = soil_sample.id)
 		LEFT JOIN borehole ON (soil_sample.borehole = borehole.id)
 		WHERE borehole.project=$1
 	`
 
+	if boreholeID > 0 {
+	}
+
 	var err error
 	test := []*LabTestResponse{}
 
-	err = db.Select(&test, query, projectID)
+	if boreholeID > 0 {
+		query = query + ` AND borehole.id = $2`
+		err = db.Select(&test, query, projectID, boreholeID)
+	} else {
+		err = db.Select(&test, query, projectID)
+	}
 
 	if err != nil {
 		log.Println(err)

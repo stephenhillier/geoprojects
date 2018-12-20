@@ -1,20 +1,34 @@
 <template>
   <div>
     <h5>
-      Soil Samples
-      <b-btn v-b-modal.newSampleModal size="sm" class="ml-5" variant="secondary">Add sample</b-btn>
-      <b-btn v-b-modal.editSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit sample</b-btn>
-      <b-btn v-b-modal.deleteSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete sample</b-btn>
+      Soil Stratigraphy
+      <b-btn v-b-modal.newStrataModal class="ml-5" size="sm" variant="secondary">Add soil layer</b-btn>
+      <b-btn v-b-modal.editStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit layer</b-btn>
+      <b-btn v-b-modal.deleteStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete layer</b-btn>
     </h5>
+    <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
+    <ag-grid-vue style="height: 500px;"
+            :enableSorting="true"
+            :enableFilter="true"
+            rowHeight="32"
+            class="ag-theme-balham mb-3"
+            :columnDefs="strataColumnDefs"
+            :rowData="strataRowData"
+            :enableColResize="true"
+            :gridReady="onStrataGridReady"
+            :gridOptions="gridOptions"
+            :selectionChanged="onSelectionChanged"
+            rowSelection="single"
+            />
 
-    <!-- New sample modal -->
-    <b-modal id="newSampleModal" title="Add a new sample" @ok="handleSubmit" @cancel="resetForm" @keydown.native.enter="handleSubmit">
+    <!-- New strata modal -->
+    <b-modal centered id="newStrataModal" title="Add a new strata" @ok="handleSubmit" @cancel="resetForm">
       <b-container fluid>
         <b-form @submit.stop.prevent="handleSubmit">
           <b-row>
             <b-col cols="12" lg="12" xl="6">
               <form-input
-                id="sampleStartInput"
+                id="strataStartInput"
                 label="From"
                 required
                 v-model="form.start"
@@ -23,7 +37,7 @@
             </b-col>
             <b-col cols="12" lg="2" xl="6">
               <form-input
-                id="sampleEndInput"
+                id="strataEndInput"
                 label="To"
                 required
                 v-model="form.end"
@@ -32,11 +46,10 @@
             </b-col>
             <b-col cols="12" lg="12" xl="12">
               <form-input
-                id="sampleNameInput"
-                label="Name"
-                hint="Sample name, e.g. SA-1"
+                id="strataDescInput"
+                label="Description"
                 required
-                v-model="form.name"
+                v-model="form.description"
               ></form-input>
             </b-col>
           </b-row>
@@ -44,13 +57,13 @@
       </b-container>
     </b-modal>
 
-    <b-modal id="editSampleModal" ref="editSampleModal" title="Edit sample" @ok="handleEdit" @cancel="handleResetEdit" @keydown.native.enter="handleEdit;$refs.editSampleModal.hide()">
+    <b-modal centered id="editStrataModal" ref="editStrataModal" title="Edit strata" @ok="handleEdit" @cancel="handleResetEdit">
       <b-container fluid>
         <b-form @submit.stop.prevent="">
           <b-row>
             <b-col cols="12" lg="12" xl="6">
               <form-input
-                id="sampleStartEditInput"
+                id="strataStartEditInput"
                 label="From"
                 required
                 v-model="editForm.start"
@@ -59,7 +72,7 @@
             </b-col>
             <b-col cols="12" lg="2" xl="6">
               <form-input
-                id="sampleEndEditInput"
+                id="strataEndEditInput"
                 label="To"
                 required
                 v-model="editForm.end"
@@ -68,11 +81,10 @@
             </b-col>
             <b-col cols="12" lg="12" xl="12">
               <form-input
-                id="sampleNameEditInput"
-                label="Name"
-                hint="Sample name, e.g. SA-1"
+                id="strataDescriptionEditInput"
+                label="Visual Description"
                 required
-                v-model="editForm.name"
+                v-model="editForm.description"
               ></form-input>
             </b-col>
           </b-row>
@@ -80,20 +92,11 @@
       </b-container>
     </b-modal>
 
-    <!-- Delete sample confirmation -->
-    <b-modal id="deleteSampleModal" centered @ok="handleDelete" title="Confirm delete">
-      Are you sure you want to delete this sample?
+    <!-- Delete strata confirmation -->
+    <b-modal id="deleteStrataModal" centered @ok="handleDelete" title="Confirm delete">
+      Are you sure you want to delete this soil strata?
     </b-modal>
 
-    <ag-grid-vue style="height: 500px;"
-          class="ag-theme-balham mb-3"
-          rowSelection="single"
-          :columnDefs="sampleColumnDefs"
-          :rowData="sampleRowData"
-          :gridReady="onSampleGridReady"
-          :selectionChanged="onSelectionChanged"
-          >
-      </ag-grid-vue>
   </div>
 
 </template>
@@ -102,12 +105,12 @@
 import { AgGridVue } from 'ag-grid-vue'
 
 export default {
-  name: 'SampleGrid',
+  name: 'StrataGrid',
   components: {
     AgGridVue
   },
   props: {
-    sampleRowData: {
+    strataRowData: {
       type: Array,
       default: () => ([])
     },
@@ -115,40 +118,49 @@ export default {
   },
   data () {
     return {
-      addNewSample: false,
-      sampleGridApi: null,
-      sampleColumnApi: null,
-      sampleColumnDefs: [
-        { headerName: 'From (m)', field: 'start', width: 110 },
-        { headerName: 'To (m)', field: 'end', width: 110 },
-        { headerName: 'Name', field: 'name', width: 150 }
+      strataIsBusy: false,
+      addNewStrata: false,
+      strataColumnDefs: [
+        { headerName: 'From (m)', field: 'start', filter: 'agNumberColumnFilter', width: 110 },
+        { headerName: 'To (m)', field: 'end', filter: 'agNumberColumnFilter', width: 110 },
+        { headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', width: 400 }
       ],
+      strataGridApi: null,
+      strataColumnApi: null,
       form: {
         start: '',
         end: '',
-        name: ''
+        description: ''
       },
       success: false,
       loading: false,
       selectedRow: null,
+      gridOptions: {},
       editForm: {}
     }
   },
   methods: {
-    onSampleGridReady (params) {
-      this.sampleGridApi = params.api
-      this.sampleColumnApi = params.columnApi
+    onStrataGridReady (params) {
+      this.strataGridApi = params.api
+      this.strataColumnApi = params.columnApi
+    },
+    handleDelete () {
+      this.$http.delete(`strata/${this.selectedRow}`).then((response) => {
+        this.$emit('strata-update')
+      }).catch((e) => {
+        console.error(e)
+      })
     },
     handleSubmit () {
       const data = Object.assign({}, this.form)
+      data.borehole = this.$route.params.bh
 
       this.loading = true
-      this.$http.post(`boreholes/${this.$route.params.bh}/samples`, data).then((response) => {
+      this.$http.post(`strata`, data).then((response) => {
         this.success = true
         this.loading = false
         this.resetForm()
-        this.$emit('sample-update')
-        this.$emit('sample-dismiss')
+        this.$emit('strata-update')
       }).catch((e) => {
         console.log(e)
         this.loading = false
@@ -156,14 +168,14 @@ export default {
     },
     handleEdit () {
       const data = Object.assign({}, this.toStrings(this.editForm))
-      const sampleId = data.id
+      const strataId = data.id
       delete data.id
 
       this.loading = true
-      this.$http.put(`boreholes/${this.$route.params.bh}/samples/${sampleId}`, data).then((response) => {
+      this.$http.put(`strata/${strataId}`, data).then((response) => {
         this.success = true
         this.loading = false
-        this.$emit('sample-update')
+        this.$emit('strata-update')
       }).catch((e) => {
         this.loading = false
       })
@@ -172,11 +184,11 @@ export default {
       this.form = {
         start: '',
         end: '',
-        name: ''
+        description: ''
       }
     },
     onSelectionChanged () {
-      const selection = this.sampleGridApi.getSelectedNodes()
+      const selection = this.strataGridApi.getSelectedNodes()
       const rowData = selection.map((item) => (item.data))
       if (rowData && rowData.length) {
         this.selectedRow = rowData[0].id
@@ -186,20 +198,11 @@ export default {
       }
     },
     handleResetEdit () {
-      const selection = this.sampleGridApi.getSelectedNodes()
+      const selection = this.strataGridApi.getSelectedNodes()
       const rowData = selection.map((item) => (item.data))
       if (rowData && rowData.length) {
         this.editForm = Object.assign({}, rowData[0])
       }
-    },
-    handleDelete () {
-      this.loading = true
-      this.$http.delete(`boreholes/${this.$route.params.bh}/samples/${this.selectedRow}`).then((response) => {
-        this.$emit('sample-update')
-        this.loading = false
-      }).catch((e) => {
-        this.loading = false
-      })
     },
     toStrings (o) {
       Object.keys(o).forEach((k) => {

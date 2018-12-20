@@ -27,28 +27,10 @@
         <b-card no-body>
           <b-tabs pills card>
             <b-tab title="Stratigraphy" class="p-2 p-lg-3">
-              <h5>
-                Soil Stratigraphy
-                <b-btn class="ml-5" size="sm" :variant="addNewStrata ? 'primary' : 'secondary'" @click="addNewStrata = !addNewStrata">{{ addNewStrata ? 'Cancel' : 'Add soil layer'}}</b-btn>
-                <b-btn size="sm" variant="dark" class="ml-2" disabled>Edit layer</b-btn>
-                <b-btn size="sm" variant="dark" class="ml-2" disabled>Delete layer</b-btn>
-              </h5>
-              <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
-              <ag-grid-vue style="height: 500px;"
-                      :enableSorting="true"
-                      :enableFilter="true"
-                      rowHeight="32"
-                      class="ag-theme-balham mb-3"
-                      :columnDefs="strataColumnDefs"
-                      :rowData="strata"
-                      :enableColResize="true"
-                      :cellValueChanged="onCellValueChanged"
-                      :gridReady="onStrataGridReady"
-                      :gridOptions="gridOptions"
-                      />
+              <strata-grid :strataRowData="strataRowData" @strata-update="fetchStrata"/>
             </b-tab>
             <b-tab title="Samples" class="p-2 p-lg-3">
-              <sample-grid :sampleRowData="sampleRowData" @sample-update="fetchSamples"/>
+              <sample-grid :sampleRowData="sampleRowData" @sample-update="fetchSamples();fetchLabTests()"/>
             </b-tab>
             <b-tab title="Lab testing" class="p-2 p-lg-3">
               <lab-test-grid :labTestRowData="labTestingRowData" :sampleOptions="sampleRowData" @labtest-update="fetchLabTests" />
@@ -62,8 +44,7 @@
 
 <script>
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
-import NewStrata from '@/components/dashboard/boreholes/NewStrata.vue'
-import StrataDelete from '@/components/gridcells/StrataDelete.vue'
+import StrataGrid from '@/components/dashboard/boreholes/grids/StrataGrid.vue'
 import SampleGrid from '@/components/dashboard/boreholes/grids/SampleGrid.vue'
 import LabTestGrid from '@/components/dashboard/boreholes/grids/LabTestGrid.vue'
 
@@ -73,7 +54,7 @@ export default {
   name: 'BoreholeDetails',
   components: {
     SingleMarkerMap,
-    NewStrata,
+    StrataGrid,
     LabTestGrid,
     AgGridVue,
     SampleGrid
@@ -89,24 +70,7 @@ export default {
       borehole: {
         location: []
       },
-      gridOptions: {},
-      strata: [],
-      strataIsBusy: false,
-      samplesIsBusy: false,
-      addNewStrata: false,
-      addNewSample: false,
-      strataColumnDefs: [
-        { headerName: 'From (m)', field: 'start', filter: 'agNumberColumnFilter', width: 110, editable: true },
-        { headerName: 'To (m)', field: 'end', filter: 'agNumberColumnFilter', width: 110, editable: true },
-        { headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', width: 400, editable: true },
-        { headerName: 'Soil tags', field: 'soils', filter: 'agTextColumnFilter' },
-        { headerName: 'Moisture', field: 'moisture', filter: 'agTextColumnFilter', width: 140 },
-        { headerName: 'Consistency', field: 'consistency', filter: 'agTextColumnFilter', width: 140 },
-        { headerName: 'Actions', width: 100, cellRendererFramework: StrataDelete }
-
-      ],
-      strataGridApi: null,
-      strataColumnApi: null,
+      strataRowData: [],
 
       labTestingRowData: [],
       sampleRowData: []
@@ -121,31 +85,6 @@ export default {
     }
   },
   methods: {
-    onCellValueChanged (evt) {
-      // this event fires even if the value didn't actually change.
-      // if this is the case, stop here.
-      if (evt.oldValue === evt.newValue) {
-        return
-      }
-
-      const strataData = {
-        borehole: String(evt.data.borehole),
-        start: String(evt.data.start),
-        end: String(evt.data.end),
-        description: evt.data.description
-      }
-
-      this.$http.put(`strata/${evt.data.id}`, strataData).then((response) => {
-        this.fetchStrata()
-
-        const rowNode = this.strataGridApi.getDisplayedRowAtIndex(evt.node.rowIndex)
-        this.strataGridApi.flashCells({
-          rowNodes: [rowNode]
-        })
-      }).catch((e) => {
-        console.error(e)
-      })
-    },
     fetchBorehole () {
       this.$http.get(`boreholes/${this.$route.params.bh}`).then((response) => {
         this.borehole = response.data
@@ -155,7 +94,7 @@ export default {
     },
     fetchStrata () {
       this.$http.get(`boreholes/${this.$route.params.bh}/strata`).then((response) => {
-        this.strata = response.data
+        this.strataRowData = response.data
       }).catch((e) => {
         console.error(e)
       })
@@ -168,19 +107,8 @@ export default {
       })
     },
     fetchLabTests () {
-      this.$http.get(`projects/${this.$route.params.id}/lab/tests`).then((response) => {
+      this.$http.get(`projects/${this.$route.params.id}/lab/tests?borehole=${this.$route.params.bh}`).then((response) => {
         this.labTestingRowData = response.data
-      }).catch((e) => {
-        console.error(e)
-      })
-    },
-    onStrataGridReady (params) {
-      this.strataGridApi = params.api
-      this.strataColumnApi = params.columnApi
-    },
-    onDeleteStrataRow (id) {
-      this.$http.delete(`strata/${id}`).then((response) => {
-        this.fetchStrata()
       }).catch((e) => {
         console.error(e)
       })

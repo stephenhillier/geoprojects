@@ -29,6 +29,8 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 					r.Options("/", api.singleProjectOptions)
 					r.Delete("/", api.deleteProject)
 
+					r.Get("/samples", api.listSamplesByProject)
+
 					// Lab test routes
 					r.Route("/lab/tests", func(r chi.Router) {
 						r.Options("/", api.labTestOptions)

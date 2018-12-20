@@ -135,6 +135,40 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		)
 	`
 
+	// 2018-12-19
+
+	createMoistureTestTable := `
+		CREATE TABLE IF NOT EXISTS moisture_test(
+			id INTEGER REFERENCES lab_test(id) PRIMARY KEY,
+			tare_mass DOUBLE PRECISION NOT NULL,
+			sample_plus_tare DOUBLE PRECISION NOT NULL,
+			dry_plus_tare DOUBLE PRECISION NOT NULL
+		)
+	`
+
+	createGSATestTable := `
+		CREATE TABLE IF NOT EXISTS gsa_test(
+			id INTEGER REFERENCES lab_test(id) PRIMARY KEY,
+			tare_mass DOUBLE PRECISION NOT NULL,
+			dry_plus_tare DOUBLE PRECISION NOT NULL,
+			washed_plus_tare DOUBLE PRECISION NOT NULL
+		)
+	`
+
+	createGSADataTable := `
+		CREATE TABLE IF NOT EXISTS gsa_data(
+			id SERIAL PRIMARY KEY,
+			test INTEGER REFERENCES gsa_test(id) NOT NULL,
+			pan BOOLEAN NOT NULL,
+			size DOUBLE PRECISION NOT NULL,
+			mass_passing DOUBLE PRECISION NOT NULL
+		)
+	`
+
+	createGSADataUniqueIndex := `
+		CREATE UNIQUE INDEX pan_idx ON gsa_data (test) WHERE pan
+	`
+
 	// migrations
 	createMigrationsTable := `CREATE TABLE IF NOT EXISTS migration(
 		id INTEGER PRIMARY KEY,
@@ -160,6 +194,12 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	tx.MustExec(createSampleTable)
 	tx.MustExec(createTestType)
 	tx.MustExec(createLabTestTable)
+
+	// 2018-12-19
+	tx.MustExec(createMoistureTestTable)
+	tx.MustExec(createGSATestTable)
+	tx.MustExec(createGSADataTable)
+	tx.MustExec(createGSADataUniqueIndex)
 
 	tx.MustExec(registerMigration)
 	err = tx.Commit()

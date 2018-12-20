@@ -4,10 +4,10 @@ import router from './router'
 import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import './registerServiceWorker'
-
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
 import axios from 'axios'
+
+import VueApexCharts from 'vue-apexcharts'
 
 // Auth0 auth service
 import AuthService from '@/components/common/AuthService.js'
@@ -26,17 +26,23 @@ import '@/components/common/readableFilter.js'
 import 'leaflet/dist/leaflet.css'
 import './ag-grid.scss'
 
+// font awesome icons
 library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt)
-
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
 
+// apexcharts chart component
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
+
 Vue.use(BootstrapVue)
 
+// create an axios client for accessing the API server
 const axiosClient = axios.create({
   baseURL: process.env.VUE_APP_API_URL || 'http://localhost:8000/api/v1/'
 })
 
+// file client for accessing PDF generator service
 const fileClient = axios.create({
   baseURL: process.env.VUE_APP_BASE_URL || 'http://localhost:8081/'
 })

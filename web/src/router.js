@@ -16,6 +16,9 @@ import NewBorehole from './components/dashboard/boreholes/NewBorehole.vue'
 import BoreholeDetail from './components/dashboard/boreholes/BoreholeDetail.vue'
 import BoreholeDetailActions from './components/dashboard/actions/BoreholeDetailActions.vue'
 
+import LabTestingHome from './components/dashboard/lab/LabTestingHome.vue'
+import MoistureContent from './components/dashboard/lab/MoistureContent.vue'
+
 Vue.use(Router)
 
 const guard = (to, from, next) => {
@@ -96,6 +99,36 @@ const router = new Router({
               {
                 text: 'Boreholes',
                 to: { name: 'project-boreholes' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'lab/moisture/:test',
+          name: 'lab-moisture',
+          component: MoistureContent,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Lab testing',
+                to: { name: 'lab-home' }
+              },
+              {
+                text: 'Moisture content',
+                to: { name: 'lab-moisture' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'lab',
+          name: 'lab-home',
+          component: LabTestingHome,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Lab testing',
+                to: { name: 'lab-home' }
               }
             ]
           }
