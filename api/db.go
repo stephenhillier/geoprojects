@@ -119,7 +119,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 
 	createTestType := `
 		CREATE TYPE lab_test_code AS ENUM (
-			'moisture', 'grainsize'
+			'moisture_content', 'grain_size_analysis', 'hydrometer', 'proctor', 'atterberg' 
 		)
 	`
 
@@ -130,8 +130,10 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 			type lab_test_code NOT NULL,
 			start_date DATE NULL,
 			end_date DATE NULL,
-			performed_by TEXT NULL CHECK (char_length(performed_by) < 80),
-			sample INTEGER NOT NULL REFERENCES soil_sample(id) ON DELETE CASCADE
+			performed_by TEXT NULL CHECK (char_length(performed_by) < 200),
+			sample INTEGER NOT NULL REFERENCES soil_sample(id),
+			checked_date DATE NULL,
+			checked_by TEXT NULL CHECK (char_length(checked_by) < 200)
 		)
 	`
 
@@ -140,18 +142,18 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	createMoistureTestTable := `
 		CREATE TABLE IF NOT EXISTS moisture_test(
 			id INTEGER REFERENCES lab_test(id) ON DELETE CASCADE PRIMARY KEY,
-			tare_mass DOUBLE PRECISION NOT NULL,
-			sample_plus_tare DOUBLE PRECISION NOT NULL,
-			dry_plus_tare DOUBLE PRECISION NOT NULL
+			tare_mass DOUBLE PRECISION NULL,
+			sample_plus_tare DOUBLE PRECISION NULL,
+			dry_plus_tare DOUBLE PRECISION NULL
 		)
 	`
 
 	createGSATestTable := `
 		CREATE TABLE IF NOT EXISTS gsa_test(
 			id INTEGER REFERENCES lab_test(id) PRIMARY KEY,
-			tare_mass DOUBLE PRECISION NOT NULL,
-			dry_plus_tare DOUBLE PRECISION NOT NULL,
-			washed_plus_tare DOUBLE PRECISION NOT NULL
+			tare_mass DOUBLE PRECISION NULL,
+			dry_plus_tare DOUBLE PRECISION NULL,
+			washed_plus_tare DOUBLE PRECISION NULL
 		)
 	`
 
@@ -161,7 +163,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 			test INTEGER REFERENCES gsa_test(id) NOT NULL,
 			pan BOOLEAN NOT NULL,
 			size DOUBLE PRECISION NOT NULL,
-			mass_passing DOUBLE PRECISION NOT NULL
+			mass_passing DOUBLE PRECISION NULL
 		)
 	`
 

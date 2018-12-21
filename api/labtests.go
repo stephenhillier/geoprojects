@@ -21,6 +21,8 @@ type LabTest struct {
 	StartDate   NullDate   `json:"start_date" db:"start_date"`
 	EndDate     NullDate   `json:"end_date" db:"end_date"`
 	PerformedBy NullString `json:"performed_by" db:"performed_by"`
+	CheckedDate NullDate   `json:"checked_date" db:"checked_date"`
+	CheckedBy   NullString `json:"checked_by" db:"checked_by"`
 }
 
 // LabTestResponse is the data returned by the API containing info about a lab test.
@@ -34,6 +36,8 @@ type LabTestResponse struct {
 	StartDate    NullDate   `json:"start_date" db:"start_date"`
 	EndDate      NullDate   `json:"end_date" db:"end_date"`
 	PerformedBy  NullString `json:"performed_by" db:"performed_by"`
+	CheckedDate  NullDate   `json:"checked_date" db:"checked_date"`
+	CheckedBy    NullString `json:"checked_by" db:"checked_by"`
 	SampleName   string     `json:"sample_name" db:"sample_name"`
 }
 
@@ -42,9 +46,11 @@ type MoistureTestRequest struct {
 	StartDate      NullDate   `json:"start_date" db:"start_date"`
 	EndDate        NullDate   `json:"end_date" db:"end_date"`
 	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
-	TareMass       float64    `json:"tare_mass,string" db:"tare_mass"`
-	SamplePlusTare float64    `json:"sample_plus_tare,string" db:"sample_plus_tare"`
-	DryPlusTare    float64    `json:"dry_plus_tare,string" db:"dry_plus_tare"`
+	CheckedDate    NullDate   `json:"checked_date" db:"checked_date"`
+	CheckedBy      NullString `json:"checked_by" db:"checked_by"`
+	TareMass       *float64   `json:"tare_mass,string" db:"tare_mass"`
+	SamplePlusTare *float64   `json:"sample_plus_tare,string" db:"sample_plus_tare"`
+	DryPlusTare    *float64   `json:"dry_plus_tare,string" db:"dry_plus_tare"`
 }
 
 // MoistureTestResponse contains all the data relating to a moisture content test
@@ -59,10 +65,12 @@ type MoistureTestResponse struct {
 	StartDate      NullDate   `json:"start_date" db:"start_date"`
 	EndDate        NullDate   `json:"end_date" db:"end_date"`
 	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
+	CheckedDate    NullDate   `json:"checked_date" db:"checked_date"`
+	CheckedBy      NullString `json:"checked_by" db:"checked_by"`
 	SampleName     string     `json:"sample_name" db:"sample_name"`
-	TareMass       float64    `json:"tare_mass" db:"tare_mass"`
-	SamplePlusTare float64    `json:"sample_plus_tare" db:"sample_plus_tare"`
-	DryPlusTare    float64    `json:"dry_plus_tare" db:"dry_plus_tare"`
+	TareMass       *float64   `json:"tare_mass" db:"tare_mass"`
+	SamplePlusTare *float64   `json:"sample_plus_tare" db:"sample_plus_tare"`
+	DryPlusTare    *float64   `json:"dry_plus_tare" db:"dry_plus_tare"`
 }
 
 func (s *server) labTestOptions(w http.ResponseWriter, req *http.Request) {
@@ -200,6 +208,8 @@ func (s *server) putLabTest(w http.ResponseWriter, req *http.Request) {
 		Type:        labTestReq.Type,
 		PerformedBy: labTestReq.PerformedBy,
 		Sample:      labTestReq.Sample,
+		CheckedBy:   labTestReq.CheckedBy,
+		CheckedDate: labTestReq.CheckedDate,
 	}
 
 	updatedLabTest, err := s.datastore.UpdateLabTest(updatedTestData)

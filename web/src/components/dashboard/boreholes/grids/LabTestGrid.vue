@@ -146,11 +146,11 @@ export default {
       selectedRow: null,
       testOptions: [
         {
-          id: 'moisture',
+          id: 'moisture_content',
           description: 'Moisture content'
         },
         {
-          id: 'grainsize',
+          id: 'grain_size_analysis',
           description: 'Grain size (sieve)'
         }
       ]

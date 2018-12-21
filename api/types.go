@@ -40,6 +40,11 @@ type NullString struct {
 	sql.NullString
 }
 
+// NullFloat64 is an alias for sql.NullFloat64
+type NullFloat64 struct {
+	sql.NullFloat64
+}
+
 // PointLocation is an alias for orb.Point
 type PointLocation struct {
 	orb.Point
@@ -51,6 +56,14 @@ func (v NullInt64) MarshalJSON() ([]byte, error) {
 		return json.Marshal(nil)
 	}
 	return json.Marshal(v.Int64)
+}
+
+// MarshalJSON represents NullFloat64 as JSON
+func (v NullFloat64) MarshalJSON() ([]byte, error) {
+	if !v.Valid {
+		return json.Marshal(nil)
+	}
+	return json.Marshal(v.Float64)
 }
 
 // MarshalJSON represents NullDate as JSON
@@ -88,6 +101,13 @@ func (v NullString) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON converts from JSON to NullInt64
 func (v *NullInt64) UnmarshalJSON(b []byte) error {
 	err := json.Unmarshal(b, &v.Int64)
+	v.Valid = (err == nil)
+	return err
+}
+
+// UnmarshalJSON converts from JSON to NullFloat64
+func (v *NullFloat64) UnmarshalJSON(b []byte) error {
+	err := json.Unmarshal(b, &v.Float64)
 	v.Valid = (err == nil)
 	return err
 }

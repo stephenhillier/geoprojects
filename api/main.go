@@ -108,6 +108,8 @@ func main() {
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
+
+	// Server is listening; Wait here for interrupt signal...
 	<-stop
 	log.Println("Shutting down...")
 	h.Shutdown(context.Background())
