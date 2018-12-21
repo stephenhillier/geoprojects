@@ -1,6 +1,6 @@
 workflow "Build & deploy to GKE" {
-  on = "push"
   resolves = ["Rollout API server"]
+  on = "release"
 }
 
 action "Filter for API folder" {
