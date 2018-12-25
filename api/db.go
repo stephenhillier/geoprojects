@@ -62,7 +62,8 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	createProjectTable := `CREATE TABLE IF NOT EXISTS project(
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL CHECK (char_length(name) < 255),
-		location TEXT NOT NULL CHECK (char_length(location) < 255)
+		location TEXT NOT NULL CHECK (char_length(location) < 255),
+		organization TEST NULL CHECK (char_length(organization) < 255)
 	)`
 
 	// 2018-10-1

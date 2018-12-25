@@ -13,7 +13,7 @@ class AuthService {
     clientID: 'BYgv3PTBtCEtS76GFXF7uDv1vf4XT5N7',
     redirectUri: redirectUri,
     responseType: 'token id_token',
-    scope: 'openid email profile'
+    scope: 'openid groups permissions roles email'
   })
 
   login () {

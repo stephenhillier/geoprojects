@@ -33,6 +33,8 @@ type config struct {
 	dbhost           string
 	defaultPageLimit int
 	maxPageLimit     int
+	authGroupClaim   string
+	authRoleClaim    string
 }
 
 func main() {
@@ -63,6 +65,9 @@ func main() {
 	}
 
 	api.config.authCert = cert
+
+	api.config.authGroupClaim = api.config.authAudience + "/claims/authorization/groups"
+	api.config.authRoleClaim = api.config.authAudience + "/claims/authorization/roles"
 
 	api.config.dbuser = os.Getenv("DBUSER")
 	api.config.dbpass = os.Getenv("DBPASS")

@@ -54,7 +54,8 @@
         <div>
           Moisture content:
           <span v-if="calculatedMoisture">
-          </span>{{  }}
+            {{ calculatedMoisture }}
+          </span>
         </div>
       </b-col>
     </b-row>
