@@ -1,6 +1,6 @@
 <template>
   <div class="login-card mx-auto mt-5">
-    <font-awesome-icon :icon="['fas', 'spinner']" class="text-muted"></font-awesome-icon>
+    <font-awesome-icon :icon="['fas', 'spinner']" spin pulse class="text-muted" size="lg"></font-awesome-icon>
   </div>
 </template>
 
@@ -11,7 +11,8 @@ export default {
     return {}
   },
   created () {
-    this.$auth.login()
+    const next = this.$route.query.redirect
+    this.$auth.login(next)
   }
 }
 </script>

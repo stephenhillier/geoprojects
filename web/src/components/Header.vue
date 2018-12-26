@@ -41,12 +41,11 @@ export default {
     }
   },
   created () {
+    this.username = this.$auth.authenticated ? this.$auth.name : null
     this.$auth.authNotifier.on('authChange', authState => {
       this.authenticated = authState.authenticated
       this.username = authState.authenticated ? this.$auth.name : null
     })
-
-    this.$auth.renewSession()
   }
 }
 </script>

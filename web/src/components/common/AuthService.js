@@ -16,8 +16,24 @@ class AuthService {
     scope: 'openid groups permissions roles email'
   })
 
-  login () {
-    this.auth0.authorize()
+  login (next) {
+    const loggedIn = localStorage.getItem('loggedIn')
+
+    if (loggedIn) {
+      this.renewSession().then(() => {
+        if (next) {
+          router.push(next)
+        } else {
+          router.push({ name: 'projects' })
+        }
+        this.authNotifier.emit('authChange', { authenticated: true })
+      }).catch((e) => {
+        //
+        this.logout()
+      })
+    } else {
+      this.auth0.authorize()
+    }
   }
 
   accessToken
@@ -46,9 +62,9 @@ class AuthService {
     this.accessToken = authResult.accessToken
     this.idToken = authResult.idToken
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
-    this.name = authResult.idTokenPayload['name']
+    this.name = authResult.idTokenPayload['email']
 
-    this.authNotifier.emit('authChange', { authenticated: true })
+    this.authNotifier.emit('authChange', { authenticated: true, name: this.name })
 
     router.app.$http.defaults.headers.common['Authorization'] = `Bearer ${authResult.accessToken}`
 
@@ -58,13 +74,16 @@ class AuthService {
   }
 
   renewSession () {
-    this.auth0.checkSession({}, (err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult)
-      } else if (err) {
-        console.log(err)
-        this.logout()
-      }
+    return new Promise((resolve, reject) => {
+      this.auth0.checkSession({}, (err, authResult) => {
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          this.setSession(authResult)
+          resolve()
+        } else if (err) {
+          console.log(err)
+          reject(err)
+        }
+      })
     })
   }
 
