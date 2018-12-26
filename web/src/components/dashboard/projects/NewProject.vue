@@ -78,8 +78,9 @@ export default {
       this.$http.post('projects/', this.form)
         .then(() => {
           this.$router.push({ name: 'projects' })
+          this.$noty.success('Project created.')
         }).catch((e) => {
-          console.log(e)
+          this.$noty.error('An error occurred while creating project.')
         })
     }
   }

@@ -34,14 +34,14 @@ export default {
       this.$http.get(`projects/${this.$route.params.id}/lab/tests`).then((response) => {
         this.labTestingRowData = response.data
       }).catch((e) => {
-        console.error(e)
+        this.$noty.error('An error occurred while retriving lab tests.')
       })
     },
     fetchSamples () {
       this.$http.get(`projects/${this.$route.params.id}/samples`).then((response) => {
         this.sampleRowData = response.data
       }).catch((e) => {
-        console.error(e)
+        this.$noty.error('An error occurred while retriving samples.')
       })
     }
   },

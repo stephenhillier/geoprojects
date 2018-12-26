@@ -89,28 +89,28 @@ export default {
       this.$http.get(`boreholes/${this.$route.params.bh}`).then((response) => {
         this.borehole = response.data
       }).catch((e) => {
-        // in future, set an error message
+        this.$noty.error('An error occurred while retrieving borehole data.')
       })
     },
     fetchStrata () {
       this.$http.get(`boreholes/${this.$route.params.bh}/strata`).then((response) => {
         this.strataRowData = response.data
       }).catch((e) => {
-        console.error(e)
+        this.$noty.error('An error occurred while retrieving soil data.')
       })
     },
     fetchSamples () {
       this.$http.get(`boreholes/${this.$route.params.bh}/samples`).then((response) => {
         this.sampleRowData = response.data
       }).catch((e) => {
-        console.error(e)
+        this.$noty.error('An error occurred while retrieving sample data.')
       })
     },
     fetchLabTests () {
       this.$http.get(`projects/${this.$route.params.id}/lab/tests?borehole=${this.$route.params.bh}`).then((response) => {
         this.labTestingRowData = response.data
       }).catch((e) => {
-        console.error(e)
+        this.$noty.error('An error occurred while retrieving laboratory data.')
       })
     }
   },

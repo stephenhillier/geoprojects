@@ -33,7 +33,6 @@
       <b-row>
         <b-col>
           <b-btn size="sm" variant="primary" type="submit" :disabled="loading">Done</b-btn>
-          <!-- <b-btn size="sm" @click="$emit('strata-dismiss')" class="ml-3" variant="outline-secondary">Cancel</b-btn> -->
         </b-col>
       </b-row>
     </b-form>
@@ -64,12 +63,12 @@ export default {
 
       this.loading = true
       this.$http.post('strata/', data).then((response) => {
-        this.success = true
         this.loading = false
+        this.$noty.error('Soil layer added.')
         this.$emit('strata-update')
         this.$emit('strata-dismiss')
       }).catch((e) => {
-        console.log(e)
+        this.$noty.error('An error occurred while adding soil layer.')
       })
     }
   }

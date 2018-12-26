@@ -102,7 +102,7 @@ export default {
         })
         this.projects = response.data || []
       }).catch((e) => {
-        console.error(e)
+        this.$noty.error('An error occurred while retriving projects.')
       })
     },
     onSearchHandler () {

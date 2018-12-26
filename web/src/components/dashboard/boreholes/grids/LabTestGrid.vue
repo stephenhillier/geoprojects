@@ -169,8 +169,10 @@ export default {
         this.success = true
         this.loading = false
         this.$emit('labtest-update')
+        this.$noty.success('Lab test created.')
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while creating lab test.')
       })
     },
     handleEdit () {
@@ -183,7 +185,9 @@ export default {
         this.success = true
         this.loading = false
         this.$emit('labtest-update')
+        this.$noty.success('Lab test updated.')
       }).catch((e) => {
+        this.$noty.error('An error occurred while updating lab test.')
         this.loading = false
       })
     },
@@ -208,9 +212,11 @@ export default {
       this.loading = true
       this.$http.delete(`projects/${this.$route.params.id}/lab/tests/${this.selectedRow}`).then((response) => {
         this.$emit('labtest-update')
+        this.$noty.success('Lab test deleted.')
         this.loading = false
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while deleting lab test.')
       })
     }
   }

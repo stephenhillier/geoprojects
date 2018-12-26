@@ -6,7 +6,7 @@ import BootstrapVue from 'bootstrap-vue'
 import './registerServiceWorker'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
-
+import VueNoty from 'vuejs-noty'
 import VueApexCharts from 'vue-apexcharts'
 
 // Auth0 auth service
@@ -25,6 +25,12 @@ import '@/components/common/readableFilter.js'
 // 3rd party library css
 import 'leaflet/dist/leaflet.css'
 import './ag-grid.scss'
+import 'vuejs-noty/dist/vuejs-noty.css'
+
+Vue.use(VueNoty, {
+  timeout: 2000,
+  layout: 'bottomRight'
+})
 
 // font awesome icons
 library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt)

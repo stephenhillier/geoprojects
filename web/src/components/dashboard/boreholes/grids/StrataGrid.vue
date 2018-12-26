@@ -147,8 +147,10 @@ export default {
     handleDelete () {
       this.$http.delete(`strata/${this.selectedRow}`).then((response) => {
         this.$emit('strata-update')
+        this.$noty.success('Soil layer deleted.')
       }).catch((e) => {
         console.error(e)
+        this.$noty.error('An error occurred while deleting soil layer.')
       })
     },
     handleSubmit () {
@@ -157,13 +159,14 @@ export default {
 
       this.loading = true
       this.$http.post(`strata`, data).then((response) => {
-        this.success = true
+        this.$noty.success('Soil layer added.')
         this.loading = false
         this.resetForm()
         this.$emit('strata-update')
       }).catch((e) => {
         console.log(e)
         this.loading = false
+        this.$noty.error('An error occurred while adding soil layer.')
       })
     },
     handleEdit () {
@@ -173,11 +176,12 @@ export default {
 
       this.loading = true
       this.$http.put(`strata/${strataId}`, data).then((response) => {
-        this.success = true
+        this.$noty.success('Soil layer updated.')
         this.loading = false
         this.$emit('strata-update')
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while updating soil layer.')
       })
     },
     resetForm () {

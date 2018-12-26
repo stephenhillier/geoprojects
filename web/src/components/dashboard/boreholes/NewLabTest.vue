@@ -43,13 +43,14 @@ export default {
 
       this.loading = true
       this.$http.post(`projects/${this.$route.params.id}/lab/tests`, data).then((response) => {
-        this.success = true
+        this.$noty.success('Lab test added.')
+
         this.loading = false
         this.$emit('labtest-update')
         this.$emit('labtest-dismiss')
       }).catch((e) => {
-        console.log(e)
         this.loading = false
+        this.$noty.error('An error occurred while adding lab test.')
       })
     }
   }

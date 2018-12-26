@@ -56,7 +56,7 @@ export default {
         this.numberOfRecords = response.data.results.length
         this.boreholes = response.data.results
       }).catch((e) => {
-        console.log(e)
+        this.$noty.error('An error occurred while retrieving boreholes.')
       })
     }
   },

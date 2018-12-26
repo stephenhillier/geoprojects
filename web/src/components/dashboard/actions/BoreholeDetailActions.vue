@@ -40,8 +40,9 @@ export default {
     deleteBorehole () {
       this.$http.delete(`boreholes/${this.$route.params.bh}`).then(() => {
         this.$router.push({ name: 'project-boreholes', params: { id: this.$route.params.id } })
-      }).catch(() => {
-        this.deleteError = true
+        this.$noty.success('Borehole deleted')
+      }).catch((e) => {
+        this.$noty.error(`An error occured while deleting borehole (${e.response.status})`)
       })
     },
     handleGetBoreholePdf () {

@@ -144,11 +144,11 @@ export default {
 
       this.loading = true
       this.$http.post(`boreholes/${this.$route.params.bh}/samples`, data).then((response) => {
-        this.success = true
         this.loading = false
         this.resetForm()
         this.$emit('sample-update')
         this.$emit('sample-dismiss')
+        this.$noty.success('Sample created.')
       }).catch((e) => {
         console.log(e)
         this.loading = false
@@ -161,11 +161,12 @@ export default {
 
       this.loading = true
       this.$http.put(`boreholes/${this.$route.params.bh}/samples/${sampleId}`, data).then((response) => {
-        this.success = true
         this.loading = false
+        this.$noty.success('Sample updated.')
         this.$emit('sample-update')
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while updating sample.')
       })
     },
     resetForm () {
@@ -197,8 +198,10 @@ export default {
       this.$http.delete(`boreholes/${this.$route.params.bh}/samples/${this.selectedRow}`).then((response) => {
         this.$emit('sample-update')
         this.loading = false
+        this.$noty.success('Sample deleted.')
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while deleting sample.')
       })
     },
     toStrings (o) {

@@ -78,14 +78,14 @@ export default {
       }
     },
     handleFormSubmit () {
-      this.formSubmitSuccess = false
       this.formSubmitError = false
       this.$http.post('boreholes', this.form).then((resp) => {
-        this.formSubmitSuccess = true
         this.$emit('update-project')
+        this.$noty.success('Borehole added.')
         this.$router.push({ name: 'project-boreholes', params: { id: this.$route.params.id } })
       }).catch((e) => {
         this.formSubmitError = true
+        this.$noty.error('An error occurred while adding borehole.')
       })
     },
     addStrataRow () {

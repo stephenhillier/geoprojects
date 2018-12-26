@@ -101,15 +101,18 @@ export default {
         this.loading = false
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while retriving lab test data.')
       })
     },
     handleSubmit () {
       this.loading = true
       this.$http.put(`projects/${this.$route.params.id}/lab/tests/${this.$route.params.test}/moisture`, this.toStrings(this.sample)).then((response) => {
         this.sample = this.toStrings(this.nullToStrings(response.data))
+        this.$noty.success('Moisture content test updated.')
         this.loading = false
       }).catch((e) => {
         this.loading = false
+        this.$noty.error('An error occurred while updating moisture content test.')
       })
     },
     toStrings (o) {

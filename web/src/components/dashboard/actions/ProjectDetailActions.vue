@@ -4,9 +4,6 @@
                 <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
                 Delete project
               </b-btn>
-              <b-alert variant="danger" dismissible v-if="deleteError" @dismissed="deleteError=false">
-                Unable to delete project.
-              </b-alert>
             </b-card>
 </template>
 
@@ -22,8 +19,9 @@ export default {
     deleteProject () {
       this.$http.delete(`projects/${this.$route.params.id}`).then(() => {
         this.$router.push({ name: 'projects' })
-      }).catch(() => {
-        this.deleteError = true
+        this.$noty.success('Project deleted')
+      }).catch((e) => {
+        this.$noty.error(`An error occurred while deleting project (${e.response.status})`)
       })
     }
   }

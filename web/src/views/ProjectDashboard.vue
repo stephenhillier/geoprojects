@@ -78,7 +78,7 @@ export default {
       this.$http.get(`projects/${this.$route.params.id}`).then((response) => {
         this.project = response.data
       }).catch((e) => {
-        console.log(e)
+        this.$noty.error('An error occurred while retriving project details.')
       })
     }
   },
