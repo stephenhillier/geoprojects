@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -31,6 +30,7 @@ type config struct {
 	dbpass           string
 	dbname           string
 	dbhost           string
+	dbdriver         string
 	defaultPageLimit int
 	maxPageLimit     int
 	authGroupClaim   string
@@ -43,6 +43,7 @@ func main() {
 	// the flag library grabs values either from command line args, env variables, or the default specified here
 	// see github.com/namsral/flag
 	conf := config{}
+	flag.StringVar(&conf.dbdriver, "dbdriver", "postgres", "database driver")
 	flag.StringVar(&conf.dbuser, "dbuser", "geo", "database username")
 	flag.StringVar(&conf.dbpass, "dbpass", "", "database password")
 	flag.StringVar(&conf.dbname, "dbname", "geo", "database name")
@@ -50,6 +51,7 @@ func main() {
 	flag.StringVar(&conf.authAudience, "auth_audience", "https://earthworks.islandcivil.com", "authentication service audience claim")
 	flag.StringVar(&conf.authIssuer, "auth_issuer", "https://earthworks.auth0.com/", "authentication service issuer claim")
 	flag.StringVar(&conf.authJWKSEndpoint, "jwks_endpoint", "https://earthworks.auth0.com/.well-known/jwks.json", "authentication JWKS endpoint")
+	flag.Parse()
 
 	api := &server{}
 	api.config = conf
@@ -73,7 +75,7 @@ func main() {
 	api.config.dbpass = os.Getenv("DBPASS")
 
 	// create db connection and router and use them to create a new "Server" instance
-	db, err := NewDB(fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", api.config.dbuser, api.config.dbpass, api.config.dbhost, api.config.dbname))
+	db, err := api.NewDB()
 	if err != nil {
 		log.Panic(err)
 	}

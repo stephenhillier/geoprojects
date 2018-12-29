@@ -25,38 +25,39 @@ spec:
     spec:
       containers:
       - name: earthworks-api
-        image: gcr.io/islandcivil-223001/earthworks-api:IMAGE_VERSION
+        image: gcr.io/islandcivil-223001/earthworks-api:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
         resources: {}
         env:
-        - name: DBUSER
-          valueFrom:
-            secretKeyRef:
-              name: cloudsql-db-credentials
-              key: username
-        - name: DBPASS
-          valueFrom:
-            secretKeyRef:
-              name: cloudsql-db-credentials
-              key: password
-      - name: cloudsql-proxy
-        image: gcr.io/cloudsql-docker/gce-proxy:1.11
-        command: ["/cloud_sql_proxy",
-                  "-instances=islandcivil-223001:us-west1:islandcivil-db=tcp:5432",
-                  "-credential_file=/secrets/cloudsql/credentials.json"]
-        securityContext:
-          runAsUser: 2  # non-root user
-          allowPrivilegeEscalation: false
+          - name: DBHOST
+            valueFrom:
+              configMapKeyRef:
+                name: earthworks-db
+                key: host
+          - name: DBPASS
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: password
+          - name: DBUSER
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: username
+          - name: DBDRIVER
+            value: cloudsqlpostgres
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /secrets/cloudsql/earthworks-db.json
         volumeMounts:
-          - name: cloudsql-instance-credentials
-            mountPath: /secrets/cloudsql
-            readOnly: true
-      volumes:
         - name: cloudsql-instance-credentials
-          secret:
-            secretName: cloudsql-instance-credentials
+          mountPath: /secrets/cloudsql
+          readOnly: true
+      volumes:
+      - name: cloudsql-instance-credentials
+        secret:
+          secretName: cloudsql-instance-credentials
 status: {}
 ---
 apiVersion: v1
@@ -93,6 +94,8 @@ spec:
       protocol: HTTP
     hosts:
     - earthworks.islandcivil.com
+    tls:
+      httpsRedirect: true
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService

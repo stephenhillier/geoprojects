@@ -1,13 +1,18 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 
-	// load postgres driver
+	// register postgres driver
 	_ "github.com/lib/pq"
+
+	// register GCP Cloud SQL postgres driver
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 )
 
 // DB represents a database with an open connection
@@ -16,13 +21,23 @@ type DB struct {
 }
 
 // NewDB initializes the database connection
-func NewDB(connectionConfig string) (*sqlx.DB, error) {
+func (s *server) NewDB() (*sqlx.DB, error) {
 
 	var db *sqlx.DB
 	var err error
+	var connectionConfig string
+
+	//
+	if s.config.dbdriver == "postgres" {
+		connectionConfig = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", s.config.dbuser, s.config.dbpass, s.config.dbhost, s.config.dbname)
+	} else if s.config.dbdriver == "cloudsqlpostgres" {
+		connectionConfig = fmt.Sprintf("host=%s user=%s dbname=%s password=%s sslmode=disable", s.config.dbhost, s.config.dbuser, s.config.dbname, s.config.dbpass)
+	} else {
+		return db, errors.New("Invalid database driver specified. Supported drivers: postgres, cloudsqlpostgres")
+	}
 
 	for {
-		db, err = sqlx.Open("postgres", connectionConfig)
+		db, err = sqlx.Open(s.config.dbdriver, connectionConfig)
 		if err != nil {
 			log.Println(err)
 		}
@@ -63,7 +78,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL CHECK (char_length(name) < 255),
 		location TEXT NOT NULL CHECK (char_length(location) < 255),
-		organization TEST NULL CHECK (char_length(organization) < 255)
+		organization TEXT NULL CHECK (char_length(organization) < 255)
 	)`
 
 	// 2018-10-1

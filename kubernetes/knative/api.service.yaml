@@ -1,0 +1,41 @@
+apiVersion: serving.knative.dev/v1alpha1 # Current version of Knative
+kind: Service
+metadata:
+  name: earthworks-api # The name of the app
+  namespace: earthworks # The namespace the app will use
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            minInstances: 1
+            image: gcr.io/islandcivil-223001/earthworks-api:latest # The URL to the image of the app
+            env:
+              - name: DBHOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: earthworks-db
+                    key: host
+              - name: DBPASS
+                valueFrom:
+                  secretKeyRef:
+                    name: db-credentials
+                    key: password
+              - name: DBUSER
+                valueFrom:
+                  secretKeyRef:
+                    name: db-credentials
+                    key: username
+              - name: DBDRIVER
+                value: cloudsqlpostgres
+              - name: GOOGLE_APPLICATION_CREDENTIALS
+                value: /secrets/cloudsql/earthworks-db.json
+            volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          volumes:
+          - name: cloudsql-instance-credentials
+            secret:
+              secretName: cloudsql-instance-credentials
