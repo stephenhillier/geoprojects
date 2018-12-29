@@ -101,7 +101,7 @@ export default {
         this.loading = false
       }).catch((e) => {
         this.loading = false
-        this.$noty.error('An error occurred while retriving lab test data.')
+        this.$noty.error('An error occurred while retrieving lab test data.')
       })
     },
     handleSubmit () {

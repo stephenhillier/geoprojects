@@ -63,7 +63,7 @@ export default {
       this.$http.get(`boreholes?project=${this.$route.params.id}`).then((response) => {
         this.boreholes = response.data.results
       }).catch((e) => {
-        this.$noty.error('An error occurred while retriving boreholes.')
+        this.$noty.error('An error occurred while retrieving boreholes.')
       })
     }
   },

@@ -25,7 +25,7 @@
             </b-col>
           </b-row>
           <fieldset class="my-3">
-            <legend>Location</legend>
+            <legend class="h5">Location</legend>
             <b-row>
               <b-col cols="12" md="6">
                 <form-input label="Latitude" id="newBoreholeLatitude" v-model.number="form.location[1]"></form-input>
