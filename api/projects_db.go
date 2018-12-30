@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"strconv"
+
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/encoding/wkt"
 )
 
 // // ProjectsRepository is the set of methods available to a collection of projects
@@ -21,6 +24,7 @@ func (db *Datastore) AllProjects(name string, number string) ([]Project, error) 
 			project.id,
 			project.name,
 			project.location,
+			ST_AsBinary(project.default_coords) AS default_coords,
 			COUNT(borehole.project) as borehole_count,
 			ST_AsBinary(st_transform(st_centroid(st_union(st_transform(datapoint.location::geometry, 26910))), 4326)::geography) as centroid
 		FROM project
@@ -84,11 +88,13 @@ func (db *Datastore) AllProjects(name string, number string) ([]Project, error) 
 
 // CreateProject creates a new project record in the database
 func (db *Datastore) CreateProject(p ProjectRequest) (Project, error) {
-	query := `INSERT INTO project (name, location) VALUES ($1, $2) RETURNING id, name, location`
+	query := `INSERT INTO project (name, location, default_coords) VALUES ($1, $2, $3) RETURNING id, name, location`
 
 	new := Project{}
 
-	err := db.QueryRowx(query, p.Name, p.Location).StructScan(&new)
+	coords := orb.Point{p.DefaultCoords[0], p.DefaultCoords[1]}
+	log.Println(wkt.MarshalString(coords))
+	err := db.QueryRowx(query, p.Name, p.Location, wkt.MarshalString(coords)).StructScan(&new)
 	if err != nil {
 		return Project{}, err
 	}

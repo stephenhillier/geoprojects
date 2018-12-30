@@ -1,9 +1,13 @@
 <template>
             <b-card title="Actions">
-              <b-btn variant="outline-danger" size="sm" @click="deleteProject">
+              <b-btn v-b-modal.deleteProjectModal variant="outline-danger" size="sm">
                 <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
                 Delete project
               </b-btn>
+                <!-- Delete project confirmation -->
+              <b-modal id="deleteProjectModal" centered @ok="deleteProject" title="Confirm delete">
+                Are you sure you want to delete this project?
+              </b-modal>
             </b-card>
 </template>
 

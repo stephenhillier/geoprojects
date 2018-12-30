@@ -8,7 +8,7 @@
     </h5>
 
     <!-- New sample modal -->
-    <b-modal id="newSampleModal" title="Add a new sample" @ok="handleSubmit" @cancel="resetForm" @keydown.native.enter="handleSubmit">
+    <b-modal id="newSampleModal" centered title="Add a new sample" @ok="handleSubmit" @cancel="resetForm" @keydown.native.enter="handleSubmit">
       <b-container fluid>
         <b-form @submit.stop.prevent="handleSubmit">
           <b-row>
@@ -44,7 +44,7 @@
       </b-container>
     </b-modal>
 
-    <b-modal id="editSampleModal" ref="editSampleModal" title="Edit sample" @ok="handleEdit" @cancel="handleResetEdit" @keydown.native.enter="handleEdit;$refs.editSampleModal.hide()">
+    <b-modal id="editSampleModal" centered ref="editSampleModal" title="Edit sample" @ok="handleEdit" @cancel="handleResetEdit" @keydown.native.enter="handleEdit;$refs.editSampleModal.hide()">
       <b-container fluid>
         <b-form @submit.stop.prevent="">
           <b-row>

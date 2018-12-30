@@ -96,9 +96,7 @@ export default {
       this.$http.get('projects').then((response) => {
         this.numberOfRecords = response.data.length
         response.data.forEach((item) => {
-          if (item.centroid[0] !== 0 && item.centroid[1] !== 0) {
-            this.locations.push({ name: item.name, location: item.centroid })
-          }
+          this.locations.push({ name: item.name, location: (item.centroid[0] === 0 && item.centroid[1] === 0) ? item.default_coords : item.centroid })
         })
         this.projects = response.data || []
       }).catch((e) => {

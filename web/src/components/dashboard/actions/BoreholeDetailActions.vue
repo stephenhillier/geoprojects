@@ -10,20 +10,15 @@
     </b-row>
     <b-row class="mt-5">
       <b-col>
-        <b-btn variant="outline-danger" size="sm" @click="deleteBorehole">
+        <b-btn variant="outline-danger" size="sm" v-b-modal.deleteBoreholeModal>
           <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
           Delete borehole
         </b-btn>
       </b-col>
     </b-row>
-    <b-row class="mt-2">
-      <b-col>
-        <b-alert variant="danger" dismissible v-if="deleteError" @dismissed="deleteError=false">
-          Unable to delete borehole.
-        </b-alert>
-      </b-col>
-    </b-row>
-
+    <b-modal id="deleteBoreholeModal" centered @ok="deleteBorehole" title="Confirm delete">
+      Are you sure you want to delete this borehole?
+    </b-modal>
   </b-card>
 </template>
 

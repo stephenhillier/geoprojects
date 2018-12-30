@@ -18,12 +18,14 @@ type Project struct {
 	Location         string        `json:"location"`
 	BoreholeCount    int           `json:"borehole_count" db:"borehole_count"`
 	CentroidLocation PointLocation `json:"centroid" db:"centroid"`
+	DefaultCoords    PointLocation `json:"default_coords" db:"default_coords"`
 }
 
 // ProjectRequest is the set of data required to accept a request for a new project
 type ProjectRequest struct {
-	Name     string `json:"name"`
-	Location string `json:"location"`
+	Name          string     `json:"name"`
+	Location      string     `json:"location"`
+	DefaultCoords [2]float64 `json:"default_coords"`
 }
 
 // PaginatedProjectResponse is a paginated API response containing a count of all projects
