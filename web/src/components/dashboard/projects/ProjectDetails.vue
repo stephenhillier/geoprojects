@@ -15,7 +15,7 @@
           <multi-marker-map :locations="boreholes"></multi-marker-map>
         </b-col>
       </b-row>
-      <ag-grid-vue style="height: 500px;"
+      <ag-grid-vue style="height: 400px;"
               :enableSorting="true"
               :enableFilter="true"
               rowHeight="32"

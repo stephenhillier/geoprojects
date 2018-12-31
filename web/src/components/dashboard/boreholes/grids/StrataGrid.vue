@@ -7,7 +7,7 @@
       <b-btn v-b-modal.deleteStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete layer</b-btn>
     </h5>
     <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
-    <ag-grid-vue style="height: 500px;"
+    <ag-grid-vue style="height: 400px;"
             :enableSorting="true"
             :enableFilter="true"
             rowHeight="32"

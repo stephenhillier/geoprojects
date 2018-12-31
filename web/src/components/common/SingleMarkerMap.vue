@@ -116,6 +116,6 @@ export default {
 
 <style lang="scss">
 .map {
-  height: 400px;
+  height: 300px;
 }
 </style>

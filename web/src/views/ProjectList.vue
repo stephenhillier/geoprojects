@@ -23,7 +23,7 @@
         </b-row>
       </b-card>
       <b-card no-body class="mb-3">
-        <ag-grid-vue style="height: 500px;"
+        <ag-grid-vue style="height: 400px;"
             :enableSorting="true"
             :enableFilter="true"
             rowHeight="32"

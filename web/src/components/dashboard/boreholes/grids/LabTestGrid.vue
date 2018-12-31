@@ -81,7 +81,7 @@
       Are you sure you want to delete this lab test?
     </b-modal>
 
-    <ag-grid-vue style="height: 500px;"
+    <ag-grid-vue style="height: 400px;"
         class="ag-theme-balham"
         :columnDefs="labColumnDefs"
         :rowData="labTestRowData"

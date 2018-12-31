@@ -1,9 +1,15 @@
 <template>
             <b-card title="Actions">
-              <b-btn v-b-modal.deleteProjectModal variant="outline-danger" size="sm">
-                <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
-                Delete project
-              </b-btn>
+              <div>
+                <b-btn variant="link" size="sm" :to="{ name: 'new-borehole' }"><font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon> New borehole</b-btn>
+              </div>
+              <div class="mt-3">
+                <b-btn v-b-modal.deleteProjectModal variant="outline-danger" size="sm">
+                  <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
+                  Delete project
+                </b-btn>
+              </div>
+
                 <!-- Delete project confirmation -->
               <b-modal id="deleteProjectModal" centered @ok="deleteProject" title="Confirm delete">
                 Are you sure you want to delete this project?

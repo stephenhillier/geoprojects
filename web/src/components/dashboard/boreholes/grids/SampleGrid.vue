@@ -85,7 +85,7 @@
       Are you sure you want to delete this sample?
     </b-modal>
 
-    <ag-grid-vue style="height: 500px;"
+    <ag-grid-vue style="height: 400px;"
           class="ag-theme-balham mb-3"
           rowSelection="single"
           :columnDefs="sampleColumnDefs"
