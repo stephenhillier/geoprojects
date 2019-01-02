@@ -36,7 +36,12 @@ const soils = [
   {
     desc: 'Silty CLAY',
     from: 6,
-    to: 10
+    to: 9
+  },
+  {
+    desc: 'SAND',
+    from: 9,
+    to: 13
   }
 ]
 

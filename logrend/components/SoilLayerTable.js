@@ -162,36 +162,6 @@ export default (props) => (
           </View>
         </View>
       </View>
-      <View style={styles.soilRowWrapper} break>
-        <View style={styles.soilRow}>
-          <View style={styles.soilColSmLeft}></View>
-          <View style={styles.soilColSm}>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>11.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>12.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>13.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>14.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>15.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>16.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>17.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>18.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegment}><View style={styles.rulerText}><Text>19.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-              <View style={styles.rulerSegmentLast}><View style={styles.rulerText}><Text>20.0</Text></View><View style={styles.rulerHash}><View style={styles.hashMark}></View><View style={styles.hashMarkLast}></View></View></View>
-          </View>
-          <View style={styles.soilCol}>
-          { props.soils.map((soil) => {
-              const height = (((Number(soil.to) - Number(soil.from)) / 10 * 452))
-
-              return (
-                <View style={{height: height, display: 'flex', flexDirection: 'row', padding: 5, borderBottom:0.5}} key={`${soil.from} ${soil.to}`}>
-                  <Text style={styles.soilText}>{soil.desc}</Text>
-                </View>
-              )  
-          }) }
-          </View>
-          <View style={styles.soilColSample}>
-          </View>
-        </View>
-      </View>
     </View>
   </View>
 )
