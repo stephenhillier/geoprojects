@@ -126,6 +126,7 @@ func (db *Datastore) GetBorehole(boreholeID int) (BoreholeResponse, error) {
 	return p, nil
 }
 
+// DeleteBorehole deletes a borehole by its ID
 func (db *Datastore) DeleteBorehole(boreholeID int64) error {
 	query := `DELETE from borehole WHERE id = $1`
 
