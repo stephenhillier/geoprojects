@@ -53,3 +53,7 @@ Soil strata are records of soil encountered during drilling of a borehole.
 To run the web frontend, use `npm run serve` from the `web/` directory and visit `127.0.0.1:8080`.
 
 To build for production, use `npm run build` and serve the assets from an http server. The included Dockerfile creates an nginx image with the built assets.
+
+## Log renderer
+
+`logrend/` contains a node.js service for generating borehole logs from project data automatically. The log renderer can be tested locally using `npm run logrend`, or can be run as a stateless service using the included Dockerfile and k8s config.
