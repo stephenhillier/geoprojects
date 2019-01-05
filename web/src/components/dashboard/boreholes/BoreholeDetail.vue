@@ -1,10 +1,8 @@
 <template>
-  <b-card>
-
+  <div>
     <b-row>
       <b-col cols="12" lg="6" xl="6">
-        <h2>{{ borehole.name }}</h2>
-        <h6 class="text-muted">{{project.name}}</h6>
+        <h1>{{ borehole.name }}</h1>
         <h5>Summary</h5>
         <div v-if="borehole.location && borehole.location.length">Location: {{ latitude.toFixed(6) }}, {{ longitude.toFixed(6) }}</div>
         <div>
@@ -39,7 +37,7 @@
         </b-card>
       </b-col>
     </b-row>
-  </b-card>
+  </div>
 </template>
 
 <script>

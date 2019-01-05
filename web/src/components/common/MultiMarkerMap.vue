@@ -1,6 +1,6 @@
 <template>
   <b-card no-body>
-    <div id="map" class="map"></div>
+    <div id="map" class="project-map"></div>
   </b-card>
 </template>
 
@@ -102,7 +102,7 @@ export default {
 </script>
 
 <style lang="scss">
-.map {
+.project-map {
   height: 400px;
 }
 </style>

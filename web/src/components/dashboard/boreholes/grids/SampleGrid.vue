@@ -2,7 +2,7 @@
   <div>
     <h5>
       Soil Samples
-      <b-btn v-b-modal.newSampleModal size="sm" class="ml-5" variant="secondary">Add sample</b-btn>
+      <b-btn v-b-modal.newSampleModal size="sm" class="ml-5" variant="info">Add sample</b-btn>
       <b-btn v-b-modal.editSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit sample</b-btn>
       <b-btn v-b-modal.deleteSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete sample</b-btn>
     </h5>

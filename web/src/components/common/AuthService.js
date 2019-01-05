@@ -13,7 +13,7 @@ class AuthService {
     clientID: 'BYgv3PTBtCEtS76GFXF7uDv1vf4XT5N7',
     redirectUri: redirectUri,
     responseType: 'token id_token',
-    scope: 'openid groups permissions roles email'
+    scope: 'openid profile groups permissions roles email'
   })
 
   login (next) {
@@ -40,6 +40,7 @@ class AuthService {
   idToken
   expiresAt
   name
+  picture
   authenticated = this.isAuthenticated()
   authNotifier = new EventEmitter()
 
@@ -63,8 +64,9 @@ class AuthService {
     this.idToken = authResult.idToken
     this.expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
     this.name = authResult.idTokenPayload['email']
+    this.picture = authResult.idTokenPayload['picture']
 
-    this.authNotifier.emit('authChange', { authenticated: true, name: this.name })
+    this.authNotifier.emit('authChange', { authenticated: true, name: this.name, picture: this.picture })
 
     router.app.$http.defaults.headers.common['Authorization'] = `Bearer ${authResult.accessToken}`
 

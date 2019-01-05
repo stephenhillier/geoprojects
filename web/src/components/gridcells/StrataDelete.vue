@@ -6,8 +6,8 @@
               :show.sync="popoverShow"
               title="Delete strata?"
               triggers="click blur">
-              <b-btn @click="onDeleteRow(params.data.id)" size="sm" variant="outline-danger">Ok</b-btn>
-              <b-btn @click="onClose" size="sm" variant="primary" class="ml-2">Cancel</b-btn>
+              <b-btn @click="onDeleteRow(params.data.id)" size="sm" variant="danger">Ok</b-btn>
+              <b-btn @click="onClose" size="sm" variant="secondary" class="ml-2">Cancel</b-btn>
 
   </b-popover>
 </div>

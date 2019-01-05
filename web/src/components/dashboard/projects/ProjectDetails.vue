@@ -1,10 +1,8 @@
 <template>
-  <b-card>
-
+  <div>
       <b-row class="mb-3">
         <b-col cols="12" xl="6">
-          <h4>Project Summary</h4>
-          <h6 class="text-muted">{{project.name}}</h6>
+          <h1>Project Summary</h1>
           <b-row>
             <b-col>
               Location: {{ project.location }}
@@ -22,9 +20,9 @@
               class="ag-theme-balham mb-3"
               :columnDefs="columnDefs"
               :rowData="boreholes"/>
-      <b-btn variant="secondary" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
+      <b-btn variant="info" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
 
-  </b-card>
+  </div>
 </template>
 
 <script>

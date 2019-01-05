@@ -43,7 +43,7 @@
       </b-row>
 
       <div class="mb-3 mt-5">
-        <b-btn type="submit" variant="dark">Submit</b-btn>
+        <b-btn type="submit" variant="info">Create borehole</b-btn>
         <b-btn type="reset" class="mx-3" variant="light">Reset</b-btn>
       </div>
     </b-form>

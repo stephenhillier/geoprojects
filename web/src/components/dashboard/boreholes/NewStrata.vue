@@ -32,7 +32,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-btn size="sm" variant="primary" type="submit" :disabled="loading">Done</b-btn>
+          <b-btn size="sm" variant="info" type="submit" :disabled="loading">Done</b-btn>
         </b-col>
       </b-row>
     </b-form>

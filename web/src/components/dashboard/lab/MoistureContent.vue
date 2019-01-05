@@ -44,7 +44,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <b-btn type="submit" variant="primary">Submit</b-btn>
+              <b-btn type="submit" variant="info">Save</b-btn>
             </b-col>
           </b-row>
         </b-form>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <h5>
-      Lab Testing
-      <b-btn v-b-modal.newLabTestModal size="sm" variant="secondary" class="ml-5">New test</b-btn>
+      Tests
+      <b-btn v-b-modal.newLabTestModal size="sm" variant="info" class="ml-5">New test</b-btn>
       <b-btn :to="{ name: 'lab-moisture', params: { id: $route.params.id, test: selectedRow }}" size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Test details</b-btn>
       <b-btn v-b-modal.deleteLabTestModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete test</b-btn>
     </h5>

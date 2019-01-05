@@ -1,9 +1,8 @@
 <template>
-  <b-card>
+  <div>
     <b-row>
       <b-col>
-        <h4 class="card-title">Lab Testing</h4>
-        <h6 class="text-muted">{{project.name}}</h6>
+        <h1>Lab Testing</h1>
       </b-col>
     </b-row>
     <b-row>
@@ -11,7 +10,7 @@
         <lab-test-grid :labTestRowData="labTestingRowData" :sampleOptions="sampleRowData" @labtest-update="fetchLabTests" />
       </b-col>
     </b-row>
-  </b-card>
+  </div>
 </template>
 
 <script>

@@ -1,28 +1,22 @@
 <template>
-<div>
-  <b-card no-body class="mb-3">
-    <b-list-group flush>
-      <b-list-group-item class="menu-heading font-weight-bold">{{ project.name }}</b-list-group-item>
-      <b-list-group-item exact :to="{ name: 'project-dashboard', params: { id: this.$route.params.id } }">Project Details</b-list-group-item>
-    </b-list-group>
+  <b-card>
+    <nav>
+      <div>
+        <ul class="nav flex-column">
+          <b-nav-item class="menu-item" exact :to="{ name: 'projects' }"><font-awesome-icon class="text-muted mr-3" :icon="['fas', 'th-list']"></font-awesome-icon>Back to project list</b-nav-item>
+          <b-nav-item active-class="active-menu" class="menu-item mt-3" exact :to="{ name: 'project-dashboard', params: { id: this.$route.params.id } }">
+              Project: {{ project.name }}
+          </b-nav-item>
+          <b-nav-item active-class="active-menu" class="menu-item" :to="{ name: 'project-boreholes', params: { id: this.$route.params.id } }">
+            <font-awesome-icon :icon="['far', 'dot-circle']" class="text-muted mr-3"></font-awesome-icon>Boreholes<b-badge variant="primary" class="float-right mt-1" pill>{{ project.borehole_count }}</b-badge>
+          </b-nav-item>
+          <b-nav-item active-class="active-menu" class="menu-item" :to="{ name: 'lab-home', params: { id: this.$route.params.id } }">
+            <font-awesome-icon :icon="['far', 'clipboard']" class="text-muted mr-3"></font-awesome-icon>Lab tests<b-badge variant="primary" pill></b-badge>
+          </b-nav-item>
+        </ul>
+      </div>
+    </nav>
   </b-card>
-  <b-card no-body class="mb-3">
-    <b-list-group flush>
-      <b-list-group-item class="menu-heading">Data:</b-list-group-item>
-      <b-list-group-item class="d-flex justify-content-between align-items-center" :to="{ name: 'project-boreholes', params: { id: this.$route.params.id } }">Boreholes<b-badge variant="light" pill>{{ project.borehole_count }}</b-badge></b-list-group-item>
-      <b-list-group-item>Instrumentation</b-list-group-item>
-    </b-list-group>
-  </b-card>
-  <b-card no-body class="mb-3">
-    <b-list-group flush>
-      <b-list-group-item class="menu-heading">Lab testing:</b-list-group-item>
-      <b-list-group-item class="d-flex justify-content-between align-items-center" :to="{ name: 'lab-home', params: { id: this.$route.params.id } }">Lab tests<b-badge variant="light" pill></b-badge></b-list-group-item>
-      <b-list-group-item>Soil Samples</b-list-group-item>
-    </b-list-group>
-  </b-card>
-
-</div>
-
 </template>
 
 <script>
@@ -33,5 +27,15 @@ export default {
 </script>
 
 <style>
-
+  .menu-heading a {
+    color: rgb(61, 61, 61)!important;
+  }
+  .menu-item a {
+    color: rgb(61, 61, 61);
+  }
+  .active-menu {
+    color:#1f548a!important;
+    background-color: #e2e6ff;
+    font-weight: 600;
+  }
 </style>

@@ -2,7 +2,7 @@
   <div>
     <h5>
       Soil Stratigraphy
-      <b-btn v-b-modal.newStrataModal class="ml-5" size="sm" variant="secondary">Add soil layer</b-btn>
+      <b-btn v-b-modal.newStrataModal class="ml-5" size="sm" variant="info">Add soil layer</b-btn>
       <b-btn v-b-modal.editStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit layer</b-btn>
       <b-btn v-b-modal.deleteStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete layer</b-btn>
     </h5>
