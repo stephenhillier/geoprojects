@@ -1,7 +1,7 @@
 <template>
   <div id="dashboard" class="mb-3">
     <b-row v-if="!!project && project != {}">
-      <b-col cols="12" lg="3" xl="2">
+      <b-col cols="12" xl="2">
         <project-menu :project="project" :project-id="project.id"></project-menu>
       </b-col>
       <b-col>
@@ -13,20 +13,7 @@
               <router-view :project="project" @update-project="fetchProjectData"></router-view>
             </b-card>
           </b-col>
-          <b-col cols="12" lg="3" xl="2">
-            <div>
-              <b-card title="Project stats" class="mb-3">
-                <dl>
-                  <dt>Boreholes:</dt>
-                  <dd>{{ project.borehole_count }}</dd>
-                </dl>
-              </b-card>
-            </div>
-            <div>
-              <b-card title="Latest activity" class="mb-3">
-
-              </b-card>
-            </div>
+          <b-col cols="12" xl="2">
             <div>
               <!-- Actions -->
               <router-view :project="project" name="actions"></router-view>

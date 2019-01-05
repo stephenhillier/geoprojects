@@ -39,9 +39,36 @@
                     <b-row>
                       <b-col cols="12">
                         <form-input
+                          id="projectNumber"
+                          label="Project number"
+                          v-model="form.project_number"
+                        ></form-input>
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col cols="12">
+                        <form-input
                           id="projectName"
                           label="Project Name"
                           v-model="form.name"
+                        ></form-input>
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col cols="12">
+                        <form-input
+                          id="projectClient"
+                          label="Client"
+                          v-model="form.client"
+                        ></form-input>
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col cols="12">
+                        <form-input
+                          id="projectManager"
+                          label="Project manager"
+                          v-model="form.pm"
                         ></form-input>
                       </b-col>
                     </b-row>
@@ -58,7 +85,7 @@
                     <fieldset class="my-3">
                       <legend class="h5">Default Location</legend>
                       <p>This is the default location for this project.  The project's map marker will be placed here when there are no data locations (such as boreholes) to display.</p>
-                      <p><span class="font-weight-bold">Hint:</span> double click the map to place a marker.</p>
+                      <p class="small"><span class="font-weight-bold">Hint:</span> double click the map to place a marker.</p>
                       <b-row>
                         <b-col cols="12" md="6">
                           <form-input label="Latitude" id="newProjectLatitude" v-model.number="form.default_coords[1]"></form-input>
@@ -113,8 +140,11 @@ export default {
         }
       ],
       form: {
+        project_number: '',
         name: '',
         location: '',
+        client: '',
+        pm: '',
         default_coords: ['', '']
       }
     }

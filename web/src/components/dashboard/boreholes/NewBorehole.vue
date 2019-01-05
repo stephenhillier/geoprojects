@@ -26,6 +26,7 @@
           </b-row>
           <fieldset class="my-3">
             <legend class="h5">Location</legend>
+            <p class="small"><span class="font-weight-bold">Hint:</span> double click the map the place a marker.</p>
             <b-row>
               <b-col cols="12" md="6">
                 <form-input label="Latitude" id="newBoreholeLatitude" v-model.number="form.location[1]"></form-input>

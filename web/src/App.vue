@@ -54,4 +54,8 @@ body {
   background-color: #e2e6ff;
   font-weight: 600;
 }
+.table-heading {
+  color: #333!important;
+  text-transform: none!important;
+}
 </style>

@@ -15,7 +15,7 @@ import AuthService from '@/components/common/AuthService.js'
 // Icons
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSpinner, faInfoCircle, faPrint, faLink, faThList, faSearch } from '@fortawesome/free-solid-svg-icons'
-import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt, faDotCircle, faClipboard } from '@fortawesome/free-regular-svg-icons'
+import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt, faDotCircle, faClipboard, faEdit } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // custom helpers (forms, displaying data etc)
@@ -33,7 +33,7 @@ Vue.use(VueNoty, {
 })
 
 // font awesome icons
-library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt, faDotCircle, faThList, faClipboard, faSearch)
+library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt, faDotCircle, faThList, faClipboard, faSearch, faEdit)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
 

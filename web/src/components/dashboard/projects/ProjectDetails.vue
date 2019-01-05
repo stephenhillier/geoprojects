@@ -2,12 +2,35 @@
   <div>
       <b-row class="mb-3">
         <b-col cols="12" xl="6">
-          <h1>Project Summary</h1>
-          <b-row>
-            <b-col>
-              Location: {{ project.location }}
-            </b-col>
-          </b-row>
+          <h1>{{project.name}}</h1>
+          <table class="table">
+            <thead>
+              <th>Overview</th>
+              <th><b-btn v-b-modal.editProjectModal size="sm" class="float-right" variant="outline-info"><font-awesome-icon :icon="['far', 'edit']" class="text-muted"></font-awesome-icon> Edit</b-btn></th>
+            </thead>
+              <tbody class="font-weight-bold">
+                  <tr>
+                    <th class="table-heading">Project number</th>
+                    <td>{{ project.project_number }}</td>
+                  </tr>
+                  <tr>
+                    <th class="table-heading">Client</th>
+                    <td>{{ project.client }}</td>
+                  </tr>
+                  <tr>
+                    <th class="table-heading">Location</th>
+                    <td>{{ project.location }}</td>
+                  </tr>
+                  <tr>
+                    <th class="table-heading">Project manager</th>
+                    <td>{{ project.pm }}</td>
+                  </tr>
+                  <tr>
+                    <th class="table-heading">Boreholes</th>
+                    <td>{{ project.borehole_count }}</td>
+                  </tr>
+              </tbody>
+          </table>
         </b-col>
         <b-col>
           <multi-marker-map :locations="boreholes"></multi-marker-map>
@@ -22,6 +45,47 @@
               :rowData="boreholes"/>
       <b-btn variant="info" size="sm" :to="{ name: 'new-borehole' }">New borehole</b-btn>
 
+      <!-- Edit project form -->
+      <b-modal id="editProjectModal" title="Edit project information" centered @ok="handleEdit" @cancel="handleResetEdit" @shown="handleShowEditForm">
+        <b-form @submit.prevent="handleEdit">
+          <b-row>
+            <b-col cols="12">
+              <form-input
+                id="projectEditName"
+                label="Name"
+                required
+                v-model="editForm.name"
+              ></form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
+              <form-input
+                id="projectEditClient"
+                label="Client"
+                required
+                v-model="editForm.client"
+              ></form-input>
+            </b-col>
+            <b-col cols="12">
+              <form-input
+                id="projectEditLocation"
+                label="Location"
+                required
+                v-model="editForm.location"
+              ></form-input>
+            </b-col>
+            <b-col cols="12">
+              <form-input
+                id="projectEditPM"
+                label="Project manager"
+                required
+                v-model="editForm.pm"
+              ></form-input>
+            </b-col>
+          </b-row>
+        </b-form>
+      </b-modal>
   </div>
 </template>
 
@@ -53,7 +117,8 @@ export default {
         { headerName: 'Field Engineer', field: 'field_eng', filter: 'agTextColumnFilter' },
         { headerName: 'Location', field: 'location', cellRendererFramework: Coords }
 
-      ]
+      ],
+      editForm: {}
     }
   },
   methods: {
@@ -63,6 +128,9 @@ export default {
       }).catch((e) => {
         this.$noty.error('An error occurred while retrieving boreholes.')
       })
+    },
+    handleShowEditForm () {
+      this.editForm = Object.assign({}, this.project)
     }
   },
   created () {
