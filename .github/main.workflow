@@ -4,9 +4,8 @@ workflow "Build & deploy to GKE" {
 }
 
 action "Filter for API folder" {
-  uses = "docker://gcr.io/cloud-builders/git"
-  runs = "sh -l -c"
-  args = ["git diff-tree --name-only HEAD | grep api"]
+  uses = "netlify/actions/diff-includes@exit-code-78"
+  args = "api"
 }
 
 action "Build image" {
