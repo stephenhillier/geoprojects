@@ -1,0 +1,89 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: earthworks-web
+  name: earthworks-web
+  namespace: earthworks
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: earthworks-web
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: earthworks-web
+        version: v1
+    spec:
+      containers:
+      - image: gcr.io/islandcivil-223001/earthworks-web:IMAGE_VERSION
+        name: earthworks-web
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: earthworks-web
+  name: earthworks-web
+  namespace: earthworks
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: earthworks-web
+status:
+  loadBalancer: {}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: earthworks-web-gateway
+  namespace: earthworks
+  labels:
+    app: earthworks-web
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - earthworks.islandcivil.com
+    tls:
+      httpsRedirect: true
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: earthworks-web
+  namespace: earthworks
+  labels:
+    app: earthworks-web
+spec:
+  hosts:
+  - earthworks.islandcivil.com
+  gateways:
+  - earthworks-web-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: earthworks-web
+        port:
+          number: 80
