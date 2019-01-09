@@ -1,0 +1,15 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: earthworks.earthworks.islandcivil.com
+spec:
+  group: earthworks.islandcivil.com
+  names:
+    kind: Earthworks
+    listKind: EarthworksList
+    plural: earthworks
+    singular: earthworks
+  scope: Namespaced
+  version: v1alpha1
+  subresources:
+    status: {}

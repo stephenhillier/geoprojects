@@ -1,0 +1,7 @@
+apiVersion: earthworks.islandcivil.com/v1alpha1
+kind: Earthworks
+metadata:
+  name: example-earthworks
+spec:
+  # Add fields here
+  size: 3
