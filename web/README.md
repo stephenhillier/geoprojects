@@ -1,6 +1,6 @@
 # web
 
-This is the Earthworks web frontend.
+This is the Earthworks web frontend. It is built with Vue.js and includes a configuration for running on Kubernetes with nginx.
 
 Vue components are located in the `/src` directory. The entrypoint is `src/main.js`.
 
