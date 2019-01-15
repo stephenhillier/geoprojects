@@ -69,8 +69,14 @@
           </b-card>
         </b-col>
       </b-row>
+      <b-modal centered title="Creating a project" ref="tutorialProjectModal" cancel-title="Don't show again" @cancel="handleCancelProjectTutorial">
+        <div class="d-block text-center">
+          <h5>Welcome!</h5>
+          <p>This is the project list, where you can search for and select a project.</p>
+          <p>We'll show you how to create projects. To get started, click on the <router-link :to="{name: 'new-project'}">New project</router-link> option on the left sidebar.</p>
+        </div>
+      </b-modal>
     </b-col>
-
   </b-row>
 </div>
 
@@ -144,6 +150,9 @@ export default {
     },
     handleSearchInput () {
       this.debouncedSearch()
+    },
+    handleCancelProjectTutorial () {
+      localStorage.setItem('earthworks-tutorial-projects', JSON.stringify(true))
     }
   },
   created () {
@@ -151,6 +160,12 @@ export default {
     this.debouncedSearch = debounce(() => {
       this.onSearchHandler()
     }, 300)
+
+    if (!JSON.parse(localStorage.getItem('earthworks-tutorial-projects'))) {
+      setTimeout(() => {
+        this.$refs.tutorialProjectModal.show()
+      }, 1000)
+    }
   }
 }
 </script>

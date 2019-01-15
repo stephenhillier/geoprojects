@@ -86,6 +86,13 @@
           </b-row>
         </b-form>
       </b-modal>
+      <b-modal centered title="Creating boreholes" ref="tutorialProjectSummaryModal" cancel-title="Don't show again" @cancel="handleCancelProjectSummaryTutorial">
+        <div class="d-block text-center">
+          <p>This is a summary of the project {{ project.name }}.</p>
+          <p>You'll be able to create and view field data from this screen.</p>
+          <p>Go ahead and click the "New Borehole" button to give it a try (don't worry, you can remove it afterward).</p>
+        </div>
+      </b-modal>
   </div>
 </template>
 
@@ -131,10 +138,19 @@ export default {
     },
     handleShowEditForm () {
       this.editForm = Object.assign({}, this.project)
+    },
+    handleCancelProjectSummaryTutorial () {
+      localStorage.setItem('earthworks-tutorial-project-summary', JSON.stringify(true))
     }
   },
   created () {
     this.fetchBoreholes()
+
+    if (!JSON.parse(localStorage.getItem('earthworks-tutorial-project-summary'))) {
+      setTimeout(() => {
+        this.$refs.tutorialProjectSummaryModal.show()
+      }, 1000)
+    }
   }
 }
 </script>

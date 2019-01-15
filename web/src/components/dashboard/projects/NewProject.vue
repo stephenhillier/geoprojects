@@ -48,8 +48,9 @@
                     <b-row>
                       <b-col cols="12">
                         <form-input
+                          required
                           id="projectName"
-                          label="Project Name"
+                          label="Project Name *"
                           v-model="form.name"
                         ></form-input>
                       </b-col>
@@ -106,15 +107,18 @@
                   <ew-map :longitude="form.default_coords[0]" :latitude="form.default_coords[1]" @update-coordinates="updateCoords" :add-mode="true"></ew-map>
                 </b-col>
               </b-row>
-
             </b-card>
           </b-col>
         </b-row>
+        <b-modal centered title="Creating a project" ref="tutorialProjectCreateModal" cancel-title="Don't show again" @cancel="handleCancelProjectCreateTutorial">
+          <div class="d-block text-center">
+            <p>This is where you fill out background information about your new project. Remember: you can always come back and edit the details later.</p>
+            <p>Double click on the map to place a marker. This is where your project will appear on the map. Give it a try!</p>
+          </div>
+        </b-modal>
       </b-col>
-
     </b-row>
   </div>
-
 </template>
 
 <script>
@@ -162,6 +166,17 @@ export default {
     updateCoords (val) {
       const { lat, lng } = val
       this.form.default_coords = [lng, lat]
+    },
+    handleCancelProjectCreateTutorial () {
+      localStorage.setItem('earthworks-tutorial-project-creation', JSON.stringify(true))
+    }
+  },
+  created () {
+    localStorage.setItem('earthworks-tutorial-projects', JSON.stringify(true))
+    if (!JSON.parse(localStorage.getItem('earthworks-tutorial-project-creation'))) {
+      setTimeout(() => {
+        this.$refs.tutorialProjectCreateModal.show()
+      }, 1000)
     }
   }
 
