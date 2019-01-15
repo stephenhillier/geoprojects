@@ -1,7 +1,6 @@
-workflow "Build & deploy to GKE" {
+workflow "Deploy API" {
   resolves = [
-    "Rollout API server",
-    "web - deployment status",
+    "Rollout API server"
   ]
   on = "push"
 }
@@ -57,6 +56,13 @@ action "Rollout API server" {
 }
 
 # Frontend pipeline
+
+
+workflow "Deploy web" {
+  on = "push"
+  resolves = ["web - deployment status"]
+}
+
 
 action "Filter for web folder" {
   uses = "netlify/actions/diff-includes@exit-code-78"
