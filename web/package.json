@@ -24,6 +24,7 @@
     "font-awesome": "^4.7.0",
     "leaflet": "^1.3.4",
     "leaflet.markercluster": "^1.4.1",
+    "lodash.debounce": "^4.0.8",
     "proboot": "^0.1.5",
     "qs": "^6.5.2",
     "querystring": "^0.2.0",

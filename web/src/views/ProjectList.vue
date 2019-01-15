@@ -33,7 +33,7 @@
                     <span class="input-icon-addon">
                       <font-awesome-icon :icon="['fas', 'search']" class="text-dark"></font-awesome-icon>
                     </span>
-                    <input type="text" class="form-control" placeholder="Search by name or project number">
+                    <input type="text" class="form-control" v-model="searchParamsInput.project_name" @input="handleSearchInput" placeholder="Search by project name">
                   </div>
                 </div>
               </b-col>
@@ -77,6 +77,8 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce'
+import querystring from 'querystring'
 import { AgGridVue } from 'ag-grid-vue'
 
 import FormInput from '@/components/common/FormInput.vue'
@@ -120,7 +122,8 @@ export default {
   },
   methods: {
     fetchProjects () {
-      this.$http.get('projects').then((response) => {
+      this.$http.get('projects?' + querystring.stringify(this.searchParams)).then((response) => {
+        this.locations = []
         this.numberOfRecords = response.data.length
         response.data.forEach((item) => {
           this.locations.push({ name: item.name, location: (item.centroid[0] === 0 && item.centroid[1] === 0) ? item.default_coords : item.centroid })
@@ -132,16 +135,22 @@ export default {
     },
     onSearchHandler () {
       this.searchParams = Object.assign({}, this.searchParamsInput)
-      this.$root.$emit('bv::refresh::table', 'projectSearchTable')
+      this.fetchProjects()
     },
     clearSearchFilter (key) {
       this.searchParams[key] = null
       this.searchParamsInput[key] = ''
       this.$root.$emit('bv::refresh::table', 'projectSearchTable')
+    },
+    handleSearchInput () {
+      this.debouncedSearch()
     }
   },
   created () {
     this.fetchProjects()
+    this.debouncedSearch = debounce(() => {
+      this.onSearchHandler()
+    }, 300)
   }
 }
 </script>
