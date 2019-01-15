@@ -6,7 +6,6 @@ Vue components are located in the `/src` directory. The entrypoint is `src/main.
 
 Authentication is provided by an external service (auth0) and is triggered by the router (when accessing protected routes, which are currently all routes). See `src/router.js` and `src/components/common/AuthService.js`
 
-
 ## Project setup
 ```
 npm install
