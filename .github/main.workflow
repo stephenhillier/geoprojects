@@ -72,7 +72,7 @@ action "Filter for web folder" {
 action "web - build image" {
   needs = ["Filter for web folder"]
   uses = "actions/docker/cli@04185cf"
-  args = ["build -t gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
+  args = ["build -t gcr.io/islandcivil-223001/earthworks-web:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
 }
 
 action "web - setup gcloud" {
