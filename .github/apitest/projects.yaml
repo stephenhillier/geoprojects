@@ -1,0 +1,32 @@
+environment:
+  vars:
+    host: https://earthworks.islandcivil.com
+    auth_url: https://earthworks.auth0.com/oauth/token
+    auth0_aud: https://earthworks.islandcivil.com
+  headers:
+    Content-Type: application/json
+    Authorization: Bearer {{auth_token}}
+requests:
+  - name: Log in
+    url: "{{auth_url}}"
+    method: post
+    body:
+      client_id: "{{auth0_id}}"
+      client_secret: "{{auth0_secret}}"
+      audience: "{{auth0_aud}}"
+      grant_type: client_credentials
+    expect:
+      status: 200
+    set:
+      - var: auth_token
+        from: access_token
+  - name: Create project
+    url: "{{host}}/api/v1/projects" # jsonplaceholder doesn't support getting back the POST'ed comment (it 404's)
+    method: post
+    body:
+      name: "Esquimalt Towers"
+      location: "Esquimalt, BC"
+      default_coords": [-123.5705992, 49.4201539]
+    expect:
+      status: 201
+status: 404
