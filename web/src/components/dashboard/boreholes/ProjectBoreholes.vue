@@ -6,7 +6,7 @@
         <b-col cols="12" xl="6">
                 <h1>Boreholes</h1>
         </b-col>
-        <b-col>
+        <b-col style="height: 400px">
           <multi-marker-map :locations="boreholes"></multi-marker-map>
         </b-col>
       </b-row>

@@ -1,5 +1,5 @@
 <template>
-  <b-card no-body>
+  <b-card no-body class="map-card">
     <div id="map" class="project-map"></div>
   </b-card>
 </template>
@@ -102,7 +102,10 @@ export default {
 </script>
 
 <style lang="scss">
+.map-card {
+  height: 100%;
+}
 .project-map {
-  height: 400px;
+  height: 100%;
 }
 </style>
