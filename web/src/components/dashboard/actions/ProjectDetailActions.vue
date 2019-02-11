@@ -1,7 +1,7 @@
 <template>
             <b-card title="Actions">
               <div>
-                <b-btn variant="link" size="sm" :to="{ name: 'new-borehole' }"><font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon> New borehole</b-btn>
+                <b-btn variant="outline-primary" size="sm" :to="{ name: 'new-borehole' }"><font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon> New borehole</b-btn>
               </div>
               <div class="mt-3">
                 <b-btn v-b-modal.deleteProjectModal variant="outline-danger" size="sm">

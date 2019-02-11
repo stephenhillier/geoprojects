@@ -17,7 +17,7 @@ export default {
 }
 </script>
 <style lang="scss">
-$primary: #002366;
+$primary: #1f548a;
 $secondary: #002366;
 $info: #01579b;
 $dark: #001838;
@@ -50,8 +50,8 @@ body {
   color: rgb(61, 61, 61);
 }
 .active-menu {
-  color:#1f548a!important;
-  background-color: #e2e6ff;
+  color:#fff!important;
+  background-color: #1f548a!important;
   font-weight: 600;
 }
 .table-heading {

@@ -33,9 +33,4 @@ export default {
   .menu-item a {
     color: rgb(61, 61, 61);
   }
-  .active-menu {
-    color:#1f548a!important;
-    background-color: #e2e6ff;
-    font-weight: 600;
-  }
 </style>

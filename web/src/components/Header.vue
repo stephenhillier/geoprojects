@@ -1,13 +1,15 @@
 <template>
-  <b-navbar toggleable="sm" variant="blue-dark" type="dark" class="border-bottom">
+  <b-navbar toggleable="sm" variant="primary" type="dark" class="border-bottom">
     <b-navbar-brand href="/" class="earthworks-brand">Earthworks</b-navbar-brand>
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
     <b-collapse is-nav id="nav_collapse">
-      <!-- <b-navbar-nav>
-        <b-nav-item :to="{ name: 'projects'}">Projects</b-nav-item>
-      </b-navbar-nav> -->
+
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
+        <b-dropdown text="Create" right class="mr-5 mt-1 d-none d-md-block" variant="success">
+          <b-dropdown-item :to="{ name: 'new-project' }">Project</b-dropdown-item>
+        </b-dropdown>
+
         <b-nav-item-dropdown right v-if="username">
           <!-- Using button-content slot -->
           <template slot="button-content">

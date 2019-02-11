@@ -142,7 +142,7 @@ export default {
       columnDefs: [
         { headerName: 'Project', field: 'name', filter: 'agTextColumnFilter', cellRendererFramework: NameWithLink, colId: 'params' },
         { headerName: 'Location', field: 'location', filter: 'agTextColumnFilter' },
-        { headerName: 'Boreholes', field: 'borehole_count' }
+        // { headerName: 'Boreholes', field: 'borehole_count' }
       ]
     }
   },
