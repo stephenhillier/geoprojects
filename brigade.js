@@ -4,6 +4,7 @@ const checkRunImage = "deis/brigade-github-check-run:latest"
 events.on("check_suite:requested", checkRequested)
 events.on("check_suite:rerequested", checkRequested)
 events.on("check_run:rerequested", checkRequested)
+events.on("exec", checkRequested)
 
 function checkRequested(e, p) {
   console.log("check requested")
