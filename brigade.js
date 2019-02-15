@@ -7,19 +7,32 @@ events.on("check_suite:requested", checkRequested)
 events.on("check_suite:created", checkRequested)
 events.on("check_suite:rerequested", checkRequested)
 events.on("check_run:rerequested", checkRequested)
-events.on("exec", checkRequested)
+events.on("exec", runTests)
+
+function runTests(e, p) {
+  var build = new Job("test", "golang:1.11")
+  build.tasks = [
+    "mkdir -p " + dest,
+    "cp -a /src/* " + dest,
+    "cd " + dest,
+    "go get -u github.com/golang/dep/cmd/dep",
+    "dep ensure",
+    "go test"
+  ];
+  build.run()
+}
 
 function checkRequested(e, p) {
   console.log("check requested")
   // Common configuration
   const env = {
     CHECK_PAYLOAD: e.payload,
-    CHECK_NAME: "MyService",
-    CHECK_TITLE: "Echo Test",
+    CHECK_NAME: "Build",
+    CHECK_TITLE: "Run tests",
   }
 
-  var test = new Job("test", "golang:1.11")
-  test.tasks = [
+  var build = new Job("test", "golang:1.11")
+  build.tasks = [
     "mkdir -p " + dest,
     "cp -a /src/* " + dest,
     "cd " + dest,
@@ -46,7 +59,7 @@ function checkRequested(e, p) {
   //
   // On error, we catch the error and notify GitHub of a failure.
   start.run().then(() => {
-    return test.run()
+    return build.run()
   }).then( (result) => {
     end.env.CHECK_CONCLUSION = "success"
     end.env.CHECK_SUMMARY = "Build completed"
