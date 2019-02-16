@@ -24,21 +24,21 @@ function runTests(e, p) {
 }
 
 function pullRequestOpened(e, p) {
-  var build = new Job("Open PR", "alpine:3.9")
+  var build = new Job("pr", "alpine:3.9")
   build.tasks = [
-    "PR opened",
+    "echo PR opened",
     "echo " + e
   ];
   checkRequested(e, p, "Deploy", "create environment", build)
 }
 
-function checkRequested(e, p, name, title, job) {
+function checkRequested(e, p, checkName, checkTitle, job) {
   console.log("check requested")
   // Common configuration
   const env = {
     CHECK_PAYLOAD: e.payload,
-    CHECK_NAME: name,
-    CHECK_TITLE: title,
+    CHECK_NAME: checkName,
+    CHECK_TITLE: checkTitle,
   }
 
 
