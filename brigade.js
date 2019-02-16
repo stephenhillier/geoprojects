@@ -8,7 +8,7 @@ events.on("check_suite:created", runTests)
 events.on("check_suite:rerequested", runTests)
 events.on("check_run:rerequested", runTests)
 events.on("exec", runTests)
-events.on("pull_request:opened", pullRequestOpened)
+events.on("pull_request", pullRequestOpened)
 
 function runTests(e, p) {
   var build = new Job("test", "golang:1.11")
@@ -26,7 +26,8 @@ function runTests(e, p) {
 function pullRequestOpened(e, p) {
   var build = new Job("Open PR", "alpine:3.9")
   build.tasks = [
-    "PR opened"
+    "PR opened",
+    "echo " + e
   ];
   checkRequested(e, p, "Deploy", "create environment", build)
 }
