@@ -1,21 +1,45 @@
 const {events, Job, Group} = require("brigadier");
 const checkRunImage = "deis/brigade-github-check-run:latest"
 
+const dest = "$GOPATH/src/github.com/stephenhillier/geoprojects";
+
 events.on("check_suite:requested", checkRequested)
+events.on("check_suite:created", checkRequested)
 events.on("check_suite:rerequested", checkRequested)
 events.on("check_run:rerequested", checkRequested)
+events.on("exec", runTests)
+
+function runTests(e, p) {
+  var build = new Job("test", "golang:1.11")
+  build.tasks = [
+    "mkdir -p " + dest,
+    "cp -a /src/* " + dest,
+    "cd " + dest + "/api",
+    "go get -u github.com/golang/dep/cmd/dep",
+    "dep ensure",
+    "go test"
+  ];
+  build.run()
+}
 
 function checkRequested(e, p) {
   console.log("check requested")
   // Common configuration
   const env = {
     CHECK_PAYLOAD: e.payload,
-    CHECK_NAME: "MyService",
-    CHECK_TITLE: "Echo Test",
+    CHECK_NAME: "Build",
+    CHECK_TITLE: "Run tests",
   }
 
-  // This will represent our build job. For us, it's just an empty thinger.
-  const build = new Job("build", "alpine:3.7", ["sleep 60", "echo hello"])
+  var build = new Job("test", "golang:1.11")
+  build.tasks = [
+    "mkdir -p " + dest,
+    "cp -a /src/* " + dest,
+    "cd " + dest,
+    "go get -u github.com/golang/dep/cmd/dep",
+    "dep ensure",
+    "go test"
+  ];
 
   // For convenience, we'll create three jobs: one for each GitHub Check
   // stage.

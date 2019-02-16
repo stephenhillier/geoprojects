@@ -1,8 +1,6 @@
 # Geoprojects
 Project management platform for geotechnical engineers and geoscientists
 
-##
-
 Folders:
 
 `api/` - REST API for CRUD functions (creating, retrieving, updating and deleting projects, boreholes, soil sample data, etc.)
