@@ -14,7 +14,7 @@ function runTests(e, p) {
   build.tasks = [
     "mkdir -p " + dest,
     "cp -a /src/* " + dest,
-    "cd " + dest,
+    "cd " + dest + "/api",
     "go get -u github.com/golang/dep/cmd/dep",
     "dep ensure",
     "go test"
