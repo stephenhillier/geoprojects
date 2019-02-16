@@ -29,7 +29,7 @@ function pullRequestOpened(e, p) {
     "echo PR opened",
     "echo " + e
   ];
-  checkRequested(e, p, "Deploy", "create environment", build)
+  build.run()
 }
 
 function checkRequested(e, p, checkName, checkTitle, job) {
