@@ -3,11 +3,12 @@ const checkRunImage = "deis/brigade-github-check-run:latest"
 
 const dest = "$GOPATH/src/github.com/stephenhillier/geoprojects";
 
-events.on("check_suite:requested", checkRequested)
-events.on("check_suite:created", checkRequested)
-events.on("check_suite:rerequested", checkRequested)
-events.on("check_run:rerequested", checkRequested)
+events.on("check_suite:requested", runTests)
+events.on("check_suite:created", runTests)
+events.on("check_suite:rerequested", runTests)
+events.on("check_run:rerequested", runTests)
 events.on("exec", runTests)
+events.on("pull_request:opened", pullRequestOpened)
 
 function runTests(e, p) {
   var build = new Job("test", "golang:1.11")
@@ -19,27 +20,26 @@ function runTests(e, p) {
     "dep ensure",
     "go test"
   ];
-  build.run()
+  checkRequested(e, p, "Build", "run tests", build)
 }
 
-function checkRequested(e, p) {
+function pullRequestOpened(e, p) {
+  var build = new Job("Open PR", "alpine:3.9")
+  build.tasks = [
+    "PR opened"
+  ];
+  checkRequested(e, p, "Deploy", "create environment", build)
+}
+
+function checkRequested(e, p, name, title, job) {
   console.log("check requested")
   // Common configuration
   const env = {
     CHECK_PAYLOAD: e.payload,
-    CHECK_NAME: "Build",
-    CHECK_TITLE: "Run tests",
+    CHECK_NAME: name,
+    CHECK_TITLE: title,
   }
 
-  var build = new Job("test", "golang:1.11")
-  build.tasks = [
-    "mkdir -p " + dest,
-    "cp -a /src/* " + dest,
-    "cd " + dest,
-    "go get -u github.com/golang/dep/cmd/dep",
-    "dep ensure",
-    "go test"
-  ];
 
   // For convenience, we'll create three jobs: one for each GitHub Check
   // stage.
@@ -59,7 +59,7 @@ function checkRequested(e, p) {
   //
   // On error, we catch the error and notify GitHub of a failure.
   start.run().then(() => {
-    return build.run()
+    return job.run()
   }).then( (result) => {
     end.env.CHECK_CONCLUSION = "success"
     end.env.CHECK_SUMMARY = "Build completed"
