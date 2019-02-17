@@ -3,10 +3,10 @@ const checkRunImage = "deis/brigade-github-check-run:latest"
 
 const dest = "$GOPATH/src/github.com/stephenhillier/geoprojects";
 
-// events.on("check_suite:requested", runTests)
-// events.on("check_suite:created", runTests)
-// events.on("check_suite:rerequested", runTests)
-// events.on("check_run:rerequested", runTests)
+events.on("check_suite:requested", runTests)
+events.on("check_suite:created", runTests)
+events.on("check_suite:rerequested", runTests)
+events.on("check_run:rerequested", runTests)
 events.on("exec", runTests)
 events.on("pull_request", deployPullRequest)
 
