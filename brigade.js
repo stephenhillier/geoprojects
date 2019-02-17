@@ -8,7 +8,7 @@ events.on("check_suite:created", runTests)
 events.on("check_suite:rerequested", runTests)
 events.on("check_run:rerequested", runTests)
 events.on("exec", runTests)
-events.on("pull_request", pullRequestOpened)
+events.on("pull_request", deployPullRequest)
 
 function runTests(e, p) {
   var build = new Job("test", "golang:1.11")
@@ -20,19 +20,19 @@ function runTests(e, p) {
     "dep ensure",
     "go test"
   ];
-  checkRequested(e, p, "Build", "run tests", build)
+  runJobWithCheck(e, p, "Build", "run tests", build)
 }
 
-function pullRequestOpened(e, p) {
-  var build = new Job("pr", "alpine:3.9")
+function deployPullRequest(e, p) {
+  var build = new Job("provision", "alpine:3.9")
   build.tasks = [
     "echo PR opened",
-    "echo " + e
+    "echo " + e.payload['action']
   ];
   build.run()
 }
 
-function checkRequested(e, p, checkName, checkTitle, job) {
+function runJobWithCheck(e, p, checkName, checkTitle, job) {
   console.log("check requested")
   // Common configuration
   const env = {
