@@ -4,4 +4,6 @@ metadata:
   name: DEPLOYMENT_NAME
 spec:
   # Add fields here
-  size: 3
+  size: 2
+  image: IMAGE_NAME
+  

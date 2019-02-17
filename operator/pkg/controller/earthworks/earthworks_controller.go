@@ -2,7 +2,6 @@ package earthworks
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	earthworksv1alpha1 "github.com/stephenhillier/geoprojects/operator/pkg/apis/earthworks/v1alpha1"
@@ -135,6 +134,20 @@ func (r *ReconcileEarthworks) Reconcile(request reconcile.Request) (reconcile.Re
 		return reconcile.Result{Requeue: true}, nil
 	}
 
+	// Ensure deployment is using the same image as the spec
+	// TODO: need to iterate through found.Spec.Template.Spec.Containers -> Image
+	// image := instance.Spec.Image
+	// if *found.Spec.Image != Image {
+	// 	found.Spec.Image = &image
+	// 	err = r.client.Update(context.TODO(), found)
+	// 	if err != nil {
+	// 		reqLogger.Error(err, "failed to update Deployment", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+	// 		return reconcile.Result{}, err
+	// 	}
+	// 	// Spec updated - return and requeue
+	// 	return reconcile.Result{Requeue: true}, nil
+	// }
+
 	// Update the Earthworks status with the pod names
 	// List the pods for this instance's deployment
 	podList := &corev1.PodList{}
@@ -164,7 +177,7 @@ func (r *ReconcileEarthworks) Reconcile(request reconcile.Request) (reconcile.Re
 func (r *ReconcileEarthworks) newDeploymentForEarthworks(e *earthworksv1alpha1.Earthworks) *appsv1.Deployment {
 	ls := labelsForEarthworks(e.Name)
 	replicas := e.Spec.Size
-	imageVersion := "latest"
+	image := e.Spec.Image
 
 	dep := &appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
@@ -186,7 +199,7 @@ func (r *ReconcileEarthworks) newDeploymentForEarthworks(e *earthworksv1alpha1.E
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image: fmt.Sprintf("stephenhillier/earthworks-web:%s", imageVersion),
+						Image: image,
 						Name:  "earthworks-web",
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: 80,
