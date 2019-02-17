@@ -3,10 +3,10 @@ const checkRunImage = "deis/brigade-github-check-run:latest"
 
 const dest = "$GOPATH/src/github.com/stephenhillier/geoprojects";
 
-events.on("check_suite:requested", runTests)
-events.on("check_suite:created", runTests)
-events.on("check_suite:rerequested", runTests)
-events.on("check_run:rerequested", runTests)
+// events.on("check_suite:requested", runTests)
+// events.on("check_suite:created", runTests)
+// events.on("check_suite:rerequested", runTests)
+// events.on("check_run:rerequested", runTests)
 events.on("exec", runTests)
 events.on("pull_request", deployPullRequest)
 
@@ -26,7 +26,8 @@ function runTests(e, p) {
 function deployPullRequest(e, p) {
   var build = new Job("provision", "gcr.io/cloud-builders/kubectl")
   build.tasks = [
-    "NAME=earthworks-pr-" + e.payload['number'] + " cat /src/operator/deploy/crds/earthworks_v1alpha1_earthworks_cr.yaml | sed 's/DEPLOYMENT_NAME/'\"$NAME\"'/' | kubectl apply -f -",
+    "NAME=earthworks-pr-" + e.payload['number'] + " && cat /src/operator/deploy/crds/earthworks_v1alpha1_earthworks_cr.yaml | sed 's/DEPLOYMENT_NAME/'\"$NAME\"'/' | cat",
+    "NAME=earthworks-pr-" + e.payload['number'] + " && cat /src/operator/deploy/crds/earthworks_v1alpha1_earthworks_cr.yaml | sed 's/DEPLOYMENT_NAME/'\"$NAME\"'/' | kubectl apply -f -",
     "echo " + e.payload['action']
   ];
   build.run()
