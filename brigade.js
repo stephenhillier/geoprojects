@@ -24,9 +24,9 @@ function runTests(e, p) {
 }
 
 function deployPullRequest(e, p) {
-  var build = new Job("provision", "alpine:3.9")
+  var build = new Job("provision", "gcr.io/cloud-builders/kubectl")
   build.tasks = [
-    "echo PR opened",
+    "NAME=earthworks-pr-" + e.payload['pull_request']['number'] + " cat /src/operator/deploy/crds/earthworks_v1alpha1_earthworks_cr.yaml | sed 's/DEPLOYMENT_NAME/'\"$NAME\"'/' | kubectl apply -f -",
     "echo " + e.payload['action']
   ];
   build.run()
