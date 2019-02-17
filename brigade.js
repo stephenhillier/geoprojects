@@ -25,7 +25,16 @@ function runTests(e, p) {
 
 function deployPullRequest(e, p) {
   var build = new Job("provision", "gcr.io/cloud-builders/kubectl")
+  console.log('--------------------')  
   console.log(e.payload)
+  console.log('--------------------')
+  console.log(e.payload.number)
+  console.log('--------------------')
+  console.log(e.payload['number'])
+  console.log('--------------------')
+  console.log(e.payload.pull_request)
+  console.log('--------------------')
+
   build.tasks = [
     "NAME=earthworks-pr-" + e.payload['number'] + " && cat /src/operator/deploy/crds/earthworks_v1alpha1_earthworks_cr.yaml | sed 's/DEPLOYMENT_NAME/'\"$NAME\"'/' | cat",
     "NAME=earthworks-pr-" + e.payload['number'] + " && cat /src/operator/deploy/crds/earthworks_v1alpha1_earthworks_cr.yaml | sed 's/DEPLOYMENT_NAME/'\"$NAME\"'/' | kubectl apply -f -",
