@@ -5,5 +5,4 @@ metadata:
 spec:
   # Add fields here
   size: 2
-  image: IMAGE_NAME
-  
+  image: stephenhillier/earthworks-web:latest
