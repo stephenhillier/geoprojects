@@ -41,7 +41,7 @@
                         <form-input
                           id="projectNumber"
                           label="Project number"
-                          v-model="form.project_number"
+                          v-model="form.number"
                         ></form-input>
                       </b-col>
                     </b-row>
@@ -144,7 +144,7 @@ export default {
         }
       ],
       form: {
-        project_number: '',
+        number: '',
         name: '',
         location: '',
         client: '',

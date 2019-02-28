@@ -30,7 +30,9 @@ type config struct {
 	dbpass           string
 	dbname           string
 	dbhost           string
+	dbport           string
 	dbdriver         string
+	dbsslmode        string
 	defaultPageLimit int
 	maxPageLimit     int
 	authGroupClaim   string
@@ -48,6 +50,8 @@ func main() {
 	flag.StringVar(&conf.dbpass, "dbpass", "", "database password")
 	flag.StringVar(&conf.dbname, "dbname", "geo", "database name")
 	flag.StringVar(&conf.dbhost, "dbhost", "127.0.0.1", "database service host")
+	flag.StringVar(&conf.dbport, "dbport", "5432", "database service port")
+	flag.StringVar(&conf.dbsslmode, "dbsslmode", "disable", "database ssl mode")
 	flag.StringVar(&conf.authAudience, "auth_audience", "https://earthworks.islandcivil.com", "authentication service audience claim")
 	flag.StringVar(&conf.authIssuer, "auth_issuer", "https://earthworks.auth0.com/", "authentication service issuer claim")
 	flag.StringVar(&conf.authJWKSEndpoint, "jwks_endpoint", "https://earthworks.auth0.com/.well-known/jwks.json", "authentication JWKS endpoint")

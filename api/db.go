@@ -29,9 +29,9 @@ func (s *server) NewDB() (*sqlx.DB, error) {
 
 	//
 	if s.config.dbdriver == "postgres" {
-		connectionConfig = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", s.config.dbuser, s.config.dbpass, s.config.dbhost, s.config.dbname)
+		connectionConfig = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", s.config.dbuser, s.config.dbpass, s.config.dbhost, s.config.dbport, s.config.dbname, s.config.dbsslmode)
 	} else if s.config.dbdriver == "cloudsqlpostgres" {
-		connectionConfig = fmt.Sprintf("host=%s user=%s dbname=%s password=%s sslmode=disable", s.config.dbhost, s.config.dbuser, s.config.dbname, s.config.dbpass)
+		connectionConfig = fmt.Sprintf("host=%s user=%s dbname=%s password=%s sslmode=%s", s.config.dbhost, s.config.dbuser, s.config.dbname, s.config.dbpass, s.config.dbsslmode)
 	} else {
 		return db, errors.New("Invalid database driver specified. Supported drivers: postgres, cloudsqlpostgres")
 	}
