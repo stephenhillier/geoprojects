@@ -21,7 +21,7 @@ spec:
         version: v1
     spec:
       containers:
-      - image: gcr.io/islandcivil-223001/earthworks-web:IMAGE_VERSION
+      - image: stephenhillier/earthworks-web:IMAGE_VERSION
         name: earthworks-web
         imagePullPolicy: Always
         ports:

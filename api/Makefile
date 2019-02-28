@@ -1,2 +1,2 @@
 build:
-	docker build -t gcr.io/islandcivil-223001/earthworks-api . && docker push gcr.io/islandcivil-223001/earthworks-api
+	docker build -t stephenhillier/earthworks-api . && docker push stephenhillier/earthworks-api

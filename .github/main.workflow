@@ -15,7 +15,7 @@ action "Filter for API folder" {
 action "Build image" {
   needs = ["Filter for API folder"]
   uses = "actions/docker/cli@04185cf"
-  args = ["build -t gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
+  args = ["build -t stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
 }
 
 action "Setup gcloud" {
@@ -39,7 +39,7 @@ action "GKE Docker" {
 action "Push to GCR.io" {
   uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["GKE Docker"]
-  args = "docker -- push gcr.io/islandcivil-223001/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
+  args = "docker -- push stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "Apply deployment config" {
@@ -70,7 +70,7 @@ action "Filter for web folder" {
 action "web - build image" {
   needs = ["Filter for web folder"]
   uses = "actions/docker/cli@04185cf"
-  args = ["build -t gcr.io/islandcivil-223001/earthworks-web:$(echo ${GITHUB_SHA} | head -c7) ./web/"]
+  args = ["build -t stephenhillier/earthworks-web:$(echo ${GITHUB_SHA} | head -c7) ./web/"]
 }
 
 action "web - setup gcloud" {
@@ -94,7 +94,7 @@ action "web - GKE Docker" {
 action "web - Push to GCR.io" {
   uses = "actions/gcloud/cli@8ec8bfa"
   needs = ["web - GKE Docker"]
-  args = "docker -- push gcr.io/islandcivil-223001/earthworks-web:$(echo ${GITHUB_SHA} | head -c7)"
+  args = "docker -- push stephenhillier/earthworks-web:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "web - apply k8s/Istio config" {
