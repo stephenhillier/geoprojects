@@ -88,13 +88,12 @@ func (db *Datastore) AllProjects(name string, number string) ([]Project, error) 
 
 // CreateProject creates a new project record in the database
 func (db *Datastore) CreateProject(p ProjectRequest) (Project, error) {
-	query := `INSERT INTO project (name, location, default_coords) VALUES ($1, $2, $3) RETURNING id, name, location`
+	query := `INSERT INTO project (name, number, client, pm, location, default_coords) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, number, client, pm, location`
 
 	new := Project{}
 
 	coords := orb.Point{p.DefaultCoords[0], p.DefaultCoords[1]}
-	log.Println(wkt.MarshalString(coords))
-	err := db.QueryRowx(query, p.Name, p.Location, wkt.MarshalString(coords)).StructScan(&new)
+	err := db.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, wkt.MarshalString(coords)).StructScan(&new)
 	if err != nil {
 		return Project{}, err
 	}
@@ -107,6 +106,9 @@ func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
 	query := `SELECT
 							project.id,
 							project.name,
+							project.number,
+							project.client,
+							project.pm,
 							project.location,
 							COUNT(borehole.project) as borehole_count,
 							ST_AsBinary(st_transform(st_centroid(st_union(st_transform(datapoint.location::geometry, 26910))), 4326)::geography) as centroid

@@ -11,7 +11,7 @@
               <tbody class="font-weight-bold">
                   <tr>
                     <th class="table-heading">Project number</th>
-                    <td>{{ project.project_number }}</td>
+                    <td>{{ project.number }}</td>
                   </tr>
                   <tr>
                     <th class="table-heading">Client</th>
@@ -55,6 +55,16 @@
                 label="Name"
                 required
                 v-model="editForm.name"
+              ></form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
+              <form-input
+                id="projectEditNumber"
+                label="Number"
+                required
+                v-model="editForm.number"
               ></form-input>
             </b-col>
           </b-row>
@@ -141,6 +151,12 @@ export default {
     },
     handleCancelProjectSummaryTutorial () {
       localStorage.setItem('earthworks-tutorial-project-summary', JSON.stringify(true))
+    },
+    handleEdit () {
+      console.log(this.editForm)
+    },
+    handleResetEdit () {
+      this.editForm = {}
     }
   },
   created () {
