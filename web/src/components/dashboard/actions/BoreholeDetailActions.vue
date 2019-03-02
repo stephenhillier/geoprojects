@@ -2,7 +2,7 @@
   <b-card title="Actions">
     <b-row class="mt-2">
       <b-col>
-        <b-btn variant="link" size="sm" :href="`${fileHost}/logs/boreholes/${$route.params.id}.pdf`" target="_blank">
+        <b-btn variant="link" size="sm" :href="`${fileHost}/logs/${$route.params.id}/boreholes/${$route.params.bh}/log.pdf`" target="_blank">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
           Publish to PDF
         </b-btn>

@@ -26,22 +26,27 @@ const soils = [
   {
     desc: 'SAND and GRAVEL, some silt',
     from: 0,
-    to: 2
+    to: 2.5
   },
   {
     desc: 'SAND, some gravel, some silt',
-    from: 2,
-    to: 6
+    from: 2.5,
+    to: 9.5
   },
   {
     desc: 'Silty CLAY',
-    from: 6,
-    to: 9
+    from: 9.5,
+    to: 11
   },
   {
     desc: 'SAND',
-    from: 9,
-    to: 13
+    from: 11,
+    to: 15
+  },
+  {
+    desc: 'CLAY',
+    from: 15,
+    to: 45
   }
 ]
 
@@ -74,34 +79,34 @@ const BoreholeLog = (props) => (
     <Page style={{padding: 25, paddingBottom: 125, fontSize: 10}} size="Letter" wrap>
       <View style={styles.headerSection} fixed>
         <Summary
-          client={summary.client}
-          project={summary.project}
-          projectNumber={summary.projectNo}
-          location={summary.location}
-          easting={summary.easting}
-          northing={summary.northing}
-          zone={summary.zone}
-          elevation={summary.elevation}
-          company={summary.company}
-          method={summary.method}
-          date={summary.date}
-          boreholeNum={props.boreholeNum}
+          client={props.client}
+          project={props.project}
+          projectNumber={props.projectNo}
+          location={props.location}
+          easting={props.easting}
+          northing={props.northing}
+          zone={props.zone}
+          elevation={props.elevation}
+          company={props.company}
+          method={props.method}
+          date={props.date}
+          boreholeNum={props.boreholeName}
           fixed
         />
         <SoilTableHeader fixed/>
       </View>
       <View wrap>
-        <SoilLayerTable soils={soils} wrap/>
+        <SoilLayerTable soils={props.soils} wrap/>
       </View>
 
       <View style={styles.footerSection} fixed>
-          <TitleBlockBottom
-            date={summary.date}
-            client={summary.client}
-            clientAddress={summary.clientAddress}
-            totalDepth={summary.totalDepth}
-            fixed
-          />
+        <TitleBlockBottom
+          date={props.date}
+          client={props.client}
+          clientAddress={props.clientAddress}
+          totalDepth={props.totalDepth}
+          fixed
+        />
       </View>
     </Page>
   </Document>

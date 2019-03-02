@@ -3,6 +3,7 @@ import ReactPDF from '@react-pdf/renderer'
 import BoreholeLog from './boreholeLog.js'
 import express from 'express'
 import http from 'http'
+import axios from 'axios'
 const jwt = require('express-jwt');
 // const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
@@ -34,6 +35,17 @@ const createPdf = async (reactTemplate, data, response) => {
 };
 
 
+const getTokenFromRequest = (req) => {
+  if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+      return req.headers.authorization.split(' ')[1];
+  } else if (req.query && req.query.token) {
+    return req.query.token;
+  } else if (req.cookies && req.cookies.access_token) {
+    return req.cookies.access_token
+  }
+  return null;
+}
+
 const checkJwt = jwt({
   // Dynamically provide a signing key
   // based on the kid in the header and 
@@ -46,16 +58,7 @@ const checkJwt = jwt({
   }),
 
 
-  getToken: function fromHeaderOrQuerystring (req) {
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-        return req.headers.authorization.split(' ')[1];
-    } else if (req.query && req.query.token) {
-      return req.query.token;
-    } else if (req.cookies && req.cookies.access_token) {
-      return req.cookies.access_token
-    }
-    return null;
-  },
+  getToken: getTokenFromRequest,
 
   // Validate the audience and the issuer.
   audience: 'https://earthworks.islandcivil.com',
@@ -63,11 +66,69 @@ const checkJwt = jwt({
   algorithms: ['RS256']
 });
 
+app.get('/logs/:projectID/boreholes/:boreholeID/:boreholeSlug.pdf', checkJwt, async function(req, res) {
+  const { boreholeID, projectID } = req.params;
+  const token = getTokenFromRequest(req)
+  let project
+  let borehole
+  let soils
 
-app.get('/logs/boreholes/:boreholeNum.pdf', checkJwt, async function(req, res) {
-  const { boreholeNum } = req.params;
-  const data = { boreholeNum };
-  return await createPdf(BoreholeLog, data, res);
+  if (!token) {
+    res.status(500);
+    res.send('Unable to parse authentication token');
+  }
+
+  const client = axios.create({
+    baseURL: `http://${process.env.PROJECTS_SERVICE}/api/v1`,
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+
+  const bhReq = client.get(`/boreholes/${boreholeID}`)
+  const prReq = client.get(`/projects/${projectID}`)
+  const soilReq = client.get(`/boreholes/${boreholeID}/strata`)
+
+  Promise.all([bhReq, prReq, soilReq]).then((values) => {
+    borehole = values[0].data
+    project = values[1].data
+    soils = values[2].data
+
+    if (borehole.project != project.id) {
+      res.send(401, 'Invalid borehole for this project')
+    }
+
+    const data = {
+      project: project.name,
+      client: project.client,
+      clientAddress: '',
+      projectNo: project.number,
+      location: project.location,
+      easting: borehole.location[1],
+      northing: borehole.location[0],
+      zone: '7',
+      elevation: '',
+      company: 'Acme Drilling Co.',
+      method: 'Auger',
+      date: borehole.end_date,
+      totalDepth: '',
+      boreholeName: borehole.name,
+      soils: soils.map((item) => {
+        return {
+          from: item.start,
+          to: item.end,
+          desc: item.description
+        }
+      })
+    }
+  
+    createPdf(BoreholeLog, data, res).then((output) => {
+      return output
+    }).catch((e) => {
+      console.error(e)
+      res.send(500, 'error rendering borehole log')
+    })
+  }).catch((e) => {
+    res.send(401, e.response)
+  })
 });
 
 
