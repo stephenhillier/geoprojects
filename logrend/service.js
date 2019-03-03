@@ -74,8 +74,7 @@ app.get('/logs/:projectID/boreholes/:boreholeID/:boreholeSlug.pdf', checkJwt, as
   let soils
 
   if (!token) {
-    res.status(500);
-    res.send('Unable to parse authentication token');
+    res.status(500).send('Unable to parse authentication token');
   }
 
   const client = axios.create({
@@ -93,7 +92,7 @@ app.get('/logs/:projectID/boreholes/:boreholeID/:boreholeSlug.pdf', checkJwt, as
     soils = values[2].data
 
     if (borehole.project != project.id) {
-      res.send(401, 'Invalid borehole for this project')
+      res.status(401).send('Invalid borehole for this project')
     }
 
     const data = {
@@ -124,10 +123,10 @@ app.get('/logs/:projectID/boreholes/:boreholeID/:boreholeSlug.pdf', checkJwt, as
       return output
     }).catch((e) => {
       console.error(e)
-      res.send(500, 'error rendering borehole log')
+      res.status(500).send('error rendering borehole log')
     })
   }).catch((e) => {
-    res.send(401, e.response)
+    res.status(401).send('error collecting borehole data')
   })
 });
 

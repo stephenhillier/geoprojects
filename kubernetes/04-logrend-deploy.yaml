@@ -27,6 +27,9 @@ spec:
         ports:
         - containerPort: 8081
         resources: {}
+        env:
+          - name: PROJECTS_SERVICE
+            value: earthworks-api:8000
 status: {}
 ---
 apiVersion: v1
