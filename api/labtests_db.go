@@ -83,6 +83,15 @@ func (db *Datastore) CreateLabTest(labTest LabTest) (LabTestResponse, error) {
 			tx.Rollback()
 			return LabTestResponse{}, err
 		}
+	case "grain_size_analysis":
+		testQuery := `
+				INSERT INTO gsa_test (id) VALUES ($1)
+			`
+		_, err = tx.Exec(testQuery, created.ID)
+		if err != nil {
+			tx.Rollback()
+			return LabTestResponse{}, err
+		}
 	default:
 		tx.Rollback()
 		return LabTestResponse{}, errors.New("Test type not implemented")
@@ -187,6 +196,75 @@ func (db *Datastore) UpdateMoistureTest(labTest MoistureTestRequest, testID int)
 	)
 	if err != nil {
 		return MoistureTestResponse{}, err
+	}
+
+	return updated, nil
+}
+
+// UpdateGSATest updates a grain size analysis record
+func (db *Datastore) UpdateGSATest(labTest GSATestRequest, testID int) (GSATestResponse, error) {
+
+	query := `
+		WITH up_gsa_test AS (
+			UPDATE gsa_test
+			SET
+				tare_mass = $1,
+				dry_plus_tare = $2,
+				washed_plus_tare = $3
+			WHERE id = $9
+			RETURNING id, tare_mass, dry_plus_tare, washed_plus_tare
+		),
+		up_lab_test AS (
+			UPDATE lab_test
+			SET
+				start_date = $4,
+				end_date = $5,
+				performed_by = $6,
+				checked_by = $7,
+				checked_date = $8
+			WHERE id = $9
+			RETURNING id, name, start_date, end_date, performed_by, type, sample, checked_by, checked_date
+		)
+		SELECT
+			up_lab_test.id,
+			up_lab_test.name,
+			up_lab_test.type,
+			up_lab_test.start_date,
+			up_lab_test.end_date,
+			up_lab_test.performed_by,
+			up_lab_test.sample,
+			up_lab_test.checked_by,
+			up_lab_test.checked_date,
+			soil_sample.name AS sample_name,
+			up_gsa_test.tare_mass,
+			up_gsa_test.washed_plus_tare,
+			up_gsa_test.dry_plus_tare,
+			borehole.id AS borehole,
+			borehole.name AS borehole_name
+		FROM up_lab_test
+		LEFT JOIN soil_sample ON (up_lab_test.sample = soil_sample.id)
+		LEFT JOIN up_gsa_test ON (up_lab_test.id = up_gsa_test.id)
+		LEFT JOIN borehole ON (soil_sample.borehole = borehole.id)
+		WHERE up_lab_test.id = $9
+	`
+
+	updated := GSATestResponse{}
+
+	err := db.Get(
+		&updated,
+		query,
+		labTest.TareMass,
+		labTest.DryPlusTare,
+		labTest.WashedPlusTare,
+		labTest.StartDate,
+		labTest.EndDate,
+		labTest.PerformedBy,
+		labTest.CheckedBy,
+		labTest.EndDate,
+		testID,
+	)
+	if err != nil {
+		return GSATestResponse{}, err
 	}
 
 	return updated, nil

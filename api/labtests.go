@@ -73,6 +73,84 @@ type MoistureTestResponse struct {
 	DryPlusTare    *float64   `json:"dry_plus_tare" db:"dry_plus_tare"`
 }
 
+// GSATestRequest is the set of data that the client provides to
+// start or update a grain size analysis test record
+type GSATestRequest struct {
+	StartDate      NullDate   `json:"start_date" db:"start_date"`
+	EndDate        NullDate   `json:"end_date" db:"end_date"`
+	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
+	CheckedDate    NullDate   `json:"checked_date" db:"checked_date"`
+	CheckedBy      NullString `json:"checked_by" db:"checked_by"`
+	TareMass       *float64   `json:"tare_mass,string" db:"tare_mass"`
+	SamplePlusTare *float64   `json:"sample_plus_tare,string" db:"sample_plus_tare"`
+	WashedPlusTare *float64   `json:"washed_plus_tare,string" db:"washed_plus_tare"`
+	DryPlusTare    *float64   `json:"dry_plus_tare,string" db:"dry_plus_tare"`
+}
+
+// GSATestResponse is the set of data that the client provides to
+// start or update a grain size analysis test record
+type GSATestResponse struct {
+	ID             int        `json:"id"`
+	Name           NullString `json:"name"`
+	Type           string     `json:"test_type" db:"type"`
+	Sample         int        `json:"sample" db:"sample"`
+	SampleName     string     `json:"sample_name" db:"sample_name"`
+	Borehole       int        `json:"borehole" db:"borehole"`
+	BoreholeName   string     `json:"borehole_name" db:"borehole_name"`
+	StartDate      NullDate   `json:"start_date" db:"start_date"`
+	EndDate        NullDate   `json:"end_date" db:"end_date"`
+	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
+	CheckedDate    NullDate   `json:"checked_date" db:"checked_date"`
+	CheckedBy      NullString `json:"checked_by" db:"checked_by"`
+	TareMass       *float64   `json:"tare_mass" db:"tare_mass"`
+	SamplePlusTare *float64   `json:"sample_plus_tare" db:"sample_plus_tare"`
+	WashedPlusTare *float64   `json:"washed_plus_tare" db:"washed_plus_tare"`
+	DryPlusTare    *float64   `json:"dry_plus_tare" db:"dry_plus_tare"`
+}
+
+// GSADataRequest is the data required to add or update the test result
+// from a single sieve/pan in a grain size analysis test
+type GSADataRequest struct {
+	Test    int     `json:"gsa_test"`
+	Pan     bool    `json:"pan"`
+	Size    float64 `json:"size"`
+	Passing float64 `json:"mass_passing"`
+}
+
+// GSADataResponse is the data returned by the API when a client
+// requests grain size analysis data for a single sieve.
+// This is also used for a GSATestResponse as a collection of all
+// the sieves for a single test.
+type GSADataResponse struct {
+	ID      int64   `json:"id"`
+	Test    int     `json:"gsa_test"`
+	Pan     bool    `json:"pan"`
+	Size    float64 `json:"size"`
+	Passing float64 `json:"mass_passing"`
+}
+
+// labTestCtxMiddleware is used by lab test routes that have a test id in the URI
+func (s *server) labTestCtxMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		labTestID, err := strconv.Atoi(chi.URLParam(r, "labTestID"))
+		if err != nil {
+			log.Println("labTestID not supplied")
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+
+		labTest, err := s.datastore.RetrieveLabTest(labTestID)
+		if err != nil {
+			log.Println("labTest was not found in DB", err)
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), labTestCtx, labTest)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func (s *server) labTestOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, POST, OPTIONS")
 	return
@@ -184,14 +262,6 @@ func (s *server) retrieveMoistureTest(w http.ResponseWriter, req *http.Request) 
 
 // putLabTest allows updating a lab test with a PUT request
 func (s *server) putLabTest(w http.ResponseWriter, req *http.Request) {
-	decoder := json.NewDecoder(req.Body)
-	labTestReq := LabTest{}
-	err := decoder.Decode(&labTestReq)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), 400)
-		return
-	}
 
 	ctx := req.Context()
 	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
@@ -200,26 +270,46 @@ func (s *server) putLabTest(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedTestData := LabTest{
-		ID:          labTest.ID,
-		Name:        labTestReq.Name,
-		StartDate:   labTestReq.StartDate,
-		EndDate:     labTestReq.EndDate,
-		Type:        labTestReq.Type,
-		PerformedBy: labTestReq.PerformedBy,
-		Sample:      labTestReq.Sample,
-		CheckedBy:   labTestReq.CheckedBy,
-		CheckedDate: labTestReq.CheckedDate,
-	}
+	switch labTest.Type {
+	case "moisture_content":
+		s.putMoistureTest(w, req)
+	case "grain_size_analysis":
+		s.putGSATest(w, req)
+	default:
+		// default handler for when no test type was provided
+		// note: this might be heading towards "unreachable" and due for refactor.
+		// all lab tests should have a corresponding child record (one of the above cases should match)
 
-	updatedLabTest, err := s.datastore.UpdateLabTest(updatedTestData)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
+		decoder := json.NewDecoder(req.Body)
+		labTestReq := LabTest{}
+		err := decoder.Decode(&labTestReq)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), 400)
+			return
+		}
 
-	render.Status(req, http.StatusOK)
-	render.JSON(w, req, updatedLabTest)
+		updatedTestData := LabTest{
+			ID:          labTest.ID,
+			Name:        labTestReq.Name,
+			StartDate:   labTestReq.StartDate,
+			EndDate:     labTestReq.EndDate,
+			Type:        labTestReq.Type,
+			PerformedBy: labTestReq.PerformedBy,
+			Sample:      labTestReq.Sample,
+			CheckedBy:   labTestReq.CheckedBy,
+			CheckedDate: labTestReq.CheckedDate,
+		}
+
+		updatedLabTest, err := s.datastore.UpdateLabTest(updatedTestData)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+
+		render.Status(req, http.StatusOK)
+		render.JSON(w, req, updatedLabTest)
+	}
 }
 
 func (s *server) putMoistureTest(w http.ResponseWriter, req *http.Request) {
@@ -249,6 +339,33 @@ func (s *server) putMoistureTest(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, updated)
 }
 
+func (s *server) putGSATest(w http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+	gsaTestReq := GSATestRequest{}
+	err := decoder.Decode(&gsaTestReq)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	updated, err := s.datastore.UpdateGSATest(gsaTestReq, labTest.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	render.Status(req, http.StatusOK)
+	render.JSON(w, req, updated)
+}
+
 // deleteLabTest asks the datastore to delete a test record
 func (s *server) deleteLabTest(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
@@ -266,26 +383,4 @@ func (s *server) deleteLabTest(w http.ResponseWriter, req *http.Request) {
 
 	render.NoContent(w, req)
 	return
-}
-
-// labTestCtxMiddleware is used by lab test routes that have a test id in the URI
-func (s *server) labTestCtxMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		labTestID, err := strconv.Atoi(chi.URLParam(r, "labTestID"))
-		if err != nil {
-			log.Println("labTestID not supplied")
-			http.Error(w, http.StatusText(404), 404)
-			return
-		}
-
-		labTest, err := s.datastore.RetrieveLabTest(labTestID)
-		if err != nil {
-			log.Println("labTest was not found in DB", err)
-			http.Error(w, http.StatusText(404), 404)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), labTestCtx, labTest)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
 }

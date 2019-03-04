@@ -170,7 +170,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 
 	createGSATestTable := `
 		CREATE TABLE IF NOT EXISTS gsa_test(
-			id INTEGER REFERENCES lab_test(id) PRIMARY KEY,
+			id INTEGER REFERENCES lab_test(id) ON DELETE CASCADE PRIMARY KEY,
 			tare_mass DOUBLE PRECISION NULL,
 			dry_plus_tare DOUBLE PRECISION NULL,
 			washed_plus_tare DOUBLE PRECISION NULL
@@ -180,7 +180,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	createGSADataTable := `
 		CREATE TABLE IF NOT EXISTS gsa_data(
 			id SERIAL PRIMARY KEY,
-			test INTEGER REFERENCES gsa_test(id) NOT NULL,
+			test INTEGER REFERENCES gsa_test(id) ON DELETE CASCADE NOT NULL,
 			pan BOOLEAN NOT NULL,
 			size DOUBLE PRECISION NOT NULL,
 			mass_passing DOUBLE PRECISION NULL
