@@ -90,31 +90,32 @@ type GSATestRequest struct {
 // GSATestResponse is the set of data that the client provides to
 // start or update a grain size analysis test record
 type GSATestResponse struct {
-	ID             int        `json:"id"`
-	Name           NullString `json:"name"`
-	Type           string     `json:"test_type" db:"type"`
-	Sample         int        `json:"sample" db:"sample"`
-	SampleName     string     `json:"sample_name" db:"sample_name"`
-	Borehole       int        `json:"borehole" db:"borehole"`
-	BoreholeName   string     `json:"borehole_name" db:"borehole_name"`
-	StartDate      NullDate   `json:"start_date" db:"start_date"`
-	EndDate        NullDate   `json:"end_date" db:"end_date"`
-	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
-	CheckedDate    NullDate   `json:"checked_date" db:"checked_date"`
-	CheckedBy      NullString `json:"checked_by" db:"checked_by"`
-	TareMass       *float64   `json:"tare_mass" db:"tare_mass"`
-	SamplePlusTare *float64   `json:"sample_plus_tare" db:"sample_plus_tare"`
-	WashedPlusTare *float64   `json:"washed_plus_tare" db:"washed_plus_tare"`
-	DryPlusTare    *float64   `json:"dry_plus_tare" db:"dry_plus_tare"`
+	ID             int                `json:"id"`
+	Name           NullString         `json:"name"`
+	Type           string             `json:"test_type" db:"type"`
+	Sample         int                `json:"sample" db:"sample"`
+	SampleName     string             `json:"sample_name" db:"sample_name"`
+	Borehole       int                `json:"borehole" db:"borehole"`
+	BoreholeName   string             `json:"borehole_name" db:"borehole_name"`
+	StartDate      NullDate           `json:"start_date" db:"start_date"`
+	EndDate        NullDate           `json:"end_date" db:"end_date"`
+	PerformedBy    NullString         `json:"performed_by" db:"performed_by"`
+	CheckedDate    NullDate           `json:"checked_date" db:"checked_date"`
+	CheckedBy      NullString         `json:"checked_by" db:"checked_by"`
+	TareMass       *float64           `json:"tare_mass" db:"tare_mass"`
+	SamplePlusTare *float64           `json:"sample_plus_tare" db:"sample_plus_tare"`
+	WashedPlusTare *float64           `json:"washed_plus_tare" db:"washed_plus_tare"`
+	DryPlusTare    *float64           `json:"dry_plus_tare" db:"dry_plus_tare"`
+	Sieves         []*GSADataResponse `json:"sieves"`
 }
 
 // GSADataRequest is the data required to add or update the test result
 // from a single sieve/pan in a grain size analysis test
 type GSADataRequest struct {
-	Test    int     `json:"gsa_test"`
+	// Test    int     `json:"gsa_test"`
 	Pan     bool    `json:"pan"`
-	Size    float64 `json:"size"`
-	Passing float64 `json:"mass_passing"`
+	Size    float64 `json:"size,string"`
+	Passing float64 `json:"mass_passing,string" db:"mass_passing"`
 }
 
 // GSADataResponse is the data returned by the API when a client
@@ -126,7 +127,7 @@ type GSADataResponse struct {
 	Test    int     `json:"gsa_test"`
 	Pan     bool    `json:"pan"`
 	Size    float64 `json:"size"`
-	Passing float64 `json:"mass_passing"`
+	Passing float64 `json:"mass_passing" db:"mass_passing"`
 }
 
 // labTestCtxMiddleware is used by lab test routes that have a test id in the URI
@@ -151,13 +152,27 @@ func (s *server) labTestCtxMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// func (s *server) gsaTestCtxMiddleware(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		ctx := r.Context()
+// 		labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+// 		if !ok {
+// 			http.Error(w, http.StatusText(422), 422)
+// 			return
+// 		}
+
+// 		gsaTest, err := s.datastore.RetrieveSi
+
+// 	})
+// }
+
 func (s *server) labTestOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, POST, OPTIONS")
 	return
 }
 
 func (s *server) singleLabTestOptions(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Allow", "DELETE, PUT, OPTIONS")
+	w.Header().Set("Allow", "GET, DELETE, PUT, OPTIONS")
 	return
 }
 
@@ -252,7 +267,6 @@ func (s *server) retrieveMoistureTest(w http.ResponseWriter, req *http.Request) 
 
 	moistureTest, err := s.datastore.RetrieveMoistureTest(labTestID)
 	if err != nil {
-		log.Println("test was not found in DB", err)
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -260,7 +274,26 @@ func (s *server) retrieveMoistureTest(w http.ResponseWriter, req *http.Request) 
 	render.JSON(w, req, moistureTest)
 }
 
+func (s *server) retrieveGSATest(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	sieveTest, err := s.datastore.RetrieveSieveTest(labTest.ID)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	render.Status(req, http.StatusOK)
+	render.JSON(w, req, sieveTest)
+}
+
 // putLabTest allows updating a lab test with a PUT request
+// it calls a specific handler based on the type of lab test
+// already registered in the database.
 func (s *server) putLabTest(w http.ResponseWriter, req *http.Request) {
 
 	ctx := req.Context()
@@ -383,4 +416,116 @@ func (s *server) deleteLabTest(w http.ResponseWriter, req *http.Request) {
 
 	render.NoContent(w, req)
 	return
+}
+
+func (s *server) addSieveToGSA(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	if labTest.Type != "grain_size_analysis" {
+		http.Error(w, "can only add sieves to a grain size analysis test", 400)
+		return
+	}
+
+	decoder := json.NewDecoder(req.Body)
+	sieveRequest := GSADataRequest{}
+	err := decoder.Decode(&sieveRequest)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	created, err := s.datastore.AddSieve(sieveRequest, labTest.ID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	render.Status(req, http.StatusCreated)
+	render.JSON(w, req, created)
+}
+
+func (s *server) putSieve(w http.ResponseWriter, req *http.Request) {
+	sieveID, err := strconv.Atoi(chi.URLParam(req, "sieveID"))
+	if err != nil {
+		log.Println("sieve id not supplied")
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	if labTest.Type != "grain_size_analysis" {
+		http.Error(w, "can only modify sieves for a grain size analysis test", 400)
+		return
+	}
+
+	decoder := json.NewDecoder(req.Body)
+	sieveRequest := GSADataRequest{}
+	err = decoder.Decode(&sieveRequest)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	modified, err := s.datastore.UpdateSieve(sieveRequest, labTest.ID, sieveID)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	render.Status(req, http.StatusOK)
+	render.JSON(w, req, modified)
+}
+
+func (s *server) deleteSieve(w http.ResponseWriter, req *http.Request) {
+	sieveID, err := strconv.Atoi(chi.URLParam(req, "sieveID"))
+	if err != nil {
+		log.Println("sieve id not supplied")
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	err = s.datastore.DeleteSieve(sieveID)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	render.NoContent(w, req)
+	return
+}
+
+func (s *server) retrieveLabTest(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	labTest, ok := ctx.Value(labTestCtx).(LabTestResponse)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	switch labTest.Type {
+	case "grain_size_analysis":
+		s.retrieveGSATest(w, req)
+	case "moisture_content":
+		s.retrieveMoistureTest(w, req)
+	default:
+		// default response (just a basic lab test response)
+		// this code ideally should not be reachable, but this
+		// is a safe fallback.
+		render.Status(req, http.StatusOK)
+		render.JSON(w, req, labTest)
+	}
+
 }

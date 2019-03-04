@@ -368,3 +368,136 @@ func (db *Datastore) DeleteLabTest(testID int) error {
 	_, err := db.Exec(query, testID)
 	return err
 }
+
+// AddSieve adds a single sieve record, referencing a grain size test record
+func (db *Datastore) AddSieve(test GSADataRequest, testID int) (GSADataResponse, error) {
+	query := `
+		INSERT INTO gsa_data (test, pan, size, mass_passing)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, test, pan, size, mass_passing
+	`
+
+	created := GSADataResponse{}
+
+	err := db.Get(&created, query, testID, test.Pan, test.Size, test.Passing)
+	if err != nil {
+		return GSADataResponse{}, err
+	}
+
+	return created, nil
+}
+
+// RetrieveSieve fetches a single sieve record from the datastore
+func (db *Datastore) RetrieveSieve(testID int) (GSADataResponse, error) {
+	query := `
+		SELECT (id, test, pan, size, mass_passing)
+		FROM gsa_data
+		WHERE id=$1
+	`
+
+	sieve := GSADataResponse{}
+	err := db.Get(&sieve, query, testID)
+	if err != nil {
+		return GSADataResponse{}, err
+	}
+
+	return sieve, nil
+}
+
+// RetrieveSieves fetches all sieves for a given grain size test
+func (db *Datastore) RetrieveSieves(testID int) ([]*GSADataResponse, error) {
+	query := `
+		SELECT (id, test, pan, size, mass_passing)
+		FROM gsa_data
+		WHERE test=$1
+	`
+
+	sieves := []*GSADataResponse{}
+
+	err := db.Select(&sieves, query, testID)
+	if err != nil {
+		return sieves, err
+	}
+
+	return sieves, nil
+}
+
+// UpdateSieve updates a single sieve record for a grain size test
+func (db *Datastore) UpdateSieve(test GSADataRequest, testID int, sieveID int) (GSADataResponse, error) {
+	query := `
+		UPDATE gsa_data
+		SET pan, size, mass_passing
+		VALUES ($1, $2, $3)
+		WHERE id = $4 AND test = $5
+		RETURNING id, test, pan, size, mass_passing
+	`
+
+	created := GSADataResponse{}
+
+	err := db.Get(&created, query, test.Pan, test.Size, test.Passing, sieveID, testID)
+	if err != nil {
+		return GSADataResponse{}, err
+	}
+
+	return created, nil
+}
+
+// DeleteSieve removes a single sieve record
+func (db *Datastore) DeleteSieve(sieveID int) error {
+	query := `
+		DELETE from gsa_data WHERE id=$1
+	`
+
+	_, err := db.Exec(query, sieveID)
+	return err
+}
+
+// RetrieveSieveTest retrieves a sieve test record
+func (db *Datastore) RetrieveSieveTest(testID int) (GSATestResponse, error) {
+	query := `
+	SELECT
+		lab_test.id,
+		lab_test.name,
+		lab_test.type,
+		lab_test.start_date,
+		lab_test.end_date,
+		lab_test.performed_by,
+		lab_test.sample,
+		lab_test.checked_by,
+		lab_test.checked_date,
+		soil_sample.name AS sample_name,
+		gsa_test.tare_mass,
+		gsa_test.washed_plus_tare,
+		gsa_test.dry_plus_tare,
+		borehole.id AS borehole,
+		borehole.name AS borehole_name
+	FROM lab_test
+	LEFT JOIN soil_sample ON (lab_test.sample = soil_sample.id)
+	LEFT JOIN gsa_test ON (lab_test.id = gsa_test.id)
+	LEFT JOIN borehole ON (soil_sample.borehole = borehole.id)
+	WHERE lab_test.id = $1
+	`
+
+	querySieves := `
+	SELECT id, test, pan, size, mass_passing
+	FROM gsa_data WHERE test = $1
+	`
+
+	test := GSATestResponse{}
+	sieves := []*GSADataResponse{}
+
+	err := db.Get(&test, query, testID)
+	if err != nil {
+		return test, err
+	}
+
+	err = db.Select(&sieves, querySieves, testID)
+	if err != nil {
+		return test, err
+	}
+
+	test.Sieves = sieves
+
+	return test, nil
+
+}

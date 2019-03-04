@@ -42,10 +42,18 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 							r.Options("/", api.singleLabTestOptions)
 							r.Delete("/", api.deleteLabTest)
 							r.Put("/", api.putLabTest)
+							r.Get("/", api.retrieveLabTest)
 							r.Route("/moisture", func(r chi.Router) {
 								r.Get("/", api.retrieveMoistureTest)
 								r.Post("/", api.createMoistureTest)
 								r.Put("/", api.putMoistureTest)
+							})
+							r.Route("/sieves", func(r chi.Router) {
+								r.Post("/", api.addSieveToGSA)
+								r.Route("/{sieveID}", func(r chi.Router) {
+									r.Put("/", api.putSieve)
+									r.Delete("/", api.deleteSieve)
+								})
 							})
 						})
 					})
