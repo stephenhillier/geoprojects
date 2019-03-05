@@ -18,6 +18,7 @@ import BoreholeDetailActions from './components/dashboard/actions/BoreholeDetail
 
 import LabTestingHome from './components/dashboard/lab/LabTestingHome.vue'
 import MoistureContent from './components/dashboard/lab/MoistureContent.vue'
+import GrainSizeAnalysis from './components/dashboard/lab/GrainSizeAnalysis.vue'
 
 Vue.use(Router)
 
@@ -99,6 +100,23 @@ const router = new Router({
               {
                 text: 'Boreholes',
                 to: { name: 'project-boreholes' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'lab/grainsize/:test',
+          name: 'lab-grainsize',
+          component: GrainSizeAnalysis,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Lab testing',
+                to: { name: 'lab-home' }
+              },
+              {
+                text: 'Grain size analysis',
+                to: { name: 'lab-grainsize' }
               }
             ]
           }

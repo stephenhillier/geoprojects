@@ -3,7 +3,7 @@
     <h5>
       Tests
       <b-btn v-b-modal.newLabTestModal size="sm" variant="info" class="ml-5">New test</b-btn>
-      <b-btn :to="{ name: 'lab-moisture', params: { id: $route.params.id, test: selectedRow }}" size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Test details</b-btn>
+      <b-btn :to="{ name: selectedTestRoute, params: { id: $route.params.id, test: selectedRow }}" size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Test details</b-btn>
       <b-btn v-b-modal.deleteLabTestModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete test</b-btn>
     </h5>
 
@@ -154,6 +154,27 @@ export default {
           description: 'Grain size (sieve)'
         }
       ]
+    }
+  },
+  computed: {
+    selectedTestRoute () {
+      // mapping of implemented test_types to frontend routes
+      const testMap = {
+        home: 'lab-home',
+        moisture_content: 'lab-moisture',
+        grain_size_analysis: 'lab-grainsize'
+      }
+
+      if (!this.selectedRow) {
+        return 'lab-home'
+      }
+
+      const testObj = this.labTestRowData.find((test) => {
+        return this.selectedRow === test.id
+      }) || {}
+
+      // return the route corresponding to the test type (defaulting to lab test home)
+      return testMap[testObj['test_type'] || 'home']
     }
   },
   methods: {
