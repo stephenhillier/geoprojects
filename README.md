@@ -55,3 +55,4 @@ To build for production, use `npm run build` and serve the assets from an http s
 ## Log renderer
 
 `logrend/` contains a node.js service for generating borehole logs from project data automatically. The log renderer can be tested locally using `npm run logrend`, or can be run as a stateless service using the included Dockerfile and k8s config.
+
