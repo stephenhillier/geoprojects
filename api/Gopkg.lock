@@ -40,15 +40,15 @@
   version = "v3.2.0"
 
 [[projects]]
-  digest = "1:631757aef84dd471e4ba8242ac6affcccfc2c4c6d9c8c45e47b0d8fe8fd82de1"
+  digest = "1:58c033da727ebd5a6769209e479cac9a6e4dab53c879631af3d8161423099d57"
   name = "github.com/go-chi/chi"
   packages = [
     ".",
     "middleware",
   ]
   pruneopts = "UT"
-  revision = "1a6bb108ccf279c8dac6f9bad857d773b4f9b421"
-  version = "v4.0.1"
+  revision = "da24bba8dcd4021cafac38724bf10dccc97c3e36"
+  version = "v4.0.2"
 
 [[projects]]
   digest = "1:dfa416a1bb8139f30832543340f972f65c0db9932034cb6a1b42c5ac615a3fb8"
@@ -67,12 +67,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
+  digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   pruneopts = "UT"
-  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
-  version = "v1.2.0"
+  revision = "c823c79ea1570fb5ff454033735a8e68575d1d0f"
+  version = "v1.3.0"
 
 [[projects]]
   digest = "1:f7463b67871bf7fe475e2c69fb0d21ead07de5188b8d7f8abf8fc961965ed841"
@@ -113,7 +113,7 @@
   version = "v1.7.4-pre"
 
 [[projects]]
-  digest = "1:6886923952f8906f943c8026f6085802dc4eb09237664dc7a46107e060025037"
+  digest = "1:a5f9f99ddef6a071e7939c9ff5f42eba6e5e9b06020a113243c785d525b7094c"
   name = "github.com/paulmach/orb"
   packages = [
     ".",
@@ -121,8 +121,8 @@
     "encoding/wkt",
   ]
   pruneopts = "UT"
-  revision = "edbcee2084dd7d15b2ab0cae97fd23acac93dccd"
-  version = "v0.1.2"
+  revision = "c6e407b203494d3b1edb9fd5cae4cf34a4ae0f29"
+  version = "v0.1.3"
 
 [[projects]]
   branch = "master"
@@ -141,11 +141,11 @@
     "context/ctxhttp",
   ]
   pruneopts = "UT"
-  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
+  revision = "c10a0554eabf8a6a7a6cc3097c9d9f43dcee0a43"
 
 [[projects]]
   branch = "master"
-  digest = "1:1540fd815845f20e31cb95c3b6f7f0f0c8880c3d053845ba4a4a609539446bf6"
+  digest = "1:5e9f22cf754ab20a5dff0ae04b12516b112c5b81cd44dccccde148865084d730"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
@@ -155,7 +155,7 @@
     "jwt",
   ]
   pruneopts = "UT"
-  revision = "3e8b2be1363542a95c52ea0796d4a40dacfb5b95"
+  revision = "e64efc72b421e893cbf63f17ba2221e7d6d0b0f3"
 
 [[projects]]
   digest = "1:5bc9ca4a3fd8e6884441c3db4a26e88d3e6f742b580252c768e7149d6fc27628"
