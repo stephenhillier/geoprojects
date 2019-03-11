@@ -204,7 +204,18 @@ func (db *Datastore) UpdateMoistureTest(labTest MoistureTestRequest, testID int)
 // UpdateGSATest updates a grain size analysis record
 func (db *Datastore) UpdateGSATest(labTest GSATestRequest, testID int) (GSATestResponse, error) {
 
-	query := `
+	removeOldDataQuery := `
+		DELETE FROM gsa_data
+		WHERE test = $1
+	`
+
+	sieveDataQuery := `
+		INSERT INTO gsa_data (test, pan, size, mass_retained)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, test, pan, size, mass_retained
+	`
+
+	updateTestSummaryQuery := `
 		WITH up_gsa_test AS (
 			UPDATE gsa_test
 			SET
@@ -250,9 +261,29 @@ func (db *Datastore) UpdateGSATest(labTest GSATestRequest, testID int) (GSATestR
 
 	updated := GSATestResponse{}
 
-	err := db.Get(
+	tx, err := db.Beginx()
+	if err != nil {
+		tx.Rollback()
+		return updated, err
+	}
+
+	_, err = tx.Exec(removeOldDataQuery, testID)
+	if err != nil {
+		tx.Rollback()
+		return updated, err
+	}
+
+	for _, s := range labTest.Sieves {
+		_, err = tx.Exec(sieveDataQuery, testID, s.Pan, s.Size, s.Retained)
+		if err != nil {
+			tx.Rollback()
+			return updated, err
+		}
+	}
+
+	err = tx.Get(
 		&updated,
-		query,
+		updateTestSummaryQuery,
 		labTest.TareMass,
 		labTest.DryPlusTare,
 		labTest.WashedPlusTare,
@@ -264,8 +295,11 @@ func (db *Datastore) UpdateGSATest(labTest GSATestRequest, testID int) (GSATestR
 		testID,
 	)
 	if err != nil {
+		tx.Rollback()
 		return GSATestResponse{}, err
 	}
+
+	tx.Commit()
 
 	return updated, nil
 }

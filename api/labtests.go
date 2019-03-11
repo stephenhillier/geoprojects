@@ -76,15 +76,16 @@ type MoistureTestResponse struct {
 // GSATestRequest is the set of data that the client provides to
 // start or update a grain size analysis test record
 type GSATestRequest struct {
-	StartDate      NullDate   `json:"start_date" db:"start_date"`
-	EndDate        NullDate   `json:"end_date" db:"end_date"`
-	PerformedBy    NullString `json:"performed_by" db:"performed_by"`
-	CheckedDate    NullDate   `json:"checked_date" db:"checked_date"`
-	CheckedBy      NullString `json:"checked_by" db:"checked_by"`
-	TareMass       *float64   `json:"tare_mass,string" db:"tare_mass"`
-	SamplePlusTare *float64   `json:"sample_plus_tare,string" db:"sample_plus_tare"`
-	WashedPlusTare *float64   `json:"washed_plus_tare,string" db:"washed_plus_tare"`
-	DryPlusTare    *float64   `json:"dry_plus_tare,string" db:"dry_plus_tare"`
+	StartDate      NullDate         `json:"start_date" db:"start_date"`
+	EndDate        NullDate         `json:"end_date" db:"end_date"`
+	PerformedBy    NullString       `json:"performed_by" db:"performed_by"`
+	CheckedDate    NullDate         `json:"checked_date" db:"checked_date"`
+	CheckedBy      NullString       `json:"checked_by" db:"checked_by"`
+	TareMass       *float64         `json:"tare_mass,string" db:"tare_mass"`
+	SamplePlusTare *float64         `json:"sample_plus_tare,string" db:"sample_plus_tare"`
+	WashedPlusTare *float64         `json:"washed_plus_tare,string" db:"washed_plus_tare"`
+	DryPlusTare    *float64         `json:"dry_plus_tare,string" db:"dry_plus_tare"`
+	Sieves         []GSADataRequest `json:"sieves"`
 }
 
 // GSATestResponse is the set of data that the client provides to
