@@ -50,8 +50,7 @@ body {
   color: rgb(61, 61, 61);
 }
 .active-menu {
-  color:#fff!important;
-  background-color: #1f548a!important;
+  color:#1f548a!important;
   font-weight: 600;
 }
 .table-heading {

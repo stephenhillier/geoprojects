@@ -50,7 +50,7 @@ action "Apply deployment config" {
 action "Rollout API server" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Apply deployment config"]
-  args = "rollout -n earthworks status deploy/earthworks-api"
+  args = "rollout -n earthworks --kubeconfig=$HOME/.kubeconfig status deploy/earthworks-api"
 }
 
 # Frontend pipeline
@@ -103,5 +103,5 @@ action "web - apply k8s/Istio config" {
 action "web - deployment status" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["web - apply k8s/Istio config"]
-  args = "rollout -n earthworks status deploy/earthworks-web"
+  args = "rollout -n earthworks --kubeconfig=$HOME/.kubeconfig  status deploy/earthworks-web"
 }
