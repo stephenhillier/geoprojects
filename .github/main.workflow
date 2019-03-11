@@ -18,33 +18,31 @@ action "Build image" {
   args = ["build -t stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
 }
 
-action "Setup gcloud" {
-  uses = "actions/gcloud/auth@8ec8bfa"
+action "Docker login" {
   needs = ["Build image"]
-  secrets = ["GCLOUD_AUTH"]
+  uses = "actions/docker/login@master"
+  secrets = ["DOCKER_USERNAME", "DOCKER_PASSWORD"]
 }
 
-action "GKE Credentials" {
-  uses = "actions/gcloud/cli@8ec8bfa"
-  needs = ["Setup gcloud"]
-  args = "container clusters get-credentials earthworks --zone us-west1-a --project islandcivil-223001"
-}
-
-action "GKE Docker" {
-  uses = "actions/gcloud/cli@8ec8bfa"
-  needs = ["GKE Credentials"]
-  args = "auth configure-docker -q"
-}
-
-action "Push to GCR.io" {
-  uses = "actions/gcloud/cli@8ec8bfa"
-  needs = ["GKE Docker"]
+action "Push to registry" {
+  uses = "actions/docker/cli@04185cf"
+  needs = ["Docker login"]
   args = "docker -- push stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
+}
+
+action "Get DO kubeconfig" {
+  needs = ["Push to registry"]
+  uses = "digitalocean/action/doctl@master"
+  secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
+  env = {
+    CLUSTER_NAME = "island"
+  }
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
 action "Apply deployment config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
-  needs = ["Push to GCR.io"]
+  needs = ["Get DO kubeconfig"]
   runs = "sh -l -c"
   args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/api.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
 }
@@ -73,33 +71,31 @@ action "web - build image" {
   args = ["build -t stephenhillier/earthworks-web:$(echo ${GITHUB_SHA} | head -c7) ./web/"]
 }
 
-action "web - setup gcloud" {
-  uses = "actions/gcloud/auth@8ec8bfa"
+action "web - docker login" {
   needs = ["web - build image"]
-  secrets = ["GCLOUD_AUTH"]
+  uses = "actions/docker/login@master"
+  secrets = ["DOCKER_USERNAME", "DOCKER_PASSWORD"]
 }
 
-action "web - GKE Credentials" {
-  uses = "actions/gcloud/cli@8ec8bfa"
-  needs = ["web - setup gcloud"]
-  args = "container clusters get-credentials earthworks --zone us-west1-a --project islandcivil-223001"
-}
-
-action "web - GKE Docker" {
-  uses = "actions/gcloud/cli@8ec8bfa"
-  needs = ["web - GKE Credentials"]
-  args = "auth configure-docker -q"
-}
-
-action "web - Push to GCR.io" {
-  uses = "actions/gcloud/cli@8ec8bfa"
-  needs = ["web - GKE Docker"]
+action "web - Push to registry" {
+  uses = "actions/docker/cli@04185cf"
+  needs = ["web - docker login"]
   args = "docker -- push stephenhillier/earthworks-web:$(echo ${GITHUB_SHA} | head -c7)"
+}
+
+action "web - Get DO kubeconfig" {
+  needs = ["web - Push to registry"]
+  uses = "digitalocean/action/doctl@master"
+  secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
+  env = {
+    CLUSTER_NAME = "island"
+  }
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
 action "web - apply k8s/Istio config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
-  needs = ["web - Push to GCR.io"]
+  needs = ["web - Get DO kubeconfig"]
   runs = "sh -l -c"
   args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/web.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
 }

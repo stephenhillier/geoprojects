@@ -36,6 +36,11 @@ spec:
               configMapKeyRef:
                 name: earthworks-db
                 key: host
+          - name: DBPORT
+            valueFrom:
+              configMapKeyRef:
+                name: earthworks-db
+                key: port
           - name: DBPASS
             valueFrom:
               secretKeyRef:
@@ -46,18 +51,8 @@ spec:
               secretKeyRef:
                 name: db-credentials
                 key: username
-          - name: DBDRIVER
-            value: cloudsqlpostgres
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /secrets/cloudsql/earthworks-db.json
-        volumeMounts:
-        - name: cloudsql-instance-credentials
-          mountPath: /secrets/cloudsql
-          readOnly: true
-      volumes:
-      - name: cloudsql-instance-credentials
-        secret:
-          secretName: cloudsql-instance-credentials
+          - name: DBSSLMODE
+            value: require
 status: {}
 ---
 apiVersion: v1
