@@ -113,9 +113,9 @@ type GSATestResponse struct {
 // from a single sieve/pan in a grain size analysis test
 type GSADataRequest struct {
 	// Test    int     `json:"gsa_test"`
-	Pan     bool    `json:"pan"`
-	Size    float64 `json:"size,string"`
-	Passing float64 `json:"mass_passing,string" db:"mass_passing"`
+	Pan      bool    `json:"pan"`
+	Size     float64 `json:"size,string"`
+	Retained float64 `json:"mass_retained,string" db:"mass_retained"`
 }
 
 // GSADataResponse is the data returned by the API when a client
@@ -123,11 +123,11 @@ type GSADataRequest struct {
 // This is also used for a GSATestResponse as a collection of all
 // the sieves for a single test.
 type GSADataResponse struct {
-	ID      int64   `json:"id"`
-	Test    int     `json:"gsa_test"`
-	Pan     bool    `json:"pan"`
-	Size    float64 `json:"size"`
-	Passing float64 `json:"mass_passing" db:"mass_passing"`
+	ID       int64   `json:"id"`
+	Test     int     `json:"gsa_test"`
+	Pan      bool    `json:"pan"`
+	Size     float64 `json:"size"`
+	Retained float64 `json:"mass_retained" db:"mass_retained"`
 }
 
 // labTestCtxMiddleware is used by lab test routes that have a test id in the URI

@@ -38,7 +38,6 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
 
 // apexcharts chart component
-Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
 
 Vue.use(BootstrapVue)

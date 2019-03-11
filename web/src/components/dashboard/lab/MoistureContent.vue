@@ -53,8 +53,8 @@
         <div class="h6">Results</div>
         <div>
           Moisture content:
-          <span v-if="calculatedMoisture">
-            {{ calculatedMoisture }}
+          <span v-if="calculatedMoisture" class="font-weight-bold">
+            {{ calculatedMoisture.toFixed(2) }} %
           </span>
         </div>
       </b-col>
@@ -78,18 +78,18 @@ export default {
   },
   computed: {
     calculatedMoisture () {
-      let sample = this.sample_plus_tare
-      let dry = this.dry_plus_tare
-      let tare = this.tare_mass
+      let sample = Number(this.sample.sample_plus_tare || 0)
+      let dry = Number(this.sample.dry_plus_tare || 0)
+      let tare = Number(this.sample.tare_mass || 0)
 
-      if (!sample || !dry || tare === '') return null
+      if (!sample || !dry || Number.isNaN(sample) || Number.isNaN(dry) || Number.isNaN(tare)) { return null }
 
       sample = Number(sample)
       dry = Number(dry)
       tare = Number(tare)
 
       return (dry - tare) > 0
-        ? (sample - dry) / (dry - tare)
+        ? (sample - dry) / (dry - tare) * 100
         : null
     }
   },

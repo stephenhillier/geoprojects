@@ -183,7 +183,7 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 			test INTEGER REFERENCES gsa_test(id) ON DELETE CASCADE NOT NULL,
 			pan BOOLEAN NOT NULL,
 			size DOUBLE PRECISION NOT NULL,
-			mass_passing DOUBLE PRECISION NULL
+			mass_retained DOUBLE PRECISION NULL
 		)
 	`
 

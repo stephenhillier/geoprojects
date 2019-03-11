@@ -372,14 +372,14 @@ func (db *Datastore) DeleteLabTest(testID int) error {
 // AddSieve adds a single sieve record, referencing a grain size test record
 func (db *Datastore) AddSieve(test GSADataRequest, testID int) (GSADataResponse, error) {
 	query := `
-		INSERT INTO gsa_data (test, pan, size, mass_passing)
+		INSERT INTO gsa_data (test, pan, size, mass_retained)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id, test, pan, size, mass_passing
+		RETURNING id, test, pan, size, mass_retained
 	`
 
 	created := GSADataResponse{}
 
-	err := db.Get(&created, query, testID, test.Pan, test.Size, test.Passing)
+	err := db.Get(&created, query, testID, test.Pan, test.Size, test.Retained)
 	if err != nil {
 		return GSADataResponse{}, err
 	}
@@ -390,7 +390,7 @@ func (db *Datastore) AddSieve(test GSADataRequest, testID int) (GSADataResponse,
 // RetrieveSieve fetches a single sieve record from the datastore
 func (db *Datastore) RetrieveSieve(testID int) (GSADataResponse, error) {
 	query := `
-		SELECT (id, test, pan, size, mass_passing)
+		SELECT (id, test, pan, size, mass_retained)
 		FROM gsa_data
 		WHERE id=$1
 	`
@@ -407,7 +407,7 @@ func (db *Datastore) RetrieveSieve(testID int) (GSADataResponse, error) {
 // RetrieveSieves fetches all sieves for a given grain size test
 func (db *Datastore) RetrieveSieves(testID int) ([]*GSADataResponse, error) {
 	query := `
-		SELECT (id, test, pan, size, mass_passing)
+		SELECT (id, test, pan, size, mass_retained)
 		FROM gsa_data
 		WHERE test=$1
 	`
@@ -426,15 +426,15 @@ func (db *Datastore) RetrieveSieves(testID int) ([]*GSADataResponse, error) {
 func (db *Datastore) UpdateSieve(test GSADataRequest, testID int, sieveID int) (GSADataResponse, error) {
 	query := `
 		UPDATE gsa_data
-		SET pan, size, mass_passing
+		SET pan, size, mass_retained
 		VALUES ($1, $2, $3)
 		WHERE id = $4 AND test = $5
-		RETURNING id, test, pan, size, mass_passing
+		RETURNING id, test, pan, size, mass_retained
 	`
 
 	created := GSADataResponse{}
 
-	err := db.Get(&created, query, test.Pan, test.Size, test.Passing, sieveID, testID)
+	err := db.Get(&created, query, test.Pan, test.Size, test.Retained, sieveID, testID)
 	if err != nil {
 		return GSADataResponse{}, err
 	}
@@ -479,7 +479,7 @@ func (db *Datastore) RetrieveSieveTest(testID int) (GSATestResponse, error) {
 	`
 
 	querySieves := `
-	SELECT id, test, pan, size, mass_passing
+	SELECT id, test, pan, size, mass_retained
 	FROM gsa_data WHERE test = $1
 	`
 
