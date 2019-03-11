@@ -37,7 +37,7 @@ action "Get DO kubeconfig" {
   env = {
     CLUSTER_NAME = "island"
   }
-  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kube/config"]
 }
 
 action "Apply deployment config" {
@@ -90,7 +90,7 @@ action "web - Get DO kubeconfig" {
   env = {
     CLUSTER_NAME = "island"
   }
-  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kube/config"]
 }
 
 action "web - apply k8s/Istio config" {
