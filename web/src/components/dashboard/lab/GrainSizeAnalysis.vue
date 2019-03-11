@@ -9,57 +9,64 @@
     </b-row>
     <b-row class="mt-5">
       <b-col cols="12" md="5">
-        <b-row class="mt-3">
-          <b-col>
-            <h5>Sample details</h5>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <form-input id="sampleTare" label="Tare mass" v-model="sample.tare_mass"></form-input>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <form-input id="sampleDryMass" label="Dry sample (plus tare)" v-model="sample.dry_plus_tare"></form-input>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <form-input id="sampleWashedMass" label="Washed sample (plus tare)" v-model="sample.washed_plus_tare"></form-input>
-          </b-col>
-        </b-row>
-        <b-row class="mt-3">
-          <b-col>
-            <h5>Sieve masses</h5>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <table class="table">
-              <thead>
-                <th class="text-dark table-heading col-5">Size</th>
-                <th class="text-dark table-heading col-5">Mass retained</th>
-                <th class="col-2"><b-btn size="sm" variant="outline-primary" @click="handleAddSieve">Add <span class="d-none d-sm-inline"> sieve</span></b-btn></th>
-              </thead>
-              <tbody>
-                <template v-for="(sieve, i) in sample.sieves">
-                  <tr :key="`sieve${i}`">
-                    <td>
-                      <form-input :id="`size${i}`" groupClass="p-0 m-0" v-model="sample.sieves[i].size" :disabled="sample.sieves[i].pan"></form-input>
-                    </td>
-                    <td>
-                      <form-input :id="`mass${i}`" groupClass="p-0 m-0" v-model="sample.sieves[i].mass_retained"></form-input>
-                    </td>
-                    <td class="align-middle text-center">
-                      <b-btn size="sm" @click="handleRemoveSieve(i)" v-if="!sample.sieves[i].pan"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></b-btn>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </b-col>
-        </b-row>
+        <b-form @submit.prevent="handleSubmit">
+          <b-row class="mt-3">
+            <b-col>
+              <h5>Sample details</h5>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <form-input id="sampleTare" label="Tare mass" v-model="sample.tare_mass"></form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <form-input id="sampleDryMass" label="Dry sample (plus tare)" v-model="sample.dry_plus_tare"></form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <form-input id="sampleWashedMass" label="Washed sample (plus tare)" v-model="sample.washed_plus_tare"></form-input>
+            </b-col>
+          </b-row>
+          <b-row class="mt-3">
+            <b-col>
+              <h5>Sieve masses</h5>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <table class="table">
+                <thead>
+                  <th class="text-dark table-heading col-5">Size</th>
+                  <th class="text-dark table-heading col-5">Mass retained</th>
+                  <th class="col-2"><b-btn size="sm" variant="outline-primary" @click="handleAddSieve">Add <span class="d-none d-sm-inline"> sieve</span></b-btn></th>
+                </thead>
+                <tbody>
+                  <template v-for="(sieve, i) in sample.sieves">
+                    <tr :key="`sieve${i}`">
+                      <td>
+                        <form-input :id="`size${i}`" groupClass="p-0 m-0" v-model="sample.sieves[i].size" :disabled="sample.sieves[i].pan"></form-input>
+                      </td>
+                      <td>
+                        <form-input :id="`mass${i}`" groupClass="p-0 m-0" v-model="sample.sieves[i].mass_retained"></form-input>
+                      </td>
+                      <td class="align-middle text-center">
+                        <b-btn size="sm" @click="handleRemoveSieve(i)" v-if="!sample.sieves[i].pan"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></b-btn>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col class="text-right">
+              <b-btn type="submit" variant="primary">Update</b-btn>
+            </b-col>
+          </b-row>
+        </b-form>
       </b-col>
       <b-col cols="12" md="7" class="pl-md-5">
         <!-- <apexchart width="100%" type="line" :options="sieveOptions" :series="sieveSeries"></apexchart> -->
@@ -124,7 +131,7 @@ export default {
         if (s.size === 'Pan') {
           test.addSieve('Pan')
           test.sieve('Pan').retained(retained)
-        } else if (!Number.isNaN(size) && !Number.isNaN(retained)) {
+        } else if (size && !Number.isNaN(size) && !Number.isNaN(retained)) {
           test.addSieve(size)
           test.sieve(size).retained(retained)
         }
@@ -192,7 +199,7 @@ export default {
     fetchTest () {
       this.loading = true
       this.$http.get(`projects/${this.$route.params.id}/lab/tests/${this.$route.params.test}`).then((response) => {
-        this.sample = response.data
+        this.sample = this.toStrings(response.data)
         this.initializeSieveArray()
         this.loading = false
       }).catch((e) => {
@@ -215,9 +222,36 @@ export default {
         }
       )
     },
+    handleSubmit () {
+      const sample = JSON.parse(JSON.stringify(this.sample))
+
+      if (sample.sieves && sample.sieves.length) {
+        sample.sieves.forEach((sieve, i) => {
+          if (sieve.size === 'Pan') {
+            sieve.size = '0'
+            sieve.pan = true
+          }
+
+          if (sieve.size === '' || sieve.mass_retained === '') {
+            sample.sieves.splice(i, 1)
+          }
+        })
+      }
+
+      this.loading = true
+      this.$http.put(`projects/${this.$route.params.id}/lab/tests/${this.$route.params.test}`, sample).then((repsonse) => {
+        this.$noty.success('Updated grain size test')
+        this.fetchTest()
+      }).catch((e) => {
+        this.loading = false
+        this.$noty.error('Error updating grain size test')
+      })
+    },
     toStrings (o) {
       Object.keys(o).forEach((k) => {
-        o[k] = '' + o[k]
+        if (typeof o[k] === 'number') {
+          o[k] = '' + o[k]
+        }
       })
       return o
     },
@@ -239,15 +273,24 @@ export default {
         ]
       }
 
-      if (!~this.sample.sieves.findIndex((i) => {
+      const pan = this.sample.sieves.findIndex((i) => {
         return i.pan === true
-      })) {
+      })
+
+      if (!~pan) {
         this.sample.sieves.push({
           pan: true,
           size: 'Pan',
           mass_passing: '0'
         })
+      } else {
+        this.sample.sieves[pan].size = 'Pan'
       }
+
+      // convert numbers to strings for use in html forms
+      this.sample.sieves.forEach((o) => {
+        this.toStrings(o)
+      })
     }
   },
   created () {
