@@ -37,14 +37,14 @@ action "Get DO kubeconfig" {
   env = {
     CLUSTER_NAME = "island"
   }
-  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kube/config"]
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
 action "Apply deployment config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Get DO kubeconfig"]
   runs = "sh -l -c"
-  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/api.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
+  args = ["KUBE_CONFIG=$HOME/.kubeconfig && SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/api.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
 }
 
 action "Rollout API server" {
@@ -90,14 +90,14 @@ action "web - Get DO kubeconfig" {
   env = {
     CLUSTER_NAME = "island"
   }
-  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kube/config"]
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
 action "web - apply k8s/Istio config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["web - Get DO kubeconfig"]
   runs = "sh -l -c"
-  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/web.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
+  args = ["KUBE_CONFIG=$HOME/.kubeconfig && SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/web.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
 }
 
 action "web - deployment status" {
