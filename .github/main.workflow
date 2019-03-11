@@ -27,7 +27,7 @@ action "Docker login" {
 action "Push to registry" {
   uses = "actions/docker/cli@04185cf"
   needs = ["Docker login"]
-  args = "docker -- push stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
+  args = "push stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "Get DO kubeconfig" {
@@ -80,7 +80,7 @@ action "web - docker login" {
 action "web - Push to registry" {
   uses = "actions/docker/cli@04185cf"
   needs = ["web - docker login"]
-  args = "docker -- push stephenhillier/earthworks-web:$(echo ${GITHUB_SHA} | head -c7)"
+  args = "push stephenhillier/earthworks-web:$(echo ${GITHUB_SHA} | head -c7)"
 }
 
 action "web - Get DO kubeconfig" {
