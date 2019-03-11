@@ -44,7 +44,7 @@ action "Apply deployment config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Get DO kubeconfig"]
   runs = "sh -l -c"
-  args = ["KUBECONFIG=$HOME/.kubeconfig && SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/api.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/api.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | KUBECONFIG=$HOME/.kubeconfig kubectl apply -f - "]
 }
 
 action "Rollout API server" {
@@ -97,7 +97,7 @@ action "web - apply k8s/Istio config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["web - Get DO kubeconfig"]
   runs = "sh -l -c"
-  args = ["KUBECONFIG=$HOME/.kubeconfig && SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/web.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/web.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | KUBECONFIG=$HOME/.kubeconfig kubectl apply -f - "]
 }
 
 action "web - deployment status" {
