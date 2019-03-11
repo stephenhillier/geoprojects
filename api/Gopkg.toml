@@ -26,10 +26,6 @@
 
 
 [[constraint]]
-  name = "github.com/GoogleCloudPlatform/cloudsql-proxy"
-  version = "1.13.0"
-
-[[constraint]]
   branch = "master"
   name = "github.com/auth0/go-jwt-middleware"
 

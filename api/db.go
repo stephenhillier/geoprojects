@@ -10,9 +10,6 @@ import (
 
 	// register postgres driver
 	_ "github.com/lib/pq"
-
-	// register GCP Cloud SQL postgres driver
-	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 )
 
 // DB represents a database with an open connection
