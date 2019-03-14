@@ -55,6 +55,7 @@ body {
 }
 .table-heading {
   color: #333!important;
+  font-weight: 600!important;
   text-transform: none!important;
 }
 </style>

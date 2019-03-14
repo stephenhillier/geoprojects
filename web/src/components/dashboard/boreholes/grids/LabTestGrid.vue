@@ -3,8 +3,7 @@
     <h5>
       Tests
       <b-btn v-b-modal.newLabTestModal size="sm" variant="info" class="ml-5">New test</b-btn>
-      <b-btn :to="{ name: selectedTestRoute, params: { id: $route.params.id, test: selectedRow }}" size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Test details</b-btn>
-      <b-btn v-b-modal.deleteLabTestModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete test</b-btn>
+      <!-- <b-btn v-b-modal.deleteLabTestModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete test</b-btn> -->
     </h5>
 
     <!-- New lab test form -->
@@ -81,7 +80,7 @@
       Are you sure you want to delete this lab test?
     </b-modal>
 
-    <ag-grid-vue style="height: 400px;"
+    <!-- <ag-grid-vue style="height: 400px;"
         class="ag-theme-balham"
         :columnDefs="labColumnDefs"
         :rowData="labTestRowData"
@@ -89,7 +88,20 @@
         rowSelection="single"
         :selectionChanged="onSelectionChanged"
         >
-    </ag-grid-vue>
+    </ag-grid-vue> -->
+
+    <b-table striped hover :items="labTestRowData" :fields="fields">
+      <template slot="test" slot-scope="data">
+        <router-link :to="{ name: getTestRoute(data.item.test_type), params: { id: $route.params.id, test: data.item.id }}">
+          {{ data.item.borehole_name }} {{ data.item.sample_name }} ({{formatTestName(data.item.test_type)}}) {{ data.item.name }}
+        </router-link>
+      </template>
+      <template slot="test_type" slot-scope="data">{{ formatTestName(data.value)}}</template>
+      <template slot="actions" slot-scope="data">
+        <router-link :to="{ name: getTestRoute(data.item.test_type), params: { id: $route.params.id, test: data.item.id }}">Details</router-link>
+      </template>
+    </b-table>
+
   </div>
 
 </template>
@@ -153,6 +165,39 @@ export default {
           id: 'grain_size_analysis',
           description: 'Grain size (sieve)'
         }
+      ],
+      fields: [
+        {
+          key: 'test',
+          sortable: false
+        },
+        {
+          key: 'sample_name',
+          label: 'Sample',
+          sortable: true
+        },
+        {
+          key: 'borehole_name',
+          sortable: true
+        },
+        {
+          key: 'test_type',
+          sortable: true
+        },
+        {
+          key: 'test_completed',
+          label: 'Completed',
+          sortable: true
+        },
+        {
+          key: 'test_checked',
+          label: 'Checked',
+          sortable: true
+        },
+        {
+          key: 'actions',
+          sortable: false
+        }
       ]
     }
   },
@@ -178,6 +223,15 @@ export default {
     }
   },
   methods: {
+    getTestRoute (type) {
+      const testMap = {
+        home: 'lab-home',
+        moisture_content: 'lab-moisture',
+        grain_size_analysis: 'lab-grainsize'
+      }
+
+      return testMap[type] || 'home'
+    },
     onLabGridReady (params) {
       this.labGridApi = params.api
       this.labColumnApi = params.columnApi
@@ -239,6 +293,13 @@ export default {
         this.loading = false
         this.$noty.error('An error occurred while deleting lab test.')
       })
+    },
+    formatTestName (codeName) {
+      const tests = {
+        grain_size_analysis: 'Grain size / sieve',
+        moisture_content: 'Moisture content'
+      }
+      return tests[codeName] || codeName
     }
   }
 }

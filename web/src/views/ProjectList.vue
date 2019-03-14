@@ -33,13 +33,20 @@
       </b-row>
       <b-row class="flex-grow-1">
         <b-col style="height: 100%">
-          <ag-grid-vue style="height: 100%;"
+          <!-- <ag-grid-vue style="height: 100%;"
               :enableSorting="true"
               :enableFilter="true"
               rowHeight="32"
               class="ag-theme-balham"
               :columnDefs="columnDefs"
-              :rowData="projects"/>
+              :rowData="projects"/> -->
+
+          <b-table striped hover :items="projects" :fields="fields">
+            <template slot="project" slot-scope="data">
+              <router-link :to="`/projects/${data.item.id}`">{{ data.item.number ? `${data.item.number} - ` :'' }}{{ data.item.name }}</router-link>
+            </template>
+          </b-table>
+          <b-pagination v-if="projects.length > perPage" v-model="currentPage" :total-rows="projects.length" :per-page="perPage" size="md" />
           <b-modal centered title="Creating a project" ref="tutorialProjectModal" cancel-title="Don't show again" @cancel="handleCancelProjectTutorial">
             <div class="d-block text-center">
               <h5>Welcome!</h5>
@@ -53,50 +60,6 @@
     <b-col style="height: 90vh;">
       <multi-marker-map :locations="locations"></multi-marker-map>
     </b-col>
-    <!-- <b-col>
-      <b-row>
-        <b-col>
-          <b-card class="mb-3">
-            <div class="card-status bg-blue"></div>
-            <b-row>
-              <b-col>
-                <h1>Projects</h1>
-              </b-col>
-              <b-col>
-                <div class="form-group horizontal">
-                  <label class="form-label sr-only">Search for projects</label>
-                  <div class="input-icon mb-3">
-                    <span class="input-icon-addon">
-                      <font-awesome-icon :icon="['fas', 'search']" class="text-dark"></font-awesome-icon>
-                    </span>
-                    <input type="text" class="form-control" v-model="searchParamsInput.project_name" @input="handleSearchInput" placeholder="Search by project name">
-                  </div>
-                </div>
-              </b-col>
-            </b-row>
-            <b-row class="no-gutters">
-
-            </b-row>
-            <b-row>
-
-            </b-row>
-          </b-card>
-        </b-col>
-        <b-col cols="12" md="3" lg="2" xl="2">
-          <b-card title="Actions" class="mb-3">
-            <b-row class="mt-2">
-              <b-col>
-                <b-btn variant="link" size="sm" :to="{name: 'new-project'}">
-                  <font-awesome-icon :icon="['far', 'plus-square']" class="text-muted"></font-awesome-icon>
-                  New project
-                </b-btn>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-      </b-row>
-
-    </b-col> -->
   </b-row>
 </div>
 
@@ -123,7 +86,20 @@ export default {
       projects: [],
       locations: [],
       loading: false,
-      fields: [ 'project', 'location', 'borehole_count' ],
+      fields: [
+        {
+          key: 'project',
+          thClass: 'table-heading'
+        },
+        {
+          key: 'location',
+          thClass: 'table-heading'
+        },
+        {
+          key: 'borehole_count',
+          thClass: 'table-heading'
+        }
+      ],
       currentPage: 1,
       perPage: 10,
       isBusy: false,
@@ -141,7 +117,7 @@ export default {
       ],
       columnDefs: [
         { headerName: 'Project', field: 'name', filter: 'agTextColumnFilter', cellRendererFramework: NameWithLink, colId: 'params' },
-        { headerName: 'Location', field: 'location', filter: 'agTextColumnFilter' },
+        { headerName: 'Location', field: 'location', filter: 'agTextColumnFilter' }
         // { headerName: 'Boreholes', field: 'borehole_count' }
       ]
     }
@@ -191,5 +167,8 @@ export default {
 </script>
 
 <style>
-
+.table-heading {
+  color: #333!important;
+  text-transform: none!important;
+}
 </style>

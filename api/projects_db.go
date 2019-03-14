@@ -23,6 +23,7 @@ func (db *Datastore) AllProjects(name string, number string) ([]Project, error) 
 	query := `SELECT
 			project.id,
 			project.name,
+			project.number,
 			project.location,
 			ST_AsBinary(project.default_coords) AS default_coords,
 			COUNT(borehole.project) as borehole_count,
