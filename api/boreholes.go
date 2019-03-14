@@ -15,14 +15,14 @@ import (
 // A borehole can either be associated with an existing datapoint, or if a location
 // is supplied, a datapoint will be created.
 type BoreholeCreateRequest struct {
-	Project   int64      `json:"project"`
-	Program   NullInt64  `json:"program"`
-	Datapoint NullInt64  `json:"datapoint"`
-	Name      string     `json:"name"`
-	StartDate NullDate   `json:"start_date" db:"start_date" schema:"start_date"`
-	EndDate   NullDate   `json:"end_date" db:"end_date" schema:"end_date"`
-	FieldEng  string     `json:"field_eng" db:"field_eng" schema:"field_eng"`
-	Location  [2]float64 `json:"location"`
+	Project   json.Number `json:"project"`
+	Program   NullInt64   `json:"program"`
+	Datapoint NullInt64   `json:"datapoint"`
+	Name      string      `json:"name"`
+	StartDate NullDate    `json:"start_date" db:"start_date" schema:"start_date"`
+	EndDate   NullDate    `json:"end_date" db:"end_date" schema:"end_date"`
+	FieldEng  string      `json:"field_eng" db:"field_eng" schema:"field_eng"`
+	Location  [2]float64  `json:"location"`
 }
 
 // BoreholeResponse is the data returned by the API after receiving a request for
@@ -120,7 +120,14 @@ func (s *server) createBorehole(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	newBorehole, err := s.datastore.CreateBorehole(borehole)
+	projectID, err := borehole.Project.Int64()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	newBorehole, err := s.datastore.CreateBorehole(borehole, projectID)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

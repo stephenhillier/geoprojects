@@ -72,7 +72,7 @@ func (db *Datastore) ListBoreholes(projectID int, limit int, offset int) ([]*Bor
 // CreateBorehole creates a borehole record, as well as a Datapoint record if an existing
 // datapoint wasn't supplied.
 // Either a datapoint or a location should be supplied.
-func (db *Datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) {
+func (db *Datastore) CreateBorehole(bh BoreholeCreateRequest, project int64) (Borehole, error) {
 
 	// If a datapoint wasn't supplied, create one.
 	// If a location also wasn't supplied, it will be created at the default location (0, 0?)
@@ -96,7 +96,7 @@ func (db *Datastore) CreateBorehole(bh BoreholeCreateRequest) (Borehole, error) 
 		query,
 		bh.Datapoint,
 		bh.Program,
-		bh.Project,
+		project,
 		bh.Name,
 		bh.StartDate,
 		bh.EndDate,

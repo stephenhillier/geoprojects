@@ -52,6 +52,13 @@ action "Rollout API server" {
   args = "KUBECONFIG=$HOME/.kubeconfig kubectl rollout -n earthworks status deploy/earthworks-api"
 }
 
+action "stephenhillier/apitest@master" {
+  uses = "stephenhillier/apitest@master"
+  needs = ["Rollout API server"]
+  secrets = ["AUTH0_CLIENT", "AUTH0_SECRET"]
+  args = "-f .github/apitest/projects.apitest.yaml -e auth0_id=$AUTH0_ID -e auth0_secret=$AUTH0_SECRET"
+}
+
 # Frontend pipeline
 
 workflow "Deploy web" {
@@ -106,10 +113,3 @@ action "web - deployment status" {
   args = "KUBECONFIG=$HOME/.kubeconfig kubectl rollout -n earthworks status deploy/earthworks-web"
 }
 
-action "stephenhillier/apitest@master" {
-  uses = "stephenhillier/apitest@master"
-  needs = ["Rollout API server"]
-  secrets = ["AUTH0_CLIENT", "AUTH0_SECRET"]
-  args = "[\"-f\", \".github/apitest/projects.apitest.yaml\", \"-e\", \"auth0_id=$AUTH0_ID\", \"-e\", \"auth0_secret=$AUTH0_SECRET\"]]"
-}# backend API pipeline
-# Frontend pipeline

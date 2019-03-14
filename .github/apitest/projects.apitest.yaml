@@ -20,6 +20,11 @@ requests:
     set:
       - var: auth_token
         from: access_token
+  - name: Projects options
+    url: "{{host}}/api/v1/projects"
+    method: options
+    expect:
+      status: 200
   - name: Create project
     url: "{{host}}/api/v1/projects"
     method: post
@@ -44,3 +49,80 @@ requests:
       status: 200
       values:
         name: "Esquimalt Towers"
+  - name: Create borehole
+    url: "{{host}}/api/v1/boreholes"
+    method: post
+    body:
+      project: "{{created_project}}"
+      location: [-123.3705992, 48.4201539]
+      name: BH18-13
+      start_date: "2018-10-01"
+      end_date: ""
+      field_eng: STH
+    expect:
+      status: 201
+    set:
+      - var: created_borehole
+        from: id
+  - name: Borehole list
+    url: "{{host}}/api/v1/boreholes"
+    method: get
+    expect:
+      status: 200
+  - name: Borehole list by project
+    url: "{{host}}/api/v1/boreholes?project={{created_project}}&limit=10"
+    method: get
+    expect:
+      status: 200
+  - name: Get created borehole
+    url: "{{host}}/api/v1/boreholes/{{created_borehole}}"
+    method: get
+    expect:
+      status: 200
+      values:
+        name: "BH18-13"
+  - name: Create soil strata
+    url: "{{host}}/api/v1/strata"
+    method: post
+    body:
+      borehole: "{{created_borehole}}"
+      start: "0.0"
+      end: "1.1"
+      description: SAND, gravelly, some silt, trace clay, damp, compact
+    expect:
+      status: 201
+    set:
+      - var: created_strata
+        from: id
+  - name: List strata by borehole
+    url: "{{host}}/api/v1/boreholes/{{created_borehole}}/strata"
+    method: get
+    expect:
+      status: 200
+  - name: Update strata
+    url: "{{host}}/api/v1/strata/{{created_strata}}"
+    method: put
+    body:
+      borehole: "{{created_borehole}}"
+      start: "0.0"
+      end: "1.2"
+      description: SAND, wet, compact
+    expect:
+      status: 200
+      values:
+        end: 1.2
+        description: SAND, wet, compact
+  - name: Create sample
+    url: "{{host}}/api/v1/boreholes/{{created_borehole}}/samples"
+    method: post
+    body:
+      borehole: "{{created_borehole}}"
+      start: "0.0"
+      end: "1.1"
+      description: SAND, gravelly, some silt, trace clay, damp, compact
+      uscs: "GW-GM"
+    expect:
+      status: 201
+    set:
+      - var: created_sample
+        from: id
