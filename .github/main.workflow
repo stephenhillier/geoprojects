@@ -1,8 +1,6 @@
 workflow "Deploy API" {
-  resolves = [
-    "Rollout API server",
-  ]
   on = "push"
+  resolves = ["stephenhillier/apitest@master"]
 }
 
 # backend API pipeline
@@ -107,3 +105,11 @@ action "web - deployment status" {
   runs = "sh -l -c"
   args = "KUBECONFIG=$HOME/.kubeconfig kubectl rollout -n earthworks status deploy/earthworks-web"
 }
+
+action "stephenhillier/apitest@master" {
+  uses = "stephenhillier/apitest@master"
+  needs = ["Rollout API server"]
+  secrets = ["AUTH0_CLIENT", "AUTH0_SECRET"]
+  args = "[\"-f\", \".github/apitest/projects.apitest.yaml\", \"-e\", \"auth0_id=$AUTH0_ID\", \"-e\", \"auth0_secret=$AUTH0_SECRET\"]]"
+}# backend API pipeline
+# Frontend pipeline
