@@ -31,7 +31,7 @@ requests:
     body:
       name: "Esquimalt Towers"
       location: "Esquimalt, BC"
-      default_coords": [-123.5705992, 49.4201539]
+      default_coords: [-123.5705992, 49.4201539]
     expect:
       status: 201
     set:
