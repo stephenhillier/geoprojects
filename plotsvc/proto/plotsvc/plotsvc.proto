@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package plotsvc;
+
+service SievePlot {
+  rpc PlotSieve(SievePlotRequest) returns (SievePlotResponse) {}
+}
+
+message SievePlotRequest {}
+
+message SievePlotResponse {
+  bool ok = 1;
+  string figure = 2;
+}
+
