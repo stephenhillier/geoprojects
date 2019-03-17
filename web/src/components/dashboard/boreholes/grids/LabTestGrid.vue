@@ -99,6 +99,10 @@
       <template slot="test_type" slot-scope="data">{{ formatTestName(data.value)}}</template>
       <template slot="actions" slot-scope="data">
         <router-link :to="{ name: getTestRoute(data.item.test_type), params: { id: $route.params.id, test: data.item.id }}">Details</router-link>
+        <b-btn class="ml-3" variant="link" size="sm" :href="`${fileHost}/logs/${$route.params.id}/sieves/${data.item.id}/${data.item.borehole_name}-${data.item.sample_name}-${formatTestName(data.item.test_type)}.pdf`" target="_blank">
+          <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
+            PDF
+        </b-btn>
       </template>
     </b-table>
 
@@ -126,6 +130,7 @@ export default {
   },
   data () {
     return {
+      fileHost: process.env.VUE_APP_FILE_URL || 'http://localhost:8081',
       labGridApi: null,
       labColumnApi: null,
       labColumnDefs: [
@@ -296,7 +301,7 @@ export default {
     },
     formatTestName (codeName) {
       const tests = {
-        grain_size_analysis: 'Grain size / sieve',
+        grain_size_analysis: 'Sieve analysis',
         moisture_content: 'Moisture content'
       }
       return tests[codeName] || codeName

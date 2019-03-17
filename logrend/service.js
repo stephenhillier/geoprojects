@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactPDF from '@react-pdf/renderer'
 import BoreholeLog from './boreholeLog.js'
+import SieveReport from './sieve/sieve.js'
 import express from 'express'
 import http from 'http'
 import axios from 'axios'
@@ -174,7 +175,7 @@ app.get('/logs/:projectID/sieves/:sieveID/:sieveSlug.pdf', checkJwt, async funct
   
 
     const reportData = {
-      date: Date.now(),
+      date: 'March 15, 2019',
     }
 
     console.log(`${process.env.PLOTS_SERVICE || 'localhost'}:50051`)
@@ -188,7 +189,7 @@ app.get('/logs/:projectID/sieves/:sieveID/:sieveSlug.pdf', checkJwt, async funct
       } else {
 
         reportData.figure = fig.figure
-        createPdf(BoreholeLog, reportData, res).then((output) => {
+        createPdf(SieveReport, reportData, res).then((output) => {
           return output
         }).catch((e) => {
           console.error(e)

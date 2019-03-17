@@ -1,10 +1,17 @@
 <template>
   <div>
     <b-row class="mt-4">
-      <b-col>
+      <b-col cols="12" md="8">
         <h4 class="card-title">Lab Testing: Grain size analysis</h4>
-        <h5 class="font-weight-bold">{{ sample.borehole_name }} {{ sample.sample_name }} <b-btn class="float-right">Help</b-btn></h5>
+        <h5 class="font-weight-bold">{{ sample.borehole_name }} {{ sample.sample_name }}</h5>
         <h6 class="text-muted">{{project.name}}</h6>
+      </b-col>
+      <b-col cols="12" md="4">
+        <b-btn size="sm">Help</b-btn>
+        <b-btn class="ml-3" variant="outline-primary" size="sm" :href="`${fileHost}/logs/${$route.params.id}/sieves/${sample.id}/${sample.borehole_name}-${sample.sample_name}-Sieve analysis.pdf`" target="_blank">
+          <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
+            Export to PDF
+        </b-btn>
       </b-col>
     </b-row>
     <b-row class="mt-5">
@@ -88,6 +95,7 @@ export default {
   },
   data () {
     return {
+      fileHost: process.env.VUE_APP_FILE_URL || 'http://localhost:8081',
       sample: {
         tare_mass: '',
         sample_plus_tare: '',
