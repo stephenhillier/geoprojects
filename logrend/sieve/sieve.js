@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactPDF, { Document, Page, View, Text, Image, Font, StyleSheet } from '@react-pdf/renderer'
 
-import Summary from '../components/Summary'
-import TitleBlockBottom from '../components/TitleBlockBottom';
+import Header from './Header'
+import Summary from './Summary'
+import TitleBlock from './TitleBlock';
 
 const PROTO_PATH = __dirname + '/../../plotsvc/proto/plotsvc/plotsvc.proto';
 const grpc = require('grpc');
@@ -48,6 +49,18 @@ const styles = StyleSheet.create({
   },
   text: {
   },
+  bodySection: {
+    borderLeft: 1,
+    borderRight: 1,
+    borderTop: 1,
+    flex: 0
+  },
+  summarySection: {
+    borderLeft: 1,
+    borderRight: 1,
+    borderTop: 1,
+    flex: 1
+  },
   headerSection: {
     height: 190,
   },
@@ -60,7 +73,8 @@ const styles = StyleSheet.create({
     borderRight: 1,
     borderBottom: 1,
     left: 25,
-    right: 0
+    right: 0,
+    flex: 0
   }
 });
 
@@ -68,28 +82,19 @@ Font.register(`${__dirname}/NotoSans-Regular.ttf`, { family: 'Noto Sans' });
 
 const SieveReport = (props) => (
   <Document>
-    <Page style={{padding: 25, paddingBottom: 125, fontSize: 10}} size="Letter" wrap>
-      <View style={styles.headerSection} fixed>
-        <Summary
-          client={props.client}
-          project={props.project}
-          projectNumber={props.projectNo}
-          location={props.location}
-          easting={props.easting}
-          northing={props.northing}
-          zone={props.zone}
-          elevation={props.elevation}
-          date={props.date}
-          boreholeNum={props.boreholeName}
-          fixed
-        />
+    <Page style={{padding: 25, paddingBottom: 125, fontSize: 10, flexDirection: 'column'}} size="Letter" wrap>
+      <View fixed style={{flex: 0}}>
+        <Header></Header>
       </View>
-      <View wrap>
+      <View style={styles.bodySection}>
+        <Image src={`data:image/png;base64, ${props.figure}`}/>
       </View>
-      <Image src={`data:image/png;base64, ${props.figure}`}/>
-
+      <View style={styles.summarySection}>
+        <Summary>
+        </Summary>
+      </View>
       <View style={styles.footerSection} fixed>
-        <TitleBlockBottom
+        <TitleBlock
           date={props.date}
           client={props.client}
           clientAddress={props.clientAddress}

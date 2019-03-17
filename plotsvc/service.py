@@ -14,13 +14,14 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 def plot_sieve_to_png(points):
-    plt.figure(figsize=(18, 12))
+    plt.figure(figsize=(20, 12))
     plt.semilogx((*zip(*points)))
     ticks = [0.08, 0.16, 0.32, 1.0, 2.5, 5.0, 10, 20, 50, 100]
     plt.xticks(ticks, [str(t) for t in ticks])
     plt.ylim((0, 100))
     plt.grid(b=None, which='major', axis='both')
-
+    plt.xlabel('Opening size (mm)')
+    plt.ylabel('Percent passing')
     fig_bytes = BytesIO()
     plt.savefig(fig_bytes, format='png')
     fig_bytes.seek(0)
