@@ -97,8 +97,6 @@ const SieveReport = (props) => (
         <TitleBlock
           date={props.date}
           client={props.client}
-          clientAddress={props.clientAddress}
-          totalDepth={props.totalDepth}
           fixed
         />
       </View>

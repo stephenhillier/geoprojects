@@ -8,6 +8,8 @@ const jwt = require('express-jwt');
 // const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 const cookieParser = require('cookie-parser')
+const grpc = require('grpc');
+const protoLoader = require('@grpc/proto-loader');
 
 const app = express();
 app.use(cookieParser())
@@ -27,7 +29,7 @@ const createPdf = async (reactTemplate, data, response) => {
     const readStream = await renderReact(reactTemplate, data);
     readStream.pipe(response);
     // When the stream end the response is closed as well
-    readStream.on('end', () => console.log(`[logrend][borehole] Rendered ${data.boreholeNum} in ${new Date() - started}ms`));
+    readStream.on('end', () => console.log(`[logrend] Rendered in ${new Date() - started}ms`));
   } catch (e) {
     console.log(`Error occurred while rendering: "${e}"`);
     response.status(500).end();
@@ -130,5 +132,77 @@ app.get('/logs/:projectID/boreholes/:boreholeID/:boreholeSlug.pdf', checkJwt, as
   })
 });
 
+app.get('/logs/:projectID/sieves/:sieveID/:sieveSlug.pdf', checkJwt, async function(req, res) {
+
+  const PROTO_PATH = __dirname + '/../plotsvc/proto/plotsvc/plotsvc.proto';
+
+  const packageDefinition = protoLoader.loadSync(
+      PROTO_PATH,
+      {keepCase: true,
+       longs: String,
+       enums: String,
+       defaults: true,
+       oneofs: true
+      });
+  const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
+  const sieveplot = protoDescriptor.plotsvc;
+
+
+  const { sieveID, projectID } = req.params;
+  const token = getTokenFromRequest(req)
+  let project
+  let testData
+  let figure
+
+  if (!token) {
+    res.status(500).send('Unable to parse authentication token');
+  }
+
+  const client = axios.create({
+    baseURL: `http://${process.env.PROJECTS_SERVICE}/api/v1`,
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+
+  const prReq = client.get(`/projects/${projectID}`)
+  const labTestReq = client.get(`/projects/${projectID}/lab/tests/${sieveID}`)
+
+  const plotClient = new sieveplot.SievePlot(`${process.env.PLOTS_SERVICE || 'localhost'}:50051`, grpc.credentials.createInsecure())
+
+  Promise.all([prReq, labTestReq]).then((values) => {
+    project = values[0].data
+    testData = values[1].data
+  
+
+    const reportData = {
+      date: Date.now(),
+    }
+
+    console.log(`${process.env.PLOTS_SERVICE || 'localhost'}:50051`)
+
+    // this isn't pretty, but the node grpc implementation does not have good async support
+    plotClient.plotSieve({}, (err, fig) => {
+      if (err || !fig || !fig.ok || !fig.figure ) {
+        console.error(err, fig)
+        console.log((err || !fig || !fig.ok || !fig.figure ))
+        res.status(500).send('error rendering plot')    
+      } else {
+
+        reportData.figure = fig.figure
+        createPdf(BoreholeLog, reportData, res).then((output) => {
+          return output
+        }).catch((e) => {
+          console.error(e)
+          res.status(500).send('error rendering report')
+        })
+    
+      }
+    })
+
+
+  }).catch((e) => {
+    console.error(e)
+    res.status(401).send('error collecting report data')
+  })
+});
 
 http.createServer(app).listen(8081);
