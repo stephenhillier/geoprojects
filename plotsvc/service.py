@@ -24,6 +24,8 @@ def plot_sieve_to_png(points):
     plt.ylabel('Percent passing')
     fig_bytes = BytesIO()
     plt.savefig(fig_bytes, format='png')
+    plt.cla()
+    plt.close()
     fig_bytes.seek(0)
     fig_base64 = base64.b64encode(fig_bytes.read())
     return fig_base64.decode("utf-8")
