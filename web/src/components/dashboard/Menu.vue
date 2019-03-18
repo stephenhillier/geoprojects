@@ -1,5 +1,5 @@
 <template>
-  <b-card>
+  <!-- <b-card>
     <nav>
       <div>
         <ul class="nav flex-column">
@@ -16,7 +16,29 @@
         </ul>
       </div>
     </nav>
-  </b-card>
+  </b-card> -->
+  <nav class="menu earthworks-project-menu">
+    <p class="menu-label">
+      Project: {{ project.name }}
+    </p>
+    <ul class="menu-list">
+      <li><a>Summary</a></li>
+      <li><a>Back to project list</a></li>
+    </ul>
+    <p class="menu-label">
+      Field data
+    </p>
+    <ul class="menu-list">
+      <li><a>Boreholes</a></li>
+    </ul>
+    <p class="menu-label">
+      Laboratory
+    </p>
+    <ul class="menu-list">
+      <li><a>Samples</a></li>
+      <li><a>Lab tests</a></li>
+    </ul>
+  </nav>
 </template>
 
 <script>
@@ -32,5 +54,10 @@ export default {
   }
   .menu-item a {
     color: rgb(61, 61, 61);
+  }
+  .earthworks-project-menu {
+    margin-top: 8px;
+    margin-left: 15px;
+    width: 300px;
   }
 </style>

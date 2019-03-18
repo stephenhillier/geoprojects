@@ -19,6 +19,7 @@
     "auth0-js": "^9.8.2",
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.13",
+    "buefy": "^0.7.3",
     "chart.js": "^2.7.3",
     "css-loader": "^1.0.1",
     "eventemitter3": "^3.1.0",
