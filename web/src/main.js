@@ -13,7 +13,7 @@ import AuthService from '@/components/common/AuthService.js'
 
 // Icons
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner, faInfoCircle, faPrint, faLink, faThList, faSearch, faAngleLeft, faAngleRight, faArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faInfoCircle, faPrint, faLink, faThList, faSearch, faAngleLeft, faAngleRight, faArrowUp, faExclamationCircle, faCog, faArrowDown, faCalendar } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt, faDotCircle, faClipboard, faEdit } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -39,7 +39,7 @@ Vue.use(VueNoty, {
 })
 
 // font awesome icons
-library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt, faDotCircle, faThList, faClipboard, faSearch, faEdit, faAngleLeft, faAngleRight, faArrowUp)
+library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt, faDotCircle, faThList, faClipboard, faSearch, faEdit, faAngleLeft, faAngleRight, faArrowUp, faArrowDown, faExclamationCircle, faCog, faCalendar)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
 

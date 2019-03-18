@@ -67,7 +67,7 @@ body {
   color: #333;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 #main-content {
@@ -118,5 +118,24 @@ body {
 }
 .is-full-map {
   height: 95%;
+}
+.form-section {
+  margin-top: 3rem;
+}
+.mt-3 {
+  margin-top: 3rem;
+}
+.mt-2 {
+  margin-top: 2rem;
+}
+.mt-1 {
+  margin-top: 1rem;
+}
+.mx-1 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+.input-width-medium {
+  max-width: 20rem;
 }
 </style>

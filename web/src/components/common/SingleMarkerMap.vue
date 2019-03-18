@@ -1,5 +1,7 @@
 <template>
+<div class="box is-fullheight is-mapbox">
   <div id="map" class="map"></div>
+</div>
 </template>
 
 <script>
@@ -116,6 +118,10 @@ export default {
 
 <style lang="scss">
 .map {
-  height: 300px;
+  height: 100%;
+}
+.is-mapbox {
+  padding: 0px;
+  border-radius: 0px;
 }
 </style>

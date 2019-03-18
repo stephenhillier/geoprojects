@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -71,13 +72,13 @@ func (v NullDate) MarshalJSON() ([]byte, error) {
 	if !v.Valid {
 		return json.Marshal(nil)
 	}
-	layout := "2006-01-02"
+	layout := "2006-01-02T15:04:05Z07:00"
 	return json.Marshal(v.Time.Format(layout))
 }
 
 // UnmarshalJSON converts from JSON to NullDate
 func (v *NullDate) UnmarshalJSON(b []byte) error {
-	layout := "2006-01-02"
+	layout := "2006-01-02T15:04:05Z07:00"
 	var dateString string
 	err := json.Unmarshal(b, &dateString)
 	v.Valid = (err == nil)
@@ -86,6 +87,7 @@ func (v *NullDate) UnmarshalJSON(b []byte) error {
 	v.Time = date
 	v.Valid = (err == nil)
 
+	log.Println(date, err)
 	return nil
 }
 

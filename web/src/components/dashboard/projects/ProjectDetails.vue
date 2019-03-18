@@ -1,13 +1,13 @@
 <template>
   <div class="is-fullheight">
-      <div class="columns is-desktop is-fullheight">
-        <div class="column is-half">
+      <div class="columns is-desktop">
+        <div class="column is-half-desktop is-one-third-widescreen is-one-quarter-fullhd">
           <div class="columns">
             <span class="column title">{{project.name}}</span>
             <div class="column is-narrow">
               <b-dropdown aria-role="list">
                   <button class="button is-primary is-button-right" slot="trigger">
-                      <span><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon> Actions</span>
+                      <span><font-awesome-icon :icon="['fas', 'cog']"></font-awesome-icon> Actions</span>
                       <b-icon icon="menu-down"></b-icon>
                   </button>
 
@@ -28,7 +28,6 @@
                   </b-dropdown-item>
               </b-dropdown>
             </div>
-
           </div>
           <table class="table">
             <thead>
@@ -58,32 +57,43 @@
                   </tr>
               </tbody>
           </table>
-          <div>
-            <router-link tag="button" class="button is-link is-action-button" :to="{ name: 'new-borehole' }"><font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon> New borehole</router-link>
-          </div>
-          <div class="mt-3">
-            <button class="button is-danger is-action-button" @click="handleDelete">
-              <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
-              Delete project
-            </button>
-          </div>
+
         </div>
-        <div class="column is-full-map">
+        <div class="column is-480-map">
           <multi-marker-map :locations="boreholes" class="is-fullheight"></multi-marker-map>
         </div>
       </div>
-      <!-- <ag-grid-vue style="height: 400px;"
-              :enableSorting="true"
-              :enableFilter="true"
-              rowHeight="32"
-              class="ag-theme-balham mb-3"
-              :columnDefs="columnDefs"
-              :rowData="boreholes"/> -->
-      <router-link tag="button" class="button is-primary" id="button" :to="{ name: 'new-borehole' }">New borehole</router-link>
-      <b-table
-        :data="boreholes"
-        :fields="fields">
-      </b-table>
+      <div class="section">
+        <h2 class="subtitle">Boreholes</h2>
+        <b-table
+          :data="boreholes"
+          :columns="fields"
+          paginated
+          :per-page="perPage"
+          :current-page.sync="currentPage"
+          >
+          <template slot-scope="props">
+              <b-table-column field="name" label="Borehole">
+                 <router-link :to="`/projects/${$route.params.id}/boreholes/${props.row.id}`">{{ props.row.name }}</router-link>
+              </b-table-column>
+
+              <b-table-column field="start_date" label="Start date">
+                  {{ props.row.start_date }}
+              </b-table-column>
+              <b-table-column field="end_date" label="End date">
+                  {{ props.row.end_date }}
+              </b-table-column>
+              <b-table-column field="field_eng" label="Field technician/engineer">
+                  {{ props.row.field_eng }}
+              </b-table-column>
+              <b-table-column field="location" label="Location">
+                  {{ props.row.location[0] }},
+                  {{ props.row.location[1] }}
+              </b-table-column>
+          </template>
+
+        </b-table>
+      </div>
 
       <b-modal :active.sync="isEditModalActive" @close="handleResetEdit">
         <form action="" @submit.prevent="handleEdit">
@@ -160,8 +170,6 @@
 <script>
 import { AgGridVue } from 'ag-grid-vue'
 import MultiMarkerMap from '@/components/common/MultiMarkerMap.vue'
-import BoreholeLink from '@/components/gridcells/BoreholeLink.vue'
-import Coords from '@/components/gridcells/Coords.vue'
 
 export default {
   name: 'ProjectDetails',
@@ -178,14 +186,27 @@ export default {
       perPage: 10,
       isBusy: false,
       numberOfRecords: 0,
-      fields: ['name', 'start_date', 'end_date', 'field_eng', 'location'],
-      columnDefs: [
-        { headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', cellRendererFramework: BoreholeLink },
-        { headerName: 'Started Drilling', field: 'start_date', filter: 'agDateColumnFilter' },
-        { headerName: 'Finished Drilling', field: 'end_date', filter: 'agDateColumnFilter' },
-        { headerName: 'Field Engineer', field: 'field_eng', filter: 'agTextColumnFilter' },
-        { headerName: 'Location', field: 'location', cellRendererFramework: Coords }
-
+      fields: [
+        {
+          field: 'name',
+          label: 'Name'
+        },
+        {
+          field: 'start_date',
+          label: 'Start date'
+        },
+        {
+          field: 'end_date',
+          label: 'End date'
+        },
+        {
+          field: 'field_eng',
+          label: 'Drilled by'
+        },
+        {
+          field: 'location',
+          label: 'Location'
+        }
       ],
       editForm: {}
     }
@@ -226,15 +247,17 @@ export default {
   created () {
     this.fetchBoreholes()
     this.editForm = Object.assign({}, this.project)
-    if (!JSON.parse(localStorage.getItem('earthworks-tutorial-project-summary'))) {
-      setTimeout(() => {
-        this.$refs.tutorialProjectSummaryModal.show()
-      }, 1000)
-    }
+    // if (!JSON.parse(localStorage.getItem('earthworks-tutorial-project-summary'))) {
+    //   setTimeout(() => {
+    //     this.$refs.tutorialProjectSummaryModal.show()
+    //   }, 1000)
+    // }
   }
 }
 </script>
 
 <style>
-
+.is-480-map {
+  min-height: 480px;
+}
 </style>

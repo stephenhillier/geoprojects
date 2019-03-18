@@ -1,7 +1,7 @@
 <template>
-  <b-card no-body class="map-card">
+  <div class="box is-mapbox is-fullheight">
     <div id="map" class="project-map"></div>
-  </b-card>
+  </div>
 </template>
 
 <script>
