@@ -30,7 +30,7 @@
     </p>
     <ul class="menu-list">
       <li><router-link :to="{ name: 'project-boreholes', params: { id: this.$route.params.id } }">
-        <font-awesome-icon :icon="['far', 'dot-circle']" class="text-muted mr-3"></font-awesome-icon> Boreholes</router-link></li>
+        Boreholes</router-link></li>
     </ul>
     <p class="menu-label">
       Laboratory
@@ -38,7 +38,7 @@
     <ul class="menu-list">
       <li><a>Samples</a></li>
       <li><router-link :to="{ name: 'lab-home', params: { id: this.$route.params.id } }">
-        <font-awesome-icon :icon="['far', 'clipboard']" class="text-muted mr-3"></font-awesome-icon> Lab tests</router-link></li>
+        Lab tests</router-link></li>
     </ul>
   </nav>
 </template>

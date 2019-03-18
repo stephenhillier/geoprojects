@@ -94,11 +94,29 @@ body {
   font-weight: 600!important;
   text-transform: none!important;
 }
+.table-heading-horizontal {
+  color: #333!important;
+  font-weight: 600!important;
+  text-transform: none!important;
+  margin-right: 15rem;
+}
 .geoprojects-header {
   margin-bottom: 15px;
   flex: none;
 }
 .is-fullheight {
   height: 100%;
+}
+.is-map-container {
+  height: 400px;
+}
+.is-action-button {
+  margin-bottom: 10px;
+}
+.is-button-right {
+  margin-left: 10px;
+}
+.is-full-map {
+  height: 95%;
 }
 </style>

@@ -29,7 +29,7 @@
         <a class="navbar-link">
           {{ username }}
         </a>
-        <div class="navbar-dropdown">
+        <div class="navbar-dropdown is-boxed">
           <a class="navbar-item" href="#" @click="logout">Logout</a>
         </div>
       </div>

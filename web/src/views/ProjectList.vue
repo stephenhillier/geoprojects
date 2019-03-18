@@ -105,12 +105,12 @@
         </template>
       </b-table>
       <div class="project-helper">
-        <b-notification type="is-info" v-if="projectTutorial">
+        <b-message title="Navigating projects" type="is-info" v-if="projectTutorial">
               <h4 class="help-header">Welcome!</h4>
               <p class="help-text">This is the project list, where you can search for and select a project.</p>
               <p class="help-text">We'll show you how to create projects. To get started, click on the <router-link :to="{name: 'new-project'}">New project</router-link> option on the left sidebar.</p>
               <div style="display: flex; flex-direction: row;"><a href="#" @click="handleCancelProjectTutorial" style="margin-left: auto;">Don't show again</a></div>
-        </b-notification>
+        </b-message>
       </div>
     </div>
 
