@@ -22,21 +22,23 @@
       Project: {{ project.name }}
     </p>
     <ul class="menu-list">
-      <li><a>Summary</a></li>
-      <li><a>Back to project list</a></li>
+      <li><router-link :to="{ name: 'project-dashboard', params: { id: this.$route.params.id } }">Summary</router-link></li>
+      <li><router-link :to="{ name: 'projects' }">Back to project list</router-link></li>
     </ul>
     <p class="menu-label">
       Field data
     </p>
     <ul class="menu-list">
-      <li><a>Boreholes</a></li>
+      <li><router-link :to="{ name: 'project-boreholes', params: { id: this.$route.params.id } }">
+        <font-awesome-icon :icon="['far', 'dot-circle']" class="text-muted mr-3"></font-awesome-icon> Boreholes</router-link></li>
     </ul>
     <p class="menu-label">
       Laboratory
     </p>
     <ul class="menu-list">
       <li><a>Samples</a></li>
-      <li><a>Lab tests</a></li>
+      <li><router-link :to="{ name: 'lab-home', params: { id: this.$route.params.id } }">
+        <font-awesome-icon :icon="['far', 'clipboard']" class="text-muted mr-3"></font-awesome-icon> Lab tests</router-link></li>
     </ul>
   </nav>
 </template>
