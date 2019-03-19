@@ -82,6 +82,8 @@
       <b-field class="project-list-search">
         <b-input placeholder="Search..."
             type="search"
+            @input="handleSearchInput"
+            v-model="searchParamsInput.search"
             icon="search">
         </b-input>
       </b-field>
