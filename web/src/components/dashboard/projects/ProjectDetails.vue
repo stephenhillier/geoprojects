@@ -257,7 +257,5 @@ export default {
 </script>
 
 <style>
-.is-480-map {
-  min-height: 480px;
-}
+
 </style>

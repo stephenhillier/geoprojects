@@ -138,4 +138,10 @@ body {
 .input-width-medium {
   max-width: 20rem;
 }
+.ml {
+  margin-left: 0.5rem;
+}
+.is-480-map {
+  height: 480px;
+}
 </style>

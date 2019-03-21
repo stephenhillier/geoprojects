@@ -119,6 +119,7 @@ export default {
 <style lang="scss">
 .map {
   height: 100%;
+  z-index: 1;
 }
 .is-mapbox {
   padding: 0px;
