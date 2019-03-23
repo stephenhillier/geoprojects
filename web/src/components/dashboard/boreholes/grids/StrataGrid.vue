@@ -3,7 +3,7 @@
     <h2 class="subtitle">
       Soil Stratigraphy
     </h2>
-    <button ref="newStrataBtn" @click="handleNewStrataModal" class="button" size="sm" variant="info">Add soil layer</button>
+    <button ref="newStrataBtn" @click="handleNewStrataModal" class="button">Add soil layer</button>
 
       <b-table
           :data="strataRowData"
@@ -125,7 +125,6 @@
       </div>
     </b-modal>
   </div>
-
 </template>
 
 <script>
@@ -147,13 +146,6 @@ export default {
       strataIsBusy: false,
       addNewStrata: false,
       fields: [],
-      strataColumnDefs: [
-        { headerName: 'From (m)', field: 'start', filter: 'agNumberColumnFilter', width: 110 },
-        { headerName: 'To (m)', field: 'end', filter: 'agNumberColumnFilter', width: 110 },
-        { headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', width: 400 }
-      ],
-      strataGridApi: null,
-      strataColumnApi: null,
       form: {
         start: '',
         end: '',
@@ -161,18 +153,12 @@ export default {
       },
       success: false,
       loading: false,
-      selectedRow: null,
-      gridOptions: {},
       editForm: {},
       perPage: 10,
       currentPage: 1
     }
   },
   methods: {
-    onStrataGridReady (params) {
-      this.strataGridApi = params.api
-      this.strataColumnApi = params.columnApi
-    },
     deleteStrata (id) {
       this.$http.delete(`strata/${id}`).then((response) => {
         this.$emit('strata-update')
@@ -219,16 +205,6 @@ export default {
         start: '',
         end: '',
         description: ''
-      }
-    },
-    onSelectionChanged () {
-      const selection = this.strataGridApi.getSelectedNodes()
-      const rowData = selection.map((item) => (item.data))
-      if (rowData && rowData.length) {
-        this.selectedRow = rowData[0].id
-        this.editForm = Object.assign({}, rowData[0])
-      } else {
-        this.selectedRow = null
       }
     },
     handleResetEdit () {
