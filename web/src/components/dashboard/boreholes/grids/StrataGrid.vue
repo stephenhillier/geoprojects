@@ -22,7 +22,7 @@
                 {{ props.row.description }}
             </b-table-column>
             <b-table-column field="actions" label="Actions" class="is-narrow">
-              <button class="button is-small" @click="editStrataModal = true"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
+              <button class="button is-small" @click="handleEdit(props.row)"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
               <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
             </b-table-column>
         </template>
@@ -199,7 +199,7 @@ export default {
         this.$noty.error('An error occurred while adding soil layer.')
       })
     },
-    handleEdit () {
+    submitEdit () {
       const data = Object.assign({}, this.toStrings(this.editForm))
       const strataId = data.id
       delete data.id
@@ -239,6 +239,10 @@ export default {
         o[k] = '' + o[k]
       })
       return o
+    },
+    handleEdit (row) {
+      this.editForm = Object.assign({}, row)
+      this.editStrataModal = true
     },
     handleDelete (id) {
       this.$dialog.confirm({
