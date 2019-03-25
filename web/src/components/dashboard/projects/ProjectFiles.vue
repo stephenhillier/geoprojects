@@ -3,20 +3,23 @@
     <h2 class="subtitle">Files</h2>
 
     <b-table
-        :data="files"
+        :data="filteredFiles"
         paginated
         :per-page="perPage"
         :current-page.sync="currentPage"
     >
       <template slot-scope="props">
           <b-table-column field="filename" label="Filename">
-            <span :class="props.row.superseded ? 'file-superseded' : ''">{{ props.row.filename }} {{ props.row.superseded ? '[superseded]' : '' }}</span>
+            <a href="#">
+              <span :class="props.row.superseded ? 'file-superseded' : ''">{{ props.row.filename }} {{ props.row.superseded ? '[superseded]' : '' }}</span>
+            </a>
           </b-table-column>
           <b-table-column field="created_at" label="Uploaded">
             {{ props.row.created_at | moment("dddd, MMMM Do YYYY, h:mm:ss a") }}
           </b-table-column>
           <b-table-column field="actions" label="Actions" class="is-narrow">
-            <button class="button is-small"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
+            <button class="button is-small"><font-awesome-icon :icon="['fas', 'download']"></font-awesome-icon></button>
+            <button class="button is-small ml"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
             <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
           </b-table-column>
       </template>
@@ -75,7 +78,19 @@ export default {
   data () {
     return {
       dropFiles: [],
-      loading: false
+      loading: false,
+      showSuperseded: false
+    }
+  },
+  computed: {
+    filteredFiles () {
+      const files = this.files || []
+      if (!this.showSuperseded) {
+        return files.filter((f) => {
+          return f.superseded === false
+        })
+      }
+      return files
     }
   },
   methods: {

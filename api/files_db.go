@@ -34,7 +34,7 @@ func (db *Datastore) ListFiles(filter FileFilter) ([]File, error) {
 		q = q.Where(sq.Eq{"project": filter.Project})
 	}
 
-	q = q.OrderBy("created_at DESC")
+	q = q.OrderBy("filename ASC, created_at DESC")
 
 	fileQuery, queryArgs, err := q.ToSql()
 

@@ -6,7 +6,7 @@
             <span class="column title">{{project.name}}</span>
             <div class="column is-narrow">
               <b-dropdown aria-role="list">
-                  <button class="button is-primary is-button-right" slot="trigger">
+                  <button class="button is-primary is-action-button" slot="trigger">
                       <span><font-awesome-icon :icon="['fas', 'cog']"></font-awesome-icon> Actions</span>
                       <b-icon icon="menu-down"></b-icon>
                   </button>
@@ -270,5 +270,8 @@ export default {
 </script>
 
 <style>
-
+.is-action-button {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
 </style>

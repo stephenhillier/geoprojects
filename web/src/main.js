@@ -27,7 +27,8 @@ import {
   faCog,
   faArrowDown,
   faCalendar,
-  faUpload
+  faUpload,
+  faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt, faDotCircle, faClipboard, faEdit } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -78,7 +79,8 @@ library.add(
   faExclamationCircle,
   faCog,
   faCalendar,
-  faUpload
+  faUpload,
+  faDownload
 )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
