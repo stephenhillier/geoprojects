@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"strconv"
+	"strings"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkt"
+	sq "gopkg.in/Masterminds/squirrel.v1"
 )
 
 // // ProjectsRepository is the set of methods available to a collection of projects
@@ -17,10 +19,12 @@ import (
 // }
 
 // AllProjects returns a list of all projects in the datastore
-func (db *Datastore) AllProjects(name string, number string) ([]Project, error) {
+func (db *Datastore) AllProjects(name string, number string, search string) ([]Project, error) {
+	projects := []Project{}
 	var err error
 
-	query := `SELECT
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	q := psql.Select(`
 			project.id,
 			project.name,
 			project.number,
@@ -28,62 +32,38 @@ func (db *Datastore) AllProjects(name string, number string) ([]Project, error) 
 			ST_AsBinary(project.default_coords) AS default_coords,
 			COUNT(borehole.project) as borehole_count,
 			ST_AsBinary(st_transform(st_centroid(st_union(st_transform(datapoint.location::geometry, 26910))), 4326)::geography) as centroid
-		FROM project
-		LEFT JOIN borehole ON (borehole.project = project.id)
-		LEFT JOIN datapoint ON (borehole.datapoint = datapoint.id)
-	`
+			`).
+		From("project").
+		LeftJoin("borehole ON (borehole.project = project.id)").
+		LeftJoin("datapoint ON (borehole.datapoint = datapoint.id)")
 
-	projects := []Project{}
-
-	numParams := 0
-
-	searchOnName := false
-	searchOnNum := false
-
-	// append WHERE statements
-	// TODO: figure out a better way to do this
-	// note: all input is parameterized.
-	if len(name) > 0 {
-		numParams++
-		searchOnName = true
-
-		searchProjectName := ` WHERE project.name ILIKE $` + strconv.Itoa(numParams)
-
-		query = query + searchProjectName
+	if search != "" {
+		q = q.Where(
+			sq.Or{
+				sq.Like{"LOWER(project.name)": strings.ToLower(fmt.Sprint("%", search, "%"))},
+				sq.Like{"LOWER(project.number)": strings.ToLower(fmt.Sprint("%", search, "%"))},
+			},
+		)
 	}
 
-	if len(number) > 0 {
-		searchOnNum = true
-		numParams++
-		// check if name was also searched on
-		if searchOnName {
-			query = query + ` AND`
-		} else {
-			query = query + ` WHERE`
-		}
+	q = q.GroupBy("project.id")
 
-		searchProjectNumber := ` CAST(project.id AS TEXT) LIKE $` + strconv.Itoa(numParams)
-
-		query = query + searchProjectNumber
-	}
-
-	groupByQuery := ` GROUP BY project.id`
-	query = query + groupByQuery
-
-	if searchOnName && searchOnNum {
-		err = db.Select(&projects, query, "%"+name+"%", number+"%")
-	} else if searchOnName && !searchOnNum {
-		err = db.Select(&projects, query, "%"+name+"%")
-	} else if !searchOnName && searchOnNum {
-		err = db.Select(&projects, query, number+"%")
-	} else {
-		err = db.Select(&projects, query)
-	}
+	projectsQuery, queryArgs, err := q.ToSql()
 
 	if err != nil {
-		log.Println(query, name, number)
+		return projects, err
+	}
+
+	err = db.Select(&projects, projectsQuery, queryArgs...)
+
+	if err != nil {
+		log.Println(projectsQuery)
 		return []Project{}, err
 	}
+
+	log.Println(projectsQuery)
+	log.Println(projects)
+
 	return projects, nil
 }
 

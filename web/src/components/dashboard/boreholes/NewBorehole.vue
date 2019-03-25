@@ -1,54 +1,87 @@
 <template>
-  <b-card>
-
-    <b-form @submit.prevent="handleFormSubmit" @reset.prevent="resetForm">
-      <b-row>
-        <b-col cols="12" xl="6">
-                <h4>New Borehole</h4>
-                <h6 class="text-muted">{{project.name}}</h6>
-          <b-row>
-            <b-col cols="12" md="4" xl="3">
-              <form-input label="Name" id="newBoreholeName" hint="e.g. BH18-1" v-model="form.name" required></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
-              <form-input label="Date drilling started" type="date" id="newBoreholeDateStarted" v-model="form.start_date" required></form-input>
-            </b-col>
-            <b-col cols="12" md="6">
-              <form-input label="Date drilling finished" type="date" id="newBoreholeDateStarted" v-model="form.end_date"></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
-              <form-input label="Field technician/engineer" id="newBoreholeFieldEng" v-model.number="form.field_eng" required></form-input>
-            </b-col>
-          </b-row>
+  <div>
+    <form @submit.prevent="handleFormSubmit" @reset.prevent="resetForm">
+      <div class="columns">
+        <div class="column">
+          <h1 class="title">New Borehole</h1>
+          <h2 class="subtitle">{{project.name}}</h2>
+          <b-field label="Name">
+            <b-input
+                id="newBoreholeName"
+                type="text"
+                message="e.g. BH19-1"
+                placeholder="e.g. BH19-1"
+                v-model="form.name"
+            ></b-input>
+          </b-field>
+          <div class="columns">
+            <div class="column">
+              <b-field label="Date drilling started">
+                <b-datepicker
+                    id="newBoreholeDateStarted"
+                    placeholder="Click to select..."
+                    icon="calendar"
+                    v-model="form.start_date"
+                    required
+                    >
+                </b-datepicker>
+              </b-field>
+            </div>
+            <div class="column">
+              <b-field label="Date drilling finished">
+                <b-datepicker
+                    id="newBoreholeDateFinished"
+                    placeholder="Click to select..."
+                    icon="calendar"
+                    v-model="form.end_date"
+                    >
+                </b-datepicker>
+              </b-field>
+            </div>
+          </div>
+          <b-field label="Field technician/engineer">
+            <b-input
+                id="newBoreholeFieldEng"
+                type="text"
+                v-model.number="form.field_eng"
+            ></b-input>
+          </b-field>
           <fieldset class="my-3">
             <legend class="h5">Location</legend>
             <p class="small"><span class="font-weight-bold">Hint:</span> double click the map the place a marker.</p>
-            <b-row>
-              <b-col cols="12" md="6">
-                <form-input label="Latitude" id="newBoreholeLatitude" v-model.number="form.location[1]"></form-input>
-              </b-col>
-              <b-col cols="12" md="6">
-                <form-input label="Longitude" id="newBoreholeLongitude" v-model.number="form.location[0]"></form-input>
-              </b-col>
-            </b-row>
-          </fieldset>
-        </b-col>
-        <b-col cols="12" xl="6">
-          <ew-map :longitude="form.location[0]" :latitude="form.location[1]" @update-coordinates="updateCoords" :add-mode="true"></ew-map>
-        </b-col>
 
-      </b-row>
+            <div class="columns mt-1">
+              <div class="column">
+                <b-field label="Latitude">
+                  <b-input
+                      id="newBoreholeLatitude"
+                      v-model.number="form.location[1]"
+                  ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Longitude">
+                  <b-input
+                      id="newBoreholeLongitude"
+                      v-model.number="form.location[0]"
+                  ></b-input>
+                </b-field>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="column">
+          <ew-map :longitude="form.location[0]" :latitude="form.location[1]" @update-coordinates="updateCoords" :add-mode="true"></ew-map>
+        </div>
+
+      </div>
 
       <div class="mb-3 mt-5">
-        <b-btn type="submit" variant="info">Create borehole</b-btn>
-        <b-btn type="reset" class="mx-3" variant="light">Reset</b-btn>
+        <button class="button is-primary" type="submit">Create borehole</button>
+        <button class="button mx-1" type="reset">Reset</button>
       </div>
-    </b-form>
-  </b-card>
+    </form>
+  </div>
 </template>
 
 <script>

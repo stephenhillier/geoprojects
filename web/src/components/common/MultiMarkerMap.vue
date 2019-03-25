@@ -1,7 +1,7 @@
 <template>
-  <b-card no-body class="map-card">
+  <div class="box is-mapbox is-fullheight">
     <div id="map" class="project-map"></div>
-  </b-card>
+  </div>
 </template>
 
 <script>
@@ -107,5 +107,6 @@ export default {
 }
 .project-map {
   height: 100%;
+  z-index: 1;
 }
 </style>

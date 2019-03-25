@@ -1,5 +1,5 @@
 <template>
-<div>
+<!-- <div>
   <b-row>
     <b-col cols="12" lg="5" xl="3" style="height: 90vh" class="d-flex flex-column">
       <b-row class="mb-3">
@@ -32,7 +32,7 @@
         </b-col>
       </b-row>
       <b-row class="flex-grow-1">
-        <b-col style="height: 100%">
+        <b-col style="height: 100%"> -->
           <!-- <ag-grid-vue style="height: 100%;"
               :enableSorting="true"
               :enableFilter="true"
@@ -41,7 +41,7 @@
               :columnDefs="columnDefs"
               :rowData="projects"/> -->
 
-          <b-table striped hover :items="projects" :fields="fields">
+          <!-- <b-table striped hover :items="projects" :fields="fields">
             <template slot="project" slot-scope="data">
               <router-link :to="`/projects/${data.item.id}`">{{ data.item.number ? `${data.item.number} - ` :'' }}{{ data.item.name }}</router-link>
             </template>
@@ -61,6 +61,65 @@
       <multi-marker-map :locations="locations"></multi-marker-map>
     </b-col>
   </b-row>
+</div> -->
+
+<div class="columns content-wrapper is-fullheight">
+  <div class="column is-narrow project-list is-hidden-mobile">
+    <div class="box project-list-menu-panel">
+      <nav class="menu">
+        <p class="menu-label">
+          Projects
+        </p>
+        <ul class="menu-list">
+          <li class="project-list-menu-item"><router-link :to="{name: 'projects'}">
+            <font-awesome-icon :icon="['fas', 'th-list']"></font-awesome-icon> Project List
+          </router-link></li>
+          <li class="project-list-menu-item"><router-link :to="{name: 'new-project'}">
+            <font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon> New Project
+          </router-link></li>
+        </ul>
+      </nav>
+      <b-field class="project-list-search">
+        <b-input placeholder="Search..."
+            type="search"
+            @input="handleSearchInput"
+            v-model="searchParamsInput.search"
+            icon="search">
+        </b-input>
+      </b-field>
+      <b-table
+          :data="projects"
+          :columns="fields"
+          paginated
+          :per-page="perPage"
+          :current-page.sync="currentPage"
+      >
+        <template slot-scope="props">
+            <b-table-column field="project" label="Project">
+                <router-link :to="`/projects/${props.row.id}`">{{ props.row.number ? `${props.row.number} -` : '' }} {{ props.row.name }}</router-link>
+            </b-table-column>
+            <b-table-column field="location" label="Location">
+                {{ props.row.location }}
+            </b-table-column>
+            <b-table-column field="borehole_count" label="Boreholes">
+                {{ props.row.borehole_count }}
+            </b-table-column>
+        </template>
+      </b-table>
+      <div class="project-helper">
+        <b-message title="Navigating projects" type="is-info" v-if="projectTutorial">
+              <h4 class="help-header">Welcome!</h4>
+              <p class="help-text">This is the project list, where you can search for and select a project.</p>
+              <p class="help-text">We'll show you how to create projects. To get started, click on the <router-link :to="{name: 'new-project'}">New project</router-link> option on the left sidebar.</p>
+              <div style="display: flex; flex-direction: row;"><a href="#" @click="handleCancelProjectTutorial" style="margin-left: auto;">Don't show again</a></div>
+        </b-message>
+      </div>
+    </div>
+
+  </div>
+  <div class="column is-fullheight project-map">
+    <multi-marker-map :locations="locations"></multi-marker-map>
+  </div>
 </div>
 
 </template>
@@ -83,21 +142,22 @@ export default {
   },
   data () {
     return {
+      projectTutorial: false,
       projects: [],
       locations: [],
       loading: false,
       fields: [
         {
-          key: 'project',
-          thClass: 'table-heading'
+          field: 'project',
+          label: 'Project'
         },
         {
-          key: 'location',
-          thClass: 'table-heading'
+          field: 'location',
+          label: 'Location'
         },
         {
-          key: 'borehole_count',
-          thClass: 'table-heading'
+          field: 'borehole_count',
+          label: 'Boreholes'
         }
       ],
       currentPage: 1,
@@ -148,6 +208,8 @@ export default {
       this.debouncedSearch()
     },
     handleCancelProjectTutorial () {
+      this.projectTutorial = false
+
       localStorage.setItem('earthworks-tutorial-projects', JSON.stringify(true))
     }
   },
@@ -159,7 +221,7 @@ export default {
 
     if (!JSON.parse(localStorage.getItem('earthworks-tutorial-projects'))) {
       setTimeout(() => {
-        this.$refs.tutorialProjectModal.show()
+        this.projectTutorial = true
       }, 1000)
     }
   }
@@ -170,5 +232,36 @@ export default {
 .table-heading {
   color: #333!important;
   text-transform: none!important;
+}
+.project-list {
+  height: 100%;
+}
+.project-map {
+  height: 100%;
+}
+.project-list-menu-item {
+  margin-top: 12px;
+}
+.project-list-search {
+  margin-top: 25px;
+}
+.project-list-menu-panel {
+  width: 600px;
+  height: 100%!important;
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+.project-helper {
+  margin-top: auto;
+}
+.help-text {
+  margin-top: 10px;
+}
+.help-header {
+  font-weight: 600;
+}
+.content-wrapper {
+  height: 100%;
 }
 </style>

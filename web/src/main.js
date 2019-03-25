@@ -2,9 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import BootstrapVue from 'bootstrap-vue'
+// import BootstrapVue from 'bootstrap-vue'
 import './registerServiceWorker'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from 'axios'
 import VueNoty from 'vuejs-noty'
 import VueApexCharts from 'vue-apexcharts'
@@ -14,7 +13,22 @@ import AuthService from '@/components/common/AuthService.js'
 
 // Icons
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner, faInfoCircle, faPrint, faLink, faThList, faSearch } from '@fortawesome/free-solid-svg-icons'
+import {
+  faSpinner,
+  faInfoCircle,
+  faPrint,
+  faLink,
+  faThList,
+  faSearch,
+  faAngleLeft,
+  faAngleRight,
+  faArrowUp,
+  faExclamationCircle,
+  faCog,
+  faArrowDown,
+  faCalendar,
+  faUpload
+} from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt, faDotCircle, faClipboard, faEdit } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -27,20 +41,52 @@ import 'leaflet/dist/leaflet.css'
 import './ag-grid.scss'
 import 'vuejs-noty/dist/vuejs-noty.css'
 
+import Buefy from 'buefy'
+
+Vue.use(require('vue-moment'))
+
+Vue.use(Buefy, {
+  defaultIconComponent: 'font-awesome-icon',
+  defaultIconPack: 'fas'
+})
+
 Vue.use(VueNoty, {
   timeout: 2000,
   layout: 'bottomRight'
 })
 
 // font awesome icons
-library.add(faSpinner, faInfoCircle, faTrashAlt, faPlusSquare, faTimesCircle, faPrint, faLink, faFile, faFileAlt, faDotCircle, faThList, faClipboard, faSearch, faEdit)
+library.add(
+  faSpinner,
+  faInfoCircle,
+  faTrashAlt,
+  faPlusSquare,
+  faTimesCircle,
+  faPrint,
+  faLink,
+  faFile,
+  faFileAlt,
+  faDotCircle,
+  faThList,
+  faClipboard,
+  faSearch,
+  faEdit,
+  faAngleLeft,
+  faAngleRight,
+  faArrowUp,
+  faArrowDown,
+  faExclamationCircle,
+  faCog,
+  faCalendar,
+  faUpload
+)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)
 
 // apexcharts chart component
 Vue.component('apexchart', VueApexCharts)
 
-Vue.use(BootstrapVue)
+// Vue.use(BootstrapVue)
 
 // create an axios client for accessing the API server
 const axiosClient = axios.create({

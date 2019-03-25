@@ -1,114 +1,137 @@
 <template>
   <div>
-    <h5>
+    <h2 class="subtitle">
       Soil Stratigraphy
-      <b-btn v-b-modal.newStrataModal class="ml-5" size="sm" variant="info">Add soil layer</b-btn>
-      <b-btn v-b-modal.editStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit layer</b-btn>
-      <b-btn v-b-modal.deleteStrataModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete layer</b-btn>
-    </h5>
-    <new-strata v-if="addNewStrata" :borehole="borehole.id" @strata-update="fetchStrata" @strata-dismiss="addNewStrata = false"></new-strata>
-    <ag-grid-vue style="height: 400px;"
-            :enableSorting="true"
-            :enableFilter="true"
-            rowHeight="32"
-            class="ag-theme-balham mb-3"
-            :columnDefs="strataColumnDefs"
-            :rowData="strataRowData"
-            :enableColResize="true"
-            :gridReady="onStrataGridReady"
-            :gridOptions="gridOptions"
-            :selectionChanged="onSelectionChanged"
-            rowSelection="single"
-            />
+    </h2>
+    <button ref="newStrataBtn" @click="handleNewStrataModal" class="button">Add soil layer</button>
+
+      <b-table
+          :data="strataRowData"
+          paginated
+          :per-page="perPage"
+          :current-page.sync="currentPage"
+      >
+        <template slot-scope="props">
+            <b-table-column field="start" label="From" class="is-narrow">
+                {{ props.row.start }}
+            </b-table-column>
+            <b-table-column field="end" label="To" class="is-narrow">
+                {{ props.row.end }}
+            </b-table-column>
+            <b-table-column field="description" label="Description">
+                {{ props.row.description }}
+            </b-table-column>
+            <b-table-column field="actions" label="Actions" class="is-narrow">
+              <button class="button is-small" @click="handleEdit(props.row)"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
+              <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
+            </b-table-column>
+        </template>
+      </b-table>
 
     <!-- New strata modal -->
-    <b-modal centered id="newStrataModal" title="Add a new strata" @ok="handleSubmit" @cancel="resetForm">
-      <b-container fluid>
-        <b-form @submit.stop.prevent="handleSubmit">
-          <b-row>
-            <b-col cols="12" lg="12" xl="6">
-              <form-input
-                id="strataStartInput"
-                label="From"
-                required
-                v-model="form.start"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="2" xl="6">
-              <form-input
-                id="strataEndInput"
-                label="To"
-                required
-                v-model="form.end"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="12" xl="12">
-              <form-input
-                id="strataDescInput"
-                label="Description"
-                required
-                v-model="form.description"
-              ></form-input>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-container>
+    <b-modal :active.sync="newStrataModal" id="newStrataModal" title="Add a new strata" @close="handleCloseNewStrataModal">
+      <div class="modal-card" style="width: auto">
+        <form @submit.stop.prevent="handleSubmit">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Add strata</p>
+          </header>
+          <section class="modal-card-body">
+              <div class="columns">
+                <div class="column">
+                  <b-field label="From">
+                    <b-input
+                      required
+                      ref="strataStartInput"
+                      id="strataStartInput"
+                      message="Depth (m)"
+                      v-model="form.start"
+                    ></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="To">
+                    <b-input
+                      required
+                      id="strataEndInput"
+                      message="Depth (m)"
+                      v-model="form.end"
+                  ></b-input>
+                  </b-field>
+                </div>
+                <div class="column">
+                  <b-field label="Description">
+                    <b-input
+                      required
+                      id="strataDescInput"
+                      v-model="form.description"
+                  ></b-input>
+                  </b-field>
+                </div>
+              </div>
+
+          </section>
+          <footer class="modal-card-foot">
+              <button class="button" type="button" @click="newStrataModal = false">Close</button>
+              <button class="button is-primary">Add strata</button>
+          </footer>
+        </form>
+      </div>
     </b-modal>
 
-    <b-modal centered id="editStrataModal" ref="editStrataModal" title="Edit strata" @ok="handleEdit" @cancel="handleResetEdit">
-      <b-container fluid>
-        <b-form @submit.stop.prevent="">
-          <b-row>
-            <b-col cols="12" lg="12" xl="6">
-              <form-input
-                id="strataStartEditInput"
-                label="From"
-                required
-                v-model="editForm.start"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="2" xl="6">
-              <form-input
-                id="strataEndEditInput"
-                label="To"
-                required
-                v-model="editForm.end"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="12" xl="12">
-              <form-input
-                id="strataDescriptionEditInput"
-                label="Visual Description"
-                required
-                v-model="editForm.description"
-              ></form-input>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-container>
+    <b-modal :active.sync="editStrataModal" id="editStrataModal" ref="editStrataModal" @close="handleResetEdit">
+      <div class="modal-card">
+        <form @submit.stop.prevent="submitEdit">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Edit strata</p>
+          </header>
+          <section class="modal-card-body">
+          <div class="columns">
+            <div class="column">
+              <b-field label="From">
+                <b-input
+                  required
+                  id="strataEditStartInput"
+                  message="Depth (m)"
+                  v-model="editForm.start"
+              ></b-input>
+              </b-field>
+            </div>
+            <div class="column">
+              <b-field label="To">
+                <b-input
+                  required
+                  id="strataEditEndInput"
+                  message="Depth (m)"
+                  v-model="editForm.end"
+              ></b-input>
+              </b-field>
+            </div>
+            <div class="column">
+              <b-field label="Description">
+                <b-input
+                  required
+                  id="strataEditDescInput"
+                  v-model="editForm.description"
+              ></b-input>
+              </b-field>
+            </div>
+          </div>
+          </section>
+          <footer class="modal-card-foot">
+              <button class="button" type="button" @click="editStrataModal = false">Cancel</button>
+              <button class="button is-primary">Save</button>
+          </footer>
+        </form>
+      </div>
     </b-modal>
-
-    <!-- Delete strata confirmation -->
-    <b-modal id="deleteStrataModal" centered @ok="handleDelete" title="Confirm delete">
-      Are you sure you want to delete this soil strata?
-    </b-modal>
-
   </div>
-
 </template>
 
 <script>
-import { AgGridVue } from 'ag-grid-vue'
 
 export default {
   name: 'StrataGrid',
-  components: {
-    AgGridVue
-  },
+
   props: {
     strataRowData: {
       type: Array,
@@ -118,15 +141,11 @@ export default {
   },
   data () {
     return {
+      newStrataModal: false,
+      editStrataModal: false,
       strataIsBusy: false,
       addNewStrata: false,
-      strataColumnDefs: [
-        { headerName: 'From (m)', field: 'start', filter: 'agNumberColumnFilter', width: 110 },
-        { headerName: 'To (m)', field: 'end', filter: 'agNumberColumnFilter', width: 110 },
-        { headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', width: 400 }
-      ],
-      strataGridApi: null,
-      strataColumnApi: null,
+      fields: [],
       form: {
         start: '',
         end: '',
@@ -134,18 +153,14 @@ export default {
       },
       success: false,
       loading: false,
-      selectedRow: null,
-      gridOptions: {},
-      editForm: {}
+      editForm: {},
+      perPage: 10,
+      currentPage: 1
     }
   },
   methods: {
-    onStrataGridReady (params) {
-      this.strataGridApi = params.api
-      this.strataColumnApi = params.columnApi
-    },
-    handleDelete () {
-      this.$http.delete(`strata/${this.selectedRow}`).then((response) => {
+    deleteStrata (id) {
+      this.$http.delete(`strata/${id}`).then((response) => {
         this.$emit('strata-update')
         this.$noty.success('Soil layer deleted.')
       }).catch((e) => {
@@ -163,13 +178,14 @@ export default {
         this.loading = false
         this.resetForm()
         this.$emit('strata-update')
+        this.handleCloseNewStrataModal()
       }).catch((e) => {
         console.log(e)
         this.loading = false
         this.$noty.error('An error occurred while adding soil layer.')
       })
     },
-    handleEdit () {
+    submitEdit () {
       const data = Object.assign({}, this.toStrings(this.editForm))
       const strataId = data.id
       delete data.id
@@ -191,28 +207,37 @@ export default {
         description: ''
       }
     },
-    onSelectionChanged () {
-      const selection = this.strataGridApi.getSelectedNodes()
-      const rowData = selection.map((item) => (item.data))
-      if (rowData && rowData.length) {
-        this.selectedRow = rowData[0].id
-        this.editForm = Object.assign({}, rowData[0])
-      } else {
-        this.selectedRow = null
-      }
-    },
     handleResetEdit () {
-      const selection = this.strataGridApi.getSelectedNodes()
-      const rowData = selection.map((item) => (item.data))
-      if (rowData && rowData.length) {
-        this.editForm = Object.assign({}, rowData[0])
-      }
+
     },
     toStrings (o) {
       Object.keys(o).forEach((k) => {
         o[k] = '' + o[k]
       })
       return o
+    },
+    handleEdit (row) {
+      this.editForm = Object.assign({}, row)
+      this.editStrataModal = true
+    },
+    handleDelete (id) {
+      this.$dialog.confirm({
+        message: 'Are you sure you want to delete this soil strata record?',
+        onConfirm: () => this.deleteStrata(id)
+      })
+    },
+    handleNewStrataModal () {
+      this.newStrataModal = true
+      this.$nextTick(() => {
+        if (this.$refs.strataStartInput) {
+          this.$refs.strataStartInput.focus()
+        }
+      })
+    },
+    handleCloseNewStrataModal () {
+      this.newStrataModal = false
+      this.resetForm()
+      this.$refs.newStrataBtn.focus()
     }
   }
 }

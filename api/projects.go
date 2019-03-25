@@ -60,7 +60,10 @@ func (s *server) listProjects(w http.ResponseWriter, req *http.Request) {
 	projectName := req.FormValue("project_name")
 	projectNumber := req.FormValue("project_number")
 
-	projects, err := s.datastore.AllProjects(projectName, projectNumber)
+	// generic search that searches in both name and number (and other columns, potentially...)
+	projectSearch := req.FormValue("search")
+
+	projects, err := s.datastore.AllProjects(projectName, projectNumber, projectSearch)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(500), 500)

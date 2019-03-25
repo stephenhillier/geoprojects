@@ -31,6 +31,11 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 
 					r.Get("/samples", api.listSamplesByProject)
 
+					r.Route("/files", func(r chi.Router) {
+						r.Post("/", api.NewFile)
+						r.Get("/", api.ListFiles)
+					})
+
 					// Lab test routes
 
 					r.Route("/lab/tests", func(r chi.Router) {

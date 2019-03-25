@@ -1,7 +1,7 @@
 <template>
   <div>
-    <b-row>
-      <b-col cols="12" lg="6" xl="6">
+    <div class="columns">
+      <div class="column">
         <h1>{{ borehole.name }}</h1>
         <h5>Summary</h5>
         <div v-if="borehole.location && borehole.location.length">Location: {{ latitude.toFixed(6) }}, {{ longitude.toFixed(6) }}</div>
@@ -13,30 +13,20 @@
         <div>Logged soil strata: {{ borehole.strata_count }}</div>
         <div>Samples: 0</div>
         <div>Lab tests: 0</div>
-      </b-col>
-      <b-col cols="12" lg="6" xl="6">
-        <b-card no-body>
+      </div>
+      <div class="column">
+        <div class="is-480-map">
           <single-marker-map :latitude="latitude" :longitude="longitude"></single-marker-map>
-        </b-card>
-      </b-col>
-    </b-row>
-    <b-row class="mt-3 no-gutters">
-      <b-col class="p-0 m-0">
-        <b-card no-body>
-          <b-tabs pills card>
-            <b-tab title="Stratigraphy" class="p-2 p-lg-3">
-              <strata-grid :strataRowData="strataRowData" @strata-update="fetchStrata"/>
-            </b-tab>
-            <b-tab title="Samples" class="p-2 p-lg-3">
-              <sample-grid :sampleRowData="sampleRowData" @sample-update="fetchSamples();fetchLabTests()"/>
-            </b-tab>
-            <b-tab title="Lab testing" class="p-2 p-lg-3">
-              <lab-test-grid :labTestRowData="labTestingRowData" :sampleOptions="sampleRowData" @labtest-update="fetchLabTests" />
-            </b-tab>
-          </b-tabs>
-        </b-card>
-      </b-col>
-    </b-row>
+        </div>
+      </div>
+    </div>
+
+    <strata-grid :strataRowData="strataRowData" @strata-update="fetchStrata"/>
+
+    <sample-grid :samples="sampleRowData" @sample-update="fetchSamples();fetchLabTests()"/>
+
+    <test-grid :testRowData="labTestingRowData" :sampleOptions="sampleRowData" @test-update="fetchLabTests" />
+
   </div>
 </template>
 
@@ -44,7 +34,7 @@
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 import StrataGrid from '@/components/dashboard/boreholes/grids/StrataGrid.vue'
 import SampleGrid from '@/components/dashboard/boreholes/grids/SampleGrid.vue'
-import LabTestGrid from '@/components/dashboard/boreholes/grids/LabTestGrid.vue'
+import TestGrid from '@/components/dashboard/boreholes/grids/TestGrid.vue'
 
 import { AgGridVue } from 'ag-grid-vue'
 
@@ -53,7 +43,7 @@ export default {
   components: {
     SingleMarkerMap,
     StrataGrid,
-    LabTestGrid,
+    TestGrid,
     AgGridVue,
     SampleGrid
   },
