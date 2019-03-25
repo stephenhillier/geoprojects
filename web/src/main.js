@@ -26,7 +26,8 @@ import {
   faExclamationCircle,
   faCog,
   faArrowDown,
-  faCalendar
+  faCalendar,
+  faUpload
 } from '@fortawesome/free-solid-svg-icons'
 import { faTrashAlt, faPlusSquare, faTimesCircle, faFile, faFileAlt, faDotCircle, faClipboard, faEdit } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -41,6 +42,8 @@ import './ag-grid.scss'
 import 'vuejs-noty/dist/vuejs-noty.css'
 
 import Buefy from 'buefy'
+
+Vue.use(require('vue-moment'))
 
 Vue.use(Buefy, {
   defaultIconComponent: 'font-awesome-icon',
@@ -74,7 +77,8 @@ library.add(
   faArrowDown,
   faExclamationCircle,
   faCog,
-  faCalendar
+  faCalendar,
+  faUpload
 )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('form-input', FormInput)

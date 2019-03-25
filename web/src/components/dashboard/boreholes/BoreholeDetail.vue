@@ -22,10 +22,10 @@
     </div>
 
     <strata-grid :strataRowData="strataRowData" @strata-update="fetchStrata"/>
-<!--
-    <sample-grid :sampleRowData="sampleRowData" @sample-update="fetchSamples();fetchLabTests()"/>
 
-    <lab-test-grid :labTestRowData="labTestingRowData" :sampleOptions="sampleRowData" @labtest-update="fetchLabTests" /> -->
+    <sample-grid :samples="sampleRowData" @sample-update="fetchSamples();fetchLabTests()"/>
+
+    <test-grid :testRowData="labTestingRowData" :sampleOptions="sampleRowData" @test-update="fetchLabTests" />
 
   </div>
 </template>
@@ -34,7 +34,7 @@
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
 import StrataGrid from '@/components/dashboard/boreholes/grids/StrataGrid.vue'
 import SampleGrid from '@/components/dashboard/boreholes/grids/SampleGrid.vue'
-import LabTestGrid from '@/components/dashboard/boreholes/grids/LabTestGrid.vue'
+import TestGrid from '@/components/dashboard/boreholes/grids/TestGrid.vue'
 
 import { AgGridVue } from 'ag-grid-vue'
 
@@ -43,7 +43,7 @@ export default {
   components: {
     SingleMarkerMap,
     StrataGrid,
-    LabTestGrid,
+    TestGrid,
     AgGridVue,
     SampleGrid
   },

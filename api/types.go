@@ -87,6 +87,15 @@ func (v *NullDate) UnmarshalJSON(b []byte) error {
 	v.Time = date
 	v.Valid = (err == nil)
 
+	// If we didn't get a valid date using the full layout, try again with
+	// a simplified layout. (YYYY-MM-DD format)
+	if !v.Valid {
+		simpleLayout := "2006-01-02"
+		date, err = time.Parse(simpleLayout, dateString)
+		v.Time = date
+		v.Valid = (err == nil)
+	}
+
 	log.Println(date, err)
 	return nil
 }

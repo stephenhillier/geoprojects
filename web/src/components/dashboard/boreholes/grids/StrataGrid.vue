@@ -80,7 +80,7 @@
 
     <b-modal :active.sync="editStrataModal" id="editStrataModal" ref="editStrataModal" @close="handleResetEdit">
       <div class="modal-card">
-        <form @submit.stop.prevent="handleEdit">
+        <form @submit.stop.prevent="submitEdit">
           <header class="modal-card-head">
             <p class="modal-card-title">Edit strata</p>
           </header>
@@ -229,7 +229,9 @@ export default {
     handleNewStrataModal () {
       this.newStrataModal = true
       this.$nextTick(() => {
-        this.$refs.strataStartInput.focus()
+        if (this.$refs.strataStartInput) {
+          this.$refs.strataStartInput.focus()
+        }
       })
     },
     handleCloseNewStrataModal () {

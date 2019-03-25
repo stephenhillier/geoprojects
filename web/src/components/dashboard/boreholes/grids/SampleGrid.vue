@@ -1,113 +1,146 @@
 <template>
   <div>
-    <h5>
+    <h2 class="subtitle">
       Soil Samples
-      <b-btn v-b-modal.newSampleModal size="sm" class="ml-5" variant="info">Add sample</b-btn>
-      <b-btn v-b-modal.editSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Edit sample</b-btn>
-      <b-btn v-b-modal.deleteSampleModal size="sm" variant="dark" class="ml-2" :disabled="!selectedRow">Delete sample</b-btn>
-    </h5>
+    </h2>
+    <button ref="newSampleBtn" @click="handleNewSampleModal" class="button">Add soil sample</button>
+
+      <b-table
+          :data="samples"
+          paginated
+          :per-page="perPage"
+          :current-page.sync="currentPage"
+      >
+        <template slot-scope="props">
+            <b-table-column field="start" label="From" class="is-narrow">
+                {{ props.row.start }}
+            </b-table-column>
+            <b-table-column field="end" label="To" class="is-narrow">
+                {{ props.row.end }}
+            </b-table-column>
+            <b-table-column field="name" label="Name">
+                {{ props.row.name }}
+            </b-table-column>
+            <b-table-column field="actions" label="Actions" class="is-narrow">
+              <button class="button is-small" @click="handleEdit(props.row)"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
+              <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
+            </b-table-column>
+        </template>
+      </b-table>
 
     <!-- New sample modal -->
-    <b-modal id="newSampleModal" centered title="Add a new sample" @ok="handleSubmit" @cancel="resetForm" @keydown.native.enter="handleSubmit">
-      <b-container fluid>
-        <b-form @submit.stop.prevent="handleSubmit">
-          <b-row>
-            <b-col cols="12" lg="12" xl="6">
-              <form-input
-                id="sampleStartInput"
-                label="From"
-                required
-                v-model="form.start"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="2" xl="6">
-              <form-input
-                id="sampleEndInput"
-                label="To"
-                required
-                v-model="form.end"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="12" xl="12">
-              <form-input
-                id="sampleNameInput"
-                label="Name"
-                hint="Sample name, e.g. SA-1"
-                required
-                v-model="form.name"
-              ></form-input>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-container>
+    <b-modal :active.sync="newSampleModal" id="newSampleModal" title="Add a new sample" @close="handleCloseNewSampleModal">
+      <div class="modal-card" style="width: auto">
+        <form @submit.stop.prevent="handleSubmit">
+          <fieldset :disabled="loading">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Add sample</p>
+            </header>
+            <section class="modal-card-body">
+                <div class="columns">
+                  <div class="column">
+                    <b-field label="From">
+                      <b-input
+                        required
+                        ref="sampleStartInput"
+                        id="sampleStartInput"
+                        message="Depth (m)"
+                        v-model="form.start"
+                      ></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="To">
+                      <b-input
+                        required
+                        id="sampleEndInput"
+                        message="Depth (m)"
+                        v-model="form.end"
+                    ></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column">
+                    <b-field label="Sample name">
+                      <b-input
+                        id="sampleNameInput"
+                        message="Sample name, e.g. SA-1"
+                        required
+                        v-model="form.name"
+                    ></b-input>
+                    </b-field>
+                  </div>
+                </div>
+
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" type="button" @click="newSampleModal = false">Close</button>
+                <button class="button is-primary">Add sample</button>
+            </footer>
+          </fieldset>
+        </form>
+      </div>
     </b-modal>
 
-    <b-modal id="editSampleModal" centered ref="editSampleModal" title="Edit sample" @ok="handleEdit" @cancel="handleResetEdit" @keydown.native.enter="handleEdit;$refs.editSampleModal.hide()">
-      <b-container fluid>
-        <b-form @submit.stop.prevent="">
-          <b-row>
-            <b-col cols="12" lg="12" xl="6">
-              <form-input
-                id="sampleStartEditInput"
-                label="From"
-                required
-                v-model="editForm.start"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="2" xl="6">
-              <form-input
-                id="sampleEndEditInput"
-                label="To"
-                required
-                v-model="editForm.end"
-                hint="Depth (m)"
-              ></form-input>
-            </b-col>
-            <b-col cols="12" lg="12" xl="12">
-              <form-input
-                id="sampleNameEditInput"
-                label="Name"
-                hint="Sample name, e.g. SA-1"
-                required
-                v-model="editForm.name"
-              ></form-input>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-container>
+    <b-modal :active.sync="editSampleModal" id="editSampleModal" ref="editSampleModal" @close="handleResetEdit">
+      <div class="modal-card">
+        <form @submit.stop.prevent="submitEdit">
+          <fieldset :disabled="loading">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Edit sample</p>
+            </header>
+            <section class="modal-card-body">
+            <div class="columns">
+              <div class="column">
+                <b-field label="From">
+                  <b-input
+                    required
+                    id="sampleEditStartInput"
+                    ref="sampleStartEditInput"
+                    message="Depth (m)"
+                    v-model="editForm.start"
+                ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="To">
+                  <b-input
+                    required
+                    id="sampleEditEndInput"
+                    message="Depth (m)"
+                    v-model="editForm.end"
+                ></b-input>
+                </b-field>
+              </div>
+              <div class="column">
+                <b-field label="Name">
+                  <b-input
+                        id="sampleNameInput"
+                        message="Sample name, e.g. SA-1"
+                        required
+                        v-model="editForm.name"
+                ></b-input>
+                </b-field>
+              </div>
+            </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button" type="button" @click="editSampleModal = false">Cancel</button>
+                <button class="button is-primary">Save</button>
+            </footer>
+          </fieldset>
+        </form>
+      </div>
     </b-modal>
-
-    <!-- Delete sample confirmation -->
-    <b-modal id="deleteSampleModal" centered @ok="handleDelete" title="Confirm delete">
-      Are you sure you want to delete this sample?
-    </b-modal>
-
-    <ag-grid-vue style="height: 400px;"
-          class="ag-theme-balham mb-3"
-          rowSelection="single"
-          :columnDefs="sampleColumnDefs"
-          :rowData="sampleRowData"
-          :gridReady="onSampleGridReady"
-          :selectionChanged="onSelectionChanged"
-          >
-      </ag-grid-vue>
   </div>
-
 </template>
 
 <script>
-import { AgGridVue } from 'ag-grid-vue'
 
 export default {
   name: 'SampleGrid',
-  components: {
-    AgGridVue
-  },
+
   props: {
-    sampleRowData: {
+    samples: {
       type: Array,
       default: () => ([])
     },
@@ -115,14 +148,11 @@ export default {
   },
   data () {
     return {
+      newSampleModal: false,
+      editSampleModal: false,
+      sampleIsBusy: false,
       addNewSample: false,
-      sampleGridApi: null,
-      sampleColumnApi: null,
-      sampleColumnDefs: [
-        { headerName: 'From (m)', field: 'start', width: 110 },
-        { headerName: 'To (m)', field: 'end', width: 110 },
-        { headerName: 'Name', field: 'name', width: 150 }
-      ],
+      fields: [],
       form: {
         start: '',
         end: '',
@@ -130,85 +160,97 @@ export default {
       },
       success: false,
       loading: false,
-      selectedRow: null,
-      editForm: {}
+      editForm: {},
+      perPage: 10,
+      currentPage: 1
     }
   },
   methods: {
-    onSampleGridReady (params) {
-      this.sampleGridApi = params.api
-      this.sampleColumnApi = params.columnApi
+    deleteSample (id) {
+      this.$http.delete(`boreholes/${this.$route.params.bh}/samples/${id}`).then((response) => {
+        this.$emit('sample-update')
+        this.$noty.success('Soil sample deleted.')
+      }).catch((e) => {
+        console.error(e)
+        this.$noty.error('An error occurred while deleting soil sample.')
+      })
     },
     handleSubmit () {
       const data = Object.assign({}, this.form)
+      data.borehole = this.$route.params.bh
 
       this.loading = true
       this.$http.post(`boreholes/${this.$route.params.bh}/samples`, data).then((response) => {
+        this.$noty.success('Soil sample added.')
         this.loading = false
         this.resetForm()
         this.$emit('sample-update')
-        this.$emit('sample-dismiss')
-        this.$noty.success('Sample created.')
+        this.handleCloseNewSampleModal()
       }).catch((e) => {
         console.log(e)
         this.loading = false
+        this.$noty.error('An error occurred while adding soil sample.')
       })
     },
-    handleEdit () {
+    submitEdit () {
       const data = Object.assign({}, this.toStrings(this.editForm))
       const sampleId = data.id
       delete data.id
 
       this.loading = true
       this.$http.put(`boreholes/${this.$route.params.bh}/samples/${sampleId}`, data).then((response) => {
+        this.$noty.success('Soil sample updated.')
         this.loading = false
-        this.$noty.success('Sample updated.')
         this.$emit('sample-update')
+        this.editSampleModal = false
       }).catch((e) => {
         this.loading = false
-        this.$noty.error('An error occurred while updating sample.')
+        this.$noty.error('An error occurred while updating soil sample.')
       })
     },
     resetForm () {
       this.form = {
         start: '',
         end: '',
-        name: ''
-      }
-    },
-    onSelectionChanged () {
-      const selection = this.sampleGridApi.getSelectedNodes()
-      const rowData = selection.map((item) => (item.data))
-      if (rowData && rowData.length) {
-        this.selectedRow = rowData[0].id
-        this.editForm = Object.assign({}, rowData[0])
-      } else {
-        this.selectedRow = null
+        description: ''
       }
     },
     handleResetEdit () {
-      const selection = this.sampleGridApi.getSelectedNodes()
-      const rowData = selection.map((item) => (item.data))
-      if (rowData && rowData.length) {
-        this.editForm = Object.assign({}, rowData[0])
-      }
-    },
-    handleDelete () {
-      this.loading = true
-      this.$http.delete(`boreholes/${this.$route.params.bh}/samples/${this.selectedRow}`).then((response) => {
-        this.$emit('sample-update')
-        this.loading = false
-        this.$noty.success('Sample deleted.')
-      }).catch((e) => {
-        this.loading = false
-        this.$noty.error('An error occurred while deleting sample.')
-      })
+
     },
     toStrings (o) {
       Object.keys(o).forEach((k) => {
         o[k] = '' + o[k]
       })
       return o
+    },
+    handleEdit (row) {
+      this.editForm = Object.assign({}, row)
+      this.editSampleModal = true
+      this.$nextTick(() => {
+        if (this.$refs.sampleStartEditInput) {
+          this.$refs.sampleStartEditInput.focus()
+        }
+      })
+    },
+    handleDelete (id) {
+      this.$dialog.confirm({
+        message: 'Are you sure you want to delete this soil sample record?',
+        onConfirm: () => this.deleteSample(id)
+      })
+    },
+    handleNewSampleModal () {
+      this.newSampleModal = true
+      this.$nextTick(() => {
+        if (this.$refs.sampleStartInput) {
+          this.$refs.sampleStartInput.focus()
+        }
+      })
+    },
+    handleCloseNewSampleModal () {
+      this.newSampleModal = false
+      this.resetForm()
+      this.$refs.newSampleBtn.focus()
     }
   }
 }

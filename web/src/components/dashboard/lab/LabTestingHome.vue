@@ -1,26 +1,26 @@
 <template>
   <div>
-    <b-row>
-      <b-col>
-        <h1>Lab Testing</h1>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <lab-test-grid :labTestRowData="labTestingRowData" :sampleOptions="sampleRowData" @labtest-update="fetchLabTests" />
-      </b-col>
-    </b-row>
+    <div class="columns">
+      <div class="column">
+        <h1 class="title">Lab Testing</h1>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <test-grid :testRowData="labTestingRowData" :sampleOptions="sampleRowData" @test-update="fetchLabTests" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import LabTestGrid from '@/components/dashboard/boreholes/grids/LabTestGrid.vue'
+import TestGrid from '@/components/dashboard/boreholes/grids/TestGrid.vue'
 
 export default {
   name: 'LabTesting',
   props: ['project'],
   components: {
-    LabTestGrid
+    TestGrid
   },
   data () {
     return {

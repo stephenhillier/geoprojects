@@ -24,7 +24,7 @@ func (db *Datastore) AllProjects(name string, number string, search string) ([]P
 	var err error
 
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	projectsQuery, queryArgs, err := psql.Select(`
+	q := psql.Select(`
 			project.id,
 			project.name,
 			project.number,
@@ -34,16 +34,21 @@ func (db *Datastore) AllProjects(name string, number string, search string) ([]P
 			ST_AsBinary(st_transform(st_centroid(st_union(st_transform(datapoint.location::geometry, 26910))), 4326)::geography) as centroid
 			`).
 		From("project").
-		Join("borehole ON (borehole.project = project.id)").
-		LeftJoin("datapoint ON (borehole.datapoint = datapoint.id)").
-		Where(
+		LeftJoin("borehole ON (borehole.project = project.id)").
+		LeftJoin("datapoint ON (borehole.datapoint = datapoint.id)")
+
+	if search != "" {
+		q = q.Where(
 			sq.Or{
 				sq.Like{"LOWER(project.name)": strings.ToLower(fmt.Sprint("%", search, "%"))},
 				sq.Like{"LOWER(project.number)": strings.ToLower(fmt.Sprint("%", search, "%"))},
 			},
-		).
-		GroupBy("project.id").
-		ToSql()
+		)
+	}
+
+	q = q.GroupBy("project.id")
+
+	projectsQuery, queryArgs, err := q.ToSql()
 
 	if err != nil {
 		return projects, err
@@ -55,6 +60,10 @@ func (db *Datastore) AllProjects(name string, number string, search string) ([]P
 		log.Println(projectsQuery)
 		return []Project{}, err
 	}
+
+	log.Println(projectsQuery)
+	log.Println(projects)
+
 	return projects, nil
 }
 

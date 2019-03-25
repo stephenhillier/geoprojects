@@ -188,6 +188,24 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 		CREATE UNIQUE INDEX pan_idx ON gsa_data (test) WHERE pan
 	`
 
+	createFileType := `
+		CREATE TYPE project_file_code AS ENUM (
+			'report', 'lab_report', 'calculation', 'proposal', 'budget', 'field_data', 'other'
+		)
+	`
+
+	createFileTable := `
+		CREATE TABLE IF NOT EXISTS project_file(
+			id SERIAL PRIMARY KEY,
+			project INTEGER NOT NULL REFERENCES project(id) ON DELETE CASCADE,
+			category project_file_code NOT NULL,
+			file BYTEA NOT NULL,
+			filename TEXT NOT NULL CHECK (char_length(filename) < 250),
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			created_by TEXT NOT NULL CHECK (char_length(created_by) < 250)
+		)
+	`
+
 	// migrations
 	createMigrationsTable := `CREATE TABLE IF NOT EXISTS migration(
 		id INTEGER PRIMARY KEY,
@@ -219,6 +237,10 @@ func migrate(db *sqlx.DB) (migrated bool, err error) {
 	tx.MustExec(createGSATestTable)
 	tx.MustExec(createGSADataTable)
 	tx.MustExec(createGSADataUniqueIndex)
+
+	// 2019-3-23
+	tx.MustExec(createFileType)
+	tx.MustExec(createFileTable)
 
 	tx.MustExec(registerMigration)
 	err = tx.Commit()

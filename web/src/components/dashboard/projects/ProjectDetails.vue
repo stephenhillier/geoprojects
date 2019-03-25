@@ -95,6 +95,8 @@
         </b-table>
       </div>
 
+      <project-files :files="projectFiles" :project="project" @updated="fetchFiles"></project-files>
+
       <b-modal :active.sync="isEditModalActive" @close="handleResetEdit">
         <form action="" @submit.prevent="handleEdit">
                 <div class="modal-card" style="width: auto">
@@ -170,18 +172,21 @@
 <script>
 import { AgGridVue } from 'ag-grid-vue'
 import MultiMarkerMap from '@/components/common/MultiMarkerMap.vue'
+import ProjectFiles from './ProjectFiles.vue'
 
 export default {
   name: 'ProjectDetails',
   props: ['project'],
   components: {
     MultiMarkerMap,
-    AgGridVue
+    AgGridVue,
+    ProjectFiles
   },
   data () {
     return {
       isEditModalActive: false,
       boreholes: [],
+      projectFiles: [],
       currentPage: 1,
       perPage: 10,
       isBusy: false,
@@ -242,10 +247,18 @@ export default {
         message: 'Are you sure you want to delete this project?',
         onConfirm: this.deleteProject
       })
+    },
+    fetchFiles () {
+      this.$http.get(`projects/${this.$route.params.id}/files`).then((r) => {
+        this.projectFiles = r.data || []
+      }).catch((e) => {
+        this.$noty.error('Error retrieving project files. Please try again later.')
+      })
     }
   },
   created () {
     this.fetchBoreholes()
+    this.fetchFiles()
     this.editForm = Object.assign({}, this.project)
     // if (!JSON.parse(localStorage.getItem('earthworks-tutorial-project-summary'))) {
     //   setTimeout(() => {
