@@ -33,7 +33,6 @@
                 {{ props.row.description }}
             </b-table-column>
             <b-table-column field="actions" label="Actions" class="is-narrow">
-              <button class="button is-small"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
               <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
             </b-table-column>
         </template>
@@ -67,54 +66,6 @@
         </form>
       </div>
     </b-modal>
-<!--
-    <b-modal :active.sync="editTestModal" id="editTestModal" ref="editTestModal" @close="handleResetEdit">
-      <div class="modal-card">
-        <form @submit.stop.prevent="submitEdit">
-          <header class="modal-card-head">
-            <p class="modal-card-title">Edit test</p>
-          </header>
-          <section class="modal-card-body">
-          <div class="columns">
-            <div class="column">
-              <b-field label="From">
-                <b-input
-                  required
-                  id="testEditStartInput"
-                  ref="testStartEditInput"
-                  message="Depth (m)"
-                  v-model="editForm.start"
-              ></b-input>
-              </b-field>
-            </div>
-            <div class="column">
-              <b-field label="To">
-                <b-input
-                  required
-                  id="testEditEndInput"
-                  message="Depth (m)"
-                  v-model="editForm.end"
-              ></b-input>
-              </b-field>
-            </div>
-            <div class="column">
-              <b-field label="Description">
-                <b-input
-                  required
-                  id="testEditDescInput"
-                  v-model="editForm.description"
-              ></b-input>
-              </b-field>
-            </div>
-          </div>
-          </section>
-          <footer class="modal-card-foot">
-              <button class="button" type="button" @click="editTestModal = false">Cancel</button>
-              <button class="button is-primary">Save</button>
-          </footer>
-        </form>
-      </div>
-    </b-modal> -->
   </div>
 </template>
 

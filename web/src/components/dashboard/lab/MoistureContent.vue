@@ -1,65 +1,57 @@
 <template>
-  <b-card>
-    <b-row>
-      <b-col>
+  <div class="is-fullheight">
+    <div class="columns">
+      <div class="column">
         <h4 class="card-title">Lab Testing: Moisture content</h4>
         <h5 class="font-weight-bold">{{ sample.borehole_name }} {{ sample.sample_name }}</h5>
         <h6 class="text-muted">{{project.name}}</h6>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-form @submit.prevent="handleSubmit">
-          <b-row>
-            <b-col cols="12">
-              <form-input
-                id="moistureContentTare"
-                label="Tare mass (g)"
-                required
-                v-model="sample.tare_mass"
-              ></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12">
-              <form-input
-                id="moistureContentSampleMass"
-                label="Sample mass (g)"
-                required
-                hint="Sample mass (including tare) in grams"
-                v-model="sample.sample_plus_tare"
-              ></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12">
-              <form-input
-                id="moistureContentDryMass"
-                label="Dry mass (g)"
-                required
-                hint="Dried sample mass (including tare) in grams"
-                v-model="sample.dry_plus_tare"
-              ></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-btn type="submit" variant="info">Save</b-btn>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-col>
-      <b-col>
-        <div class="h6">Results</div>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <form @submit.prevent="handleSubmit">
+          <b-field label="Tare mass (g)">
+            <b-input
+              id="moistureContentTare"
+              type="text"
+              required
+              v-model="sample.tare_mass"
+            ></b-input>
+          </b-field>
+          <b-field label="Sample mass (g)">
+            <b-input
+              id="moistureContentSampleMass"
+              type="text"
+              message="Sample mass (including tare) in grams"
+              required
+              v-model="sample.sample_plus_tare"
+            ></b-input>
+          </b-field>
+          <b-field label="Dry mass (g)">
+            <b-input
+              id="moistureContentDryMass"
+              type="text"
+              message="Dried sample mass (including tare) in grams"
+              required
+              v-model="sample.dry_plus_tare"
+            ></b-input>
+          </b-field>
+
+          <button class="button is-primary" type="submit">Save</button>
+
+        </form>
+      </div>
+      <div class="column">
+        <h2 class="subtitle">Results</h2>
         <div>
           Moisture content:
           <span v-if="calculatedMoisture" class="font-weight-bold">
             {{ calculatedMoisture.toFixed(2) }} %
           </span>
         </div>
-      </b-col>
-    </b-row>
-  </b-card>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

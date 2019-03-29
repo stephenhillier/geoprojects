@@ -1,85 +1,101 @@
 <template>
   <div>
-    <b-row class="mt-4">
-      <b-col cols="12" md="8">
-        <h4 class="card-title">Lab Testing: Grain size analysis</h4>
-        <h5 class="font-weight-bold">{{ sample.borehole_name }} {{ sample.sample_name }}</h5>
-        <h6 class="text-muted">{{project.name}}</h6>
-      </b-col>
-      <b-col cols="12" md="4">
-        <b-btn size="sm">Help</b-btn>
-        <b-btn class="ml-3" variant="outline-primary" size="sm" :href="`${fileHost}/logs/${$route.params.id}/sieves/${sample.id}/${sample.borehole_name}-${sample.sample_name}-Sieve analysis.pdf`" target="_blank">
+    <div class="columns">
+      <div class="column">
+        <h1 class="title">Lab Testing: Grain size analysis</h1>
+        <h2 class="subtitle">{{ sample.borehole_name }} {{ sample.sample_name }}</h2>
+        <h2 class="subtitle">{{project.name}}</h2>
+      </div>
+      <div class="column">
+        <button class="button">Help</button>
+        <button class="button ml-1" :href="`${fileHost}/logs/${$route.params.id}/sieves/${sample.id}/${sample.borehole_name}-${sample.sample_name}-Sieve analysis.pdf`" target="_blank">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
             Export to PDF
-        </b-btn>
-      </b-col>
-    </b-row>
-    <b-row class="mt-5">
-      <b-col cols="12" md="5">
-        <b-form @submit.prevent="handleSubmit">
-          <b-row class="mt-3">
-            <b-col>
+        </button>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <form @submit.prevent="handleSubmit">
+          <div class="columns">
+            <div class="column">
               <h5>Sample details</h5>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <form-input id="sampleTare" label="Tare mass" v-model="sample.tare_mass"></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <form-input id="sampleDryMass" label="Dry sample (plus tare)" v-model="sample.dry_plus_tare"></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <form-input id="sampleWashedMass" label="Washed sample (plus tare)" v-model="sample.washed_plus_tare"></form-input>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col>
+            </div>
+          </div>
+          <b-field label="Tare mass">
+            <b-input
+              id="sampleTare"
+              type="text"
+              v-model="sample.tare_mass"
+            ></b-input>
+          </b-field>
+          <b-field label="Dry sample (plus tare)">
+            <b-input
+              id="sampleDryMass"
+              type="text"
+              v-model="sample.dry_plus_tare"
+            ></b-input>
+          </b-field>
+          <b-field label="Washed sample (plus tare)">
+            <b-input
+              id="sampleWashedMass"
+              type="text"
+              v-model="sample.washed_plus_tare"
+            ></b-input>
+          </b-field>
+          <div class="columns">
+            <div class="column">
               <h5>Sieve masses</h5>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
               <table class="table">
                 <thead>
                   <th class="text-dark table-heading col-5">Size</th>
                   <th class="text-dark table-heading col-5">Mass retained</th>
-                  <th class="col-2"><b-btn size="sm" variant="outline-primary" @click="handleAddSieve">Add <span class="d-none d-sm-inline"> sieve</span></b-btn></th>
+                  <th class="col-2"><button class="button" type="button" @click="handleAddSieve">Add sieve</button></th>
                 </thead>
                 <tbody>
                   <template v-for="(sieve, i) in sample.sieves">
                     <tr :key="`sieve${i}`">
                       <td>
-                        <form-input :id="`size${i}`" groupClass="p-0 m-0" v-model="sample.sieves[i].size" :disabled="sample.sieves[i].pan"></form-input>
+                        <b-input
+                          :id="`size${i}`"
+                          type="text"
+                          v-model="sample.sieves[i].size"
+                          :disabled="sample.sieves[i].pan"
+                          required
+                        ></b-input>
                       </td>
                       <td>
-                        <form-input :id="`mass${i}`" groupClass="p-0 m-0" v-model="sample.sieves[i].mass_retained"></form-input>
+                        <b-input
+                          :id="`mass${i}`"
+                          type="text"
+                          v-model="sample.sieves[i].mass_retained"
+                        ></b-input>
                       </td>
                       <td class="align-middle text-center">
-                        <b-btn size="sm" @click="handleRemoveSieve(i)" v-if="!sample.sieves[i].pan"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></b-btn>
+                        <button type="button" class="button" @click="handleRemoveSieve(i)" v-if="!sample.sieves[i].pan"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
                       </td>
                     </tr>
                   </template>
                 </tbody>
               </table>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">
-              <b-btn type="submit" variant="primary">Update</b-btn>
-            </b-col>
-          </b-row>
-        </b-form>
-      </b-col>
-      <b-col cols="12" md="7" class="pl-md-5">
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <button class="button is-primary" type="submit">Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="column">
         <!-- <apexchart width="100%" type="line" :options="sieveOptions" :series="sieveSeries"></apexchart> -->
         <gsa-chart :chart-data="chartData" :options="chartOptions" v-if="chartData.datasets && chartData.datasets.length && chartData.datasets[0].data.length"></gsa-chart>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </div>
 </template>
 

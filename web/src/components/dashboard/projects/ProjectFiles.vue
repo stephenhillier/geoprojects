@@ -79,7 +79,9 @@ export default {
     return {
       dropFiles: [],
       loading: false,
-      showSuperseded: false
+      showSuperseded: false,
+      perPage: 10,
+      currentPage: 1
     }
   },
   computed: {

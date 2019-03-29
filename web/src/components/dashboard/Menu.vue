@@ -44,4 +44,7 @@ export default {
     margin-left: 15px;
     width: 300px;
   }
+  ul.menu-list > li > .router-link-exact-active {
+    border-left: 2px solid #41438d;
+  }
 </style>

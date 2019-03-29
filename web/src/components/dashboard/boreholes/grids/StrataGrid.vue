@@ -194,6 +194,7 @@ export default {
       this.$http.put(`strata/${strataId}`, data).then((response) => {
         this.$noty.success('Soil layer updated.')
         this.loading = false
+        this.editStrataModal = false
         this.$emit('strata-update')
       }).catch((e) => {
         this.loading = false

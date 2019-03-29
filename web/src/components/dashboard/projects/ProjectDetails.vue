@@ -12,7 +12,7 @@
                   </button>
 
                   <b-dropdown-item aria-role="listitem">
-                    <a @click="isEditModalActive = true" href="#"><font-awesome-icon :icon="['far', 'edit']" class="text-muted"></font-awesome-icon> Edit</a>
+                    <a @click="handleEditProject" href="#"><font-awesome-icon :icon="['far', 'edit']" class="text-muted"></font-awesome-icon> Edit</a>
                   </b-dropdown-item>
                   <b-dropdown-item aria-role="listitem">
                     <router-link :to="{ name: 'new-borehole' }">
@@ -153,7 +153,7 @@
                     </section>
                     <footer class="modal-card-foot">
                         <button class="button" type="button" @click="isEditModalActive = false">Close</button>
-                        <button class="button is-primary" type="submit">Login</button>
+                        <button class="button is-primary" type="submit">Save</button>
                     </footer>
                 </div>
             </form>
@@ -254,12 +254,15 @@ export default {
       }).catch((e) => {
         this.$noty.error('Error retrieving project files. Please try again later.')
       })
+    },
+    handleEditProject () {
+      this.editForm = Object.assign({}, this.project)
+      this.isEditModalActive = true
     }
   },
   created () {
     this.fetchBoreholes()
     this.fetchFiles()
-    this.editForm = Object.assign({}, this.project)
     // if (!JSON.parse(localStorage.getItem('earthworks-tutorial-project-summary'))) {
     //   setTimeout(() => {
     //     this.$refs.tutorialProjectSummaryModal.show()
