@@ -47,3 +47,13 @@ func (db *Datastore) ListFiles(filter FileFilter) ([]File, error) {
 	return files, err
 
 }
+
+// GetFile retrieves a project file by its ID
+func (db *Datastore) GetFile(id int, project int) (FileObject, error) {
+	file := FileObject{}
+	q := `
+		SELECT file, filename FROM project_file WHERE id=$1 AND project=$2
+	`
+	err := db.QueryRowx(q, id, project).StructScan(&file)
+	return file, err
+}

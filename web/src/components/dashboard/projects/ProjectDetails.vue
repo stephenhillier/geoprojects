@@ -63,6 +63,8 @@
           <multi-marker-map :locations="boreholes" class="is-fullheight"></multi-marker-map>
         </div>
       </div>
+      <project-files :files="projectFiles" :project="project" @updated="fetchFiles"></project-files>
+
       <div class="section">
         <h2 class="subtitle">Boreholes</h2>
         <b-table
@@ -95,7 +97,6 @@
         </b-table>
       </div>
 
-      <project-files :files="projectFiles" :project="project" @updated="fetchFiles"></project-files>
 
       <b-modal :active.sync="isEditModalActive" @close="handleResetEdit">
         <form action="" @submit.prevent="handleEdit">

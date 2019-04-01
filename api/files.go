@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 )
 
@@ -27,6 +30,13 @@ type File struct {
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	CreatedBy  string    `json:"created_by" db:"created_by"`
 	Superseded bool      `json:"superseded"`
+}
+
+// FileObject is a struct that contains a byte slice,
+// for reading into and out of a database/file store.
+type FileObject struct {
+	File     []byte
+	Filename string
 }
 
 // FileFilter allows searching for files based on different criteria (project, file category etc)
@@ -114,4 +124,27 @@ func (s *server) ListFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, files)
+}
+
+func (s *server) GetFile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	project, ok := ctx.Value(projectCtx).(Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	fileID, err := strconv.Atoi(chi.URLParam(r, "fileID"))
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	file, err := s.datastore.GetFile(fileID, project.ID)
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+	}
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%s", file.Filename))
+	render.Data(w, r, file.File)
+
 }

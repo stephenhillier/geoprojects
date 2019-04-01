@@ -10,7 +10,7 @@
     >
       <template slot-scope="props">
           <b-table-column field="filename" label="Filename">
-            <a href="#">
+            <a href="#" @click.prevent="handleDownload(props.row.id, props.row.filename)">
               <span :class="props.row.superseded ? 'file-superseded' : ''">{{ props.row.filename }} {{ props.row.superseded ? '[superseded]' : '' }}</span>
             </a>
           </b-table-column>
@@ -18,60 +18,68 @@
             {{ props.row.created_at | moment("dddd, MMMM Do YYYY, h:mm:ss a") }}
           </b-table-column>
           <b-table-column field="actions" label="Actions" class="is-narrow">
-            <button class="button is-small"><font-awesome-icon :icon="['fas', 'download']"></font-awesome-icon></button>
-            <button class="button is-small ml"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
+            <button class="button is-small" @click="handleDownload(props.row.id, props.row.filename)"><font-awesome-icon :icon="['fas', 'download']"></font-awesome-icon></button>
             <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
           </b-table-column>
       </template>
     </b-table>
+    <button type="button" class="button is-primary" @click="isUploadModalActive=true">Upload files</button>
+    <b-modal :active.sync="isUploadModalActive">
+      <form @submit.prevent="handleFileUpload">
+        <div class="modal-card" style="width: 20rem;">
+          <section class="modal-card-body">
 
-    <form @submit.prevent="handleFileUpload">
-      <fieldset :disabled="loading" :class="loading ? 'upload-progress' : ''">
-        <b-field>
-            <b-upload v-model="dropFiles"
-                multiple
-                drag-drop>
-                <section class="section">
-                    <div class="content has-text-centered">
-                        <p>
-                            <b-icon
-                                icon="upload"
-                                size="is-large">
-                            </b-icon>
-                        </p>
-                        <p>Drop your files here or click to upload</p>
-                    </div>
-                </section>
-            </b-upload>
-        </b-field>
+            <fieldset :disabled="loading" :class="loading ? 'upload-progress' : ''">
+              <b-field>
+                  <b-upload v-model="dropFiles"
+                      multiple
+                      drag-drop>
+                      <section class="section">
+                          <div class="content has-text-centered">
+                              <p>
+                                  <b-icon
+                                      icon="upload"
+                                      size="is-large">
+                                  </b-icon>
+                              </p>
+                              <p>Drop your files here or click to upload</p>
+                          </div>
+                      </section>
+                  </b-upload>
+              </b-field>
 
-        <div class="tags">
-          <transition-group name="list" tag="span">
-              <span v-for="(file, index) in dropFiles"
-                  :key="index"
-                  class="tag is-primary list-item" >
-                  {{file.name}}
-                  <button class="delete is-small"
-                      type="button"
-                      @click="deleteDropFile(index)">
-                  </button>
-              </span>
-            </transition-group>
+              <div class="tags">
+                <transition-group name="list" tag="span">
+                    <span v-for="(file, index) in dropFiles"
+                        :key="index"
+                        class="tag is-primary list-item" >
+                        {{file.name}}
+                        <button class="delete is-small"
+                            type="button"
+                            @click="deleteDropFile(index)">
+                        </button>
+                    </span>
+                  </transition-group>
+              </div>
+              <b-field><!-- Label left empty for spacing -->
+                  <p class="control">
+                      <button type="submit" class="button is-primary" :disabled="!dropFiles.length">
+                        Upload files
+                      </button>
+                      <font-awesome-icon v-if="loading" :icon="['fas', 'spinner']" spin pulse class="loading-spinner" size="lg"></font-awesome-icon>
+                  </p>
+              </b-field>
+            </fieldset>
+          </section>
         </div>
-        <b-field><!-- Label left empty for spacing -->
-            <p class="control">
-                <button type="submit" class="button is-primary" :disabled="!dropFiles.length">
-                  Upload files
-                </button>
-                <font-awesome-icon v-if="loading" :icon="['fas', 'spinner']" spin pulse class="loading-spinner" size="lg"></font-awesome-icon>
-            </p>
-        </b-field>
-      </fieldset>
-    </form>
+      </form>
+    </b-modal>
+
   </section>
 </template>
 
 <script>
+import { saveAs } from 'file-saver'
 export default {
   name: 'ProjectFiles',
   props: ['project', 'files'],
@@ -81,7 +89,8 @@ export default {
       loading: false,
       showSuperseded: false,
       perPage: 10,
-      currentPage: 1
+      currentPage: 1,
+      isUploadModalActive: false
     }
   },
   computed: {
@@ -115,6 +124,7 @@ export default {
         this.$noty.error('Error uploading files. Please try again later.')
       }).finally(() => {
         this.loading = false
+        this.isUploadModalActive = false
       })
     },
     // delete a file staged for upload
@@ -124,6 +134,14 @@ export default {
     // delete a file on the server
     handleDelete (id) {
       console.log(id)
+    },
+    handleDownload (id, filename) {
+      this.$http.get(`projects/${this.$route.params.id}/files/${id}`, { responseType: 'blob' }).then((response) => {
+        const file = new Blob([response.data])
+        saveAs(file, filename)
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   }
 }

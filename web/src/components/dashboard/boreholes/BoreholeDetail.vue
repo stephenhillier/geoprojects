@@ -6,9 +6,9 @@
         <h5>Summary</h5>
         <div v-if="borehole.location && borehole.location.length">Location: {{ latitude.toFixed(6) }}, {{ longitude.toFixed(6) }}</div>
         <div>
-          Started: {{ borehole.start_date }}
+          Started: {{ borehole.start_date | moment('YYYY-MM-DD') }}
         </div>
-        <div>Completed: {{ borehole.end_date }}</div>
+        <div>Completed: {{ borehole.end_date | moment('YYYY-MM-DD') }}</div>
         <div>Logged by: {{ borehole.field_eng }}</div>
         <div>Logged soil strata: {{ borehole.strata_count }}</div>
         <div>Samples: 0</div>
