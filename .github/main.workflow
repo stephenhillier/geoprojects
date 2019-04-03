@@ -55,8 +55,10 @@ action "Rollout API server" {
 action "stephenhillier/apitest@master" {
   uses = "stephenhillier/apitest@master"
   needs = ["Rollout API server"]
-  secrets = ["AUTH0_CLIENT", "AUTH0_SECRET"]
   args = "-f .github/apitest/projects.apitest.yaml -e auth0_id=$AUTH0_ID -e auth0_secret=$AUTH0_SECRET"
+  secrets = ["AUTH0_ID", "AUTH0_SECRET"]
+
+  # backend API pipeline
 }
 
 # Frontend pipeline
@@ -112,4 +114,3 @@ action "web - deployment status" {
   runs = "sh -l -c"
   args = "KUBECONFIG=$HOME/.kubeconfig kubectl rollout -n earthworks status deploy/earthworks-web"
 }
-
