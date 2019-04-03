@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/paulmach/orb"
@@ -57,12 +56,8 @@ func (db *Datastore) AllProjects(name string, number string, search string) ([]P
 	err = db.Select(&projects, projectsQuery, queryArgs...)
 
 	if err != nil {
-		log.Println(projectsQuery)
 		return []Project{}, err
 	}
-
-	log.Println(projectsQuery)
-	log.Println(projects)
 
 	return projects, nil
 }

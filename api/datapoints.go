@@ -11,6 +11,7 @@ import (
 // order to reflect that drilling/subsurface sampling/instrumentation would
 // generally have been performed at the same physical location.
 type Datapoint struct {
-	ID       NullInt64 `json:"id"`
-	Location orb.Point `json:"location"`
+	ID        NullInt64   `json:"id"`
+	Location  orb.Point   `json:"location"`
+	Elevation NullFloat64 `json:"elevation"`
 }

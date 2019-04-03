@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -58,6 +59,21 @@ type Borehole struct {
 	StartDate NullDate  `json:"start_date" db:"start_date"`
 	EndDate   NullDate  `json:"end_date" db:"end_date"`
 	FieldEng  string    `json:"field_eng" db:"field_eng"`
+}
+
+// BoreholeV2 is a more comprehensive model that includes
+// more data that might be required for professional use
+type BoreholeV2 struct {
+	ID             int64          `json:"id"`
+	Project        NullInt64      `json:"project"`
+	Program        NullInt64      `json:"program"`
+	Datapoint      int64          `json:"datapoint"`
+	Name           string         `json:"name"`
+	StartDate      NullDate       `json:"start_date" db:"start_date"`
+	EndDate        NullDate       `json:"end_date" db:"end_date"`
+	FieldEng       string         `json:"field_eng" db:"field_eng"`
+	TotalDepth     float64        `json:"total_depth" db:"total_depth"`
+	DrillingMethod sql.NullString `json:"drilling_method" db:"drilling_method"`
 }
 
 // boreholeOptions responds to OPTIONS requests (and pre-flight requests)
