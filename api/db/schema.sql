@@ -285,6 +285,7 @@ CREATE TABLE public.project_file (
     filename text NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     created_by text NOT NULL,
+    expired_at timestamp without time zone,
     CONSTRAINT project_file_created_by_check CHECK ((char_length(created_by) < 250)),
     CONSTRAINT project_file_filename_check CHECK ((char_length(filename) < 250))
 );

@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS project_file(
     file BYTEA NOT NULL,
     filename TEXT NOT NULL CHECK (char_length(filename) < 250),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    created_by TEXT NOT NULL CHECK (char_length(created_by) < 250)
+    created_by TEXT NOT NULL CHECK (char_length(created_by) < 250),
+    expired_at TIMESTAMP NULL
 );
 
 -- migrate:down

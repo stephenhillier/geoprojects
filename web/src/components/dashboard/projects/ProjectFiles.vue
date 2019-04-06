@@ -108,23 +108,31 @@ export default {
     handleFileUpload () {
       this.loading = true
 
-      const formData = new FormData()
-      formData.append('file', this.dropFiles[0])
       const config = {
         headers: {
           'content-type': 'multipart/form-data'
         }
       }
 
-      this.$http.post(`projects/${this.$route.params.id}/files`, formData, config).then((response) => {
+      const staged = [...this.dropFiles]
+      const uploads = []
+
+      staged.forEach((file, i) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        const req = this.$http.post(`projects/${this.$route.params.id}/files`, formData, config)
+        uploads.push(req)
+      })
+
+      Promise.all(uploads).then((response) => {
         this.dropFiles = []
         this.$noty.success('Files successfully uploaded.')
-        this.$emit('updated', true)
       }).catch((e) => {
         this.$noty.error('Error uploading files. Please try again later.')
       }).finally(() => {
         this.loading = false
         this.isUploadModalActive = false
+        this.$emit('updated', true)
       })
     },
     // delete a file staged for upload
@@ -132,8 +140,19 @@ export default {
       this.dropFiles.splice(i, 1)
     },
     // delete a file on the server
+    deleteFile (id) {
+      this.$http.delete(`projects/${this.$route.params.id}/files/${id}`).then((response) => {
+        this.$emit('updated', true)
+        this.$noty.success('File deleted')
+      }).catch((e) => {
+        this.$noty.error('Error deleting file. Please try again later.')
+      })
+    },
     handleDelete (id) {
-      console.log(id)
+      this.$dialog.confirm({
+        message: 'Are you sure you want to delete this file?',
+        onConfirm: () => this.deleteFile(id)
+      })
     },
     handleDownload (id, filename) {
       this.$http.get(`projects/${this.$route.params.id}/files/${id}`, { responseType: 'blob' }).then((response) => {

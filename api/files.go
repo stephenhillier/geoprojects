@@ -30,6 +30,7 @@ type File struct {
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	CreatedBy  string    `json:"created_by" db:"created_by"`
 	Superseded bool      `json:"superseded"`
+	Archived   NullDate  `json:"archived,omitempty"`
 }
 
 // FileObject is a struct that contains a byte slice,
@@ -44,6 +45,7 @@ type FileFilter struct {
 	ID       int64  `json:"id" schema:"id"`
 	Project  int    `json:"project" schema:"project"`
 	Category string `json:"category" schema:"category"`
+	Archived bool   `json:"archived" schema:"archived"`
 }
 
 func (s *server) NewFile(w http.ResponseWriter, r *http.Request) {
@@ -146,5 +148,48 @@ func (s *server) GetFile(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%s", file.Filename))
 	render.Data(w, r, file.File)
+}
 
+func (s *server) DeleteFile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	project, ok := ctx.Value(projectCtx).(Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	fileID, err := strconv.Atoi(chi.URLParam(r, "fileID"))
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	err = s.datastore.DeleteFile(fileID, project.ID)
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+	}
+
+	render.Status(r, http.StatusNoContent)
+	return
+}
+
+func (s *server) RestoreFile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	project, ok := ctx.Value(projectCtx).(Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	fileID, err := strconv.Atoi(chi.URLParam(r, "fileID"))
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	err = s.datastore.RestoreFile(fileID, project.ID)
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+	}
+
+	render.Status(r, http.StatusOK)
+	return
 }
