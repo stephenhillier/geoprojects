@@ -38,6 +38,13 @@ action "Get DO kubeconfig" {
   args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
+# action "Migrate database" {
+#   uses = "docker://gcr.io/cloud-builders/kubectl"
+#   needs = ["Get DO kubeconfig"]
+#   runs = "sh -l -c"
+#   args = ["kubectl run api-migration -e DB_CONN=$DB_CONN --rm --image amacneil/dbmate -- -e DB_CONN migrate"]
+# }
+
 action "Apply deployment config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Get DO kubeconfig"]
