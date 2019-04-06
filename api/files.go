@@ -168,8 +168,7 @@ func (s *server) DeleteFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(404), 404)
 	}
 
-	render.Status(r, http.StatusNoContent)
-	return
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (s *server) RestoreFile(w http.ResponseWriter, r *http.Request) {
@@ -190,6 +189,5 @@ func (s *server) RestoreFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(404), 404)
 	}
 
-	render.Status(r, http.StatusOK)
-	return
+	w.WriteHeader(http.StatusOK)
 }

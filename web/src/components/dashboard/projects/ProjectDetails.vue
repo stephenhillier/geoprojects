@@ -80,10 +80,10 @@
               </b-table-column>
 
               <b-table-column field="start_date" label="Start date">
-                  {{ props.row.start_date }}
+                  {{ props.row.start_date | moment('YYYY-MM-DD') }}
               </b-table-column>
               <b-table-column field="end_date" label="End date">
-                  {{ props.row.end_date }}
+                  {{ props.row.end_date | moment('YYYY-MM-DD') }}
               </b-table-column>
               <b-table-column field="field_eng" label="Field technician/engineer">
                   {{ props.row.field_eng }}
