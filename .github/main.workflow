@@ -38,16 +38,21 @@ action "Get DO kubeconfig" {
   args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
-# action "Migrate database" {
-#   uses = "docker://gcr.io/cloud-builders/kubectl"
-#   needs = ["Get DO kubeconfig"]
-#   runs = "sh -l -c"
-#   args = ["kubectl run api-migration -e DB_CONN=$DB_CONN --rm --image amacneil/dbmate -- -e DB_CONN migrate"]
-# }
+action "Migrate database" {
+  uses = "docker://gcr.io/cloud-builders/kubectl"
+  needs = ["Get DO kubeconfig"]
+  args = ["create -f kubernetes/jobs/api-db-migrate.yaml"]
+}
+
+action "Verify migration" {
+  uses = "docker://gcr.io/cloud-builders/kubectl"
+  needs = ["Migrate database"]
+  args = ["wait --for=condition=complete --timeout=30s -n earthworks job/earthworks-db-migrate"]
+}
 
 action "Apply deployment config" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
-  needs = ["Get DO kubeconfig"]
+  needs = ["Verify migration"]
   runs = "sh -l -c"
   args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/pipeline/api.istio.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | KUBECONFIG=$HOME/.kubeconfig kubectl apply -f - "]
 }

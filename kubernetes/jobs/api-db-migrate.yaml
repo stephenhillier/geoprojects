@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: earthworks-db-migrate
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 100
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: dbmate
+        image: amacneil/dbmate
+        args: ["-e DB_CONN", "migrate"]
+        env:
+          - name: DBHOST
+            valueFrom:
+              configMapKeyRef:
+                name: earthworks-db
+                key: host
+          - name: DBPORT
+            valueFrom:
+              configMapKeyRef:
+                name: earthworks-db
+                key: port
+          - name: DBPASS
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: password
+          - name: DBUSER
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: username
+          - name: DB_CONN
+            value: "postgres://${DBUSER}:${DBPASS}@${DBHOST}:${DBPORT}/geo?sslmode=require"
