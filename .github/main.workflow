@@ -41,13 +41,15 @@ action "Get DO kubeconfig" {
 action "Migrate database" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Get DO kubeconfig"]
-  args = ["create -f kubernetes/jobs/api-db-migrate.yaml"]
+  runs = "sh -l -c"
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat kubernetes/jobs/api-db-migrate.yaml | sed 's/IMAGE_VERSION/'\"$SHORT_REF\"'/' | KUBECONFIG=$HOME/.kubeconfig kubectl replace --force -f - "]
 }
 
 action "Verify migration" {
   uses = "docker://gcr.io/cloud-builders/kubectl"
   needs = ["Migrate database"]
-  args = ["wait --for=condition=complete --timeout=30s -n earthworks job/earthworks-db-migrate"]
+  runs = "sh -l -c"
+  args = ["KUBECONFIG=$HOME/.kubeconfig kubectl wait --for=condition=complete --timeout=30s -n earthworks job/earthworks-db-migrate"]
 }
 
 action "Apply deployment config" {

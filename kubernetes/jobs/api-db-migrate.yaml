@@ -8,13 +8,14 @@ spec:
   activeDeadlineSeconds: 900
   template:
     spec:
+      shareProcessNamespace: true
       restartPolicy: Never
       containers:
       - name: dbmate
-        image: stephenhillier/earthworks-api:latest
+        image: stephenhillier/earthworks-api:IMAGE_VERSION
         imagePullPolicy: Always
         command: ["/bin/sh", "-c"]
-        args: ["/app/dbmate -e DB_CONN wait && /app/dbmate -e DB_CONN -d /app/db/migrations migrate"]
+        args: ["sleep 3; /app/dbmate -e DB_CONN -d /app/db/migrations migrate; exit_code=$?; pkill -INT /usr/local/bin/pilot-agent; exit $exit_code"]
         env:
           - name: DBHOST
             valueFrom:

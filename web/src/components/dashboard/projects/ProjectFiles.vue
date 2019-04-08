@@ -8,6 +8,9 @@
         :per-page="perPage"
         :current-page.sync="currentPage"
     >
+      <template slot="empty">
+        No files for this project.
+      </template>
       <template slot-scope="props">
           <b-table-column field="filename" label="Filename">
             <a href="#" @click.prevent="handleDownload(props.row.id, props.row.filename)">

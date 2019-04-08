@@ -21,6 +21,9 @@
             <b-table-column field="name" label="Name">
                 {{ props.row.name }}
             </b-table-column>
+            <b-table-column field="borehole" label="Sampled from">
+                {{ props.row.borehole_name }}
+            </b-table-column>
             <b-table-column field="actions" label="Actions" class="is-narrow">
               <button class="button is-small" @click="handleEdit(props.row)"><font-awesome-icon :icon="['far', 'edit']"></font-awesome-icon></button>
               <button class="button is-small ml" @click="handleDelete(props.row.id)"><font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon></button>
@@ -57,6 +60,13 @@
                         message="Depth (m)"
                         v-model="form.end"
                     ></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column" v-if="!currentBorehole">
+                    <b-field label="Sampled from">
+                      <b-select id="sampleLocationInput" required v-model="sampledFrom" message="Sampling location (e.g. borehole)">
+                          <option v-for="(option, i) in boreholes" :key="`boreholeOption${i}`" :value="option.id">{{ option.name }}</option>
+                      </b-select>
                     </b-field>
                   </div>
                   <div class="column">
@@ -111,6 +121,13 @@
                 ></b-input>
                 </b-field>
               </div>
+              <div class="column" v-if="!currentBorehole">
+                <b-field label="Sampled from">
+                  <b-select id="sampleLocationInput" required v-model="editForm.borehole" message="Sampling location (e.g. borehole)">
+                      <option v-for="(option, i) in boreholes" :key="`boreholeOption${i}`" :value="option.id">{{ option.name }}</option>
+                  </b-select>
+                </b-field>
+              </div>
               <div class="column">
                 <b-field label="Name">
                   <b-input
@@ -162,7 +179,13 @@ export default {
       loading: false,
       editForm: {},
       perPage: 10,
-      currentPage: 1
+      currentPage: 1,
+      boreholes: []
+    }
+  },
+  computed: {
+    currentBorehole () {
+      return this.$route.params.bh || null
     }
   },
   methods: {
@@ -180,7 +203,7 @@ export default {
       data.borehole = this.$route.params.bh
 
       this.loading = true
-      this.$http.post(`boreholes/${this.$route.params.bh}/samples`, data).then((response) => {
+      this.$http.post(`boreholes/${this.currentBorehole || this.sampledFrom}/samples`, data).then((response) => {
         this.$noty.success('Soil sample added.')
         this.loading = false
         this.resetForm()
@@ -198,7 +221,7 @@ export default {
       delete data.id
 
       this.loading = true
-      this.$http.put(`boreholes/${this.$route.params.bh}/samples/${sampleId}`, data).then((response) => {
+      this.$http.put(`boreholes/${this.currentBorehole || data.borehole}/samples/${sampleId}`, data).then((response) => {
         this.$noty.success('Soil sample updated.')
         this.loading = false
         this.$emit('sample-update')
@@ -251,6 +274,23 @@ export default {
       this.newSampleModal = false
       this.resetForm()
       this.$refs.newSampleBtn.focus()
+    },
+    fetchBoreholes () {
+      this.$http.get(`boreholes?project=${this.$route.params.id}`).then((response) => {
+        this.numberOfRecords = response.data.results.length
+        this.boreholes = response.data.results
+      }).catch((e) => {
+        this.$noty.error('An error occurred while retrieving boreholes.')
+      })
+    }
+  },
+  created () {
+    // if a borehole is not defined on the route, then fetch a list
+    // of available boreholes for displaying samples across a whole project.
+    // If a borehole is defined on the route, we only display samples for that
+    // borehole and loading all boreholes isn't necessary.
+    if (!this.$route.params.bh) {
+      this.fetchBoreholes()
     }
   }
 }

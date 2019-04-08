@@ -18,7 +18,8 @@
       Laboratory
     </p>
     <ul class="menu-list">
-      <li><a>Samples</a></li>
+      <li><router-link :to="{ name: 'samples-home', params: { id: this.$route.params.id } }">
+        Samples</router-link></li>
       <li><router-link :to="{ name: 'lab-home', params: { id: this.$route.params.id } }">
         Lab tests</router-link></li>
     </ul>

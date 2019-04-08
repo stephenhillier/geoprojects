@@ -13,14 +13,15 @@ import (
 
 // Sample is a soil layer/stratum and contains information such as description and depth of the layer
 type Sample struct {
-	ID          int64   `json:"id"`
-	Name        string  `json:"name"`
-	Borehole    int64   `json:"borehole"`
-	Start       float64 `json:"start" db:"start_depth"`
-	End         float64 `json:"end" db:"end_depth"`
-	Description string  `json:"description"`
-	USCS        string  `json:"uscs" db:"uscs"`
-	Tests       int     `json:"test_count"`
+	ID           int64   `json:"id"`
+	Name         string  `json:"name"`
+	Borehole     int64   `json:"borehole"`
+	BoreholeName string  `json:"borehole_name" db:"borehole_name"`
+	Start        float64 `json:"start" db:"start_depth"`
+	End          float64 `json:"end" db:"end_depth"`
+	Description  string  `json:"description"`
+	USCS         string  `json:"uscs" db:"uscs"`
+	Tests        int     `json:"test_count"`
 }
 
 // SampleRequest is a struct containing fields required to create a new sample

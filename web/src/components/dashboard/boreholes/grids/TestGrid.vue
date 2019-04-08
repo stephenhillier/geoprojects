@@ -46,7 +46,7 @@
             <p class="modal-card-title">Add test</p>
           </header>
           <section class="modal-card-body">
-            <b-field grouped>
+            <b-field grouped v-if="sampleOptions && sampleOptions.length">
               <b-field label="Sample">
                   <b-select v-model="form.sample" message="Choose a sample to test">
                       <option v-for="(option, i) in sampleOptions" :key="`soilNameOption${i}`" :value="option.id">{{ option.name }}</option>
@@ -57,11 +57,12 @@
                       <option v-for="(option, i) in testOptions" :key="`testTypeOption${i}`" :value="option.id">{{ option.description }}</option>
                   </b-select>
               </b-field>
-          </b-field>
+            </b-field>
+            <p v-else>No samples to run tests on.  Add samples first.</p>
           </section>
           <footer class="modal-card-foot">
               <button class="button" type="button" @click="newTestModal = false">Close</button>
-              <button class="button is-primary">Add test</button>
+              <button class="button is-primary"  v-if="sampleOptions && sampleOptions.length">Add test</button>
           </footer>
         </form>
       </div>

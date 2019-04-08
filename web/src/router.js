@@ -15,6 +15,7 @@ import ProjectBoreholes from './components/dashboard/boreholes/ProjectBoreholes.
 import NewBorehole from './components/dashboard/boreholes/NewBorehole.vue'
 import BoreholeDetail from './components/dashboard/boreholes/BoreholeDetail.vue'
 import BoreholeDetailActions from './components/dashboard/actions/BoreholeDetailActions.vue'
+import SamplesHome from './components/dashboard/lab/SamplesHome.vue'
 
 import LabTestingHome from './components/dashboard/lab/LabTestingHome.vue'
 import MoistureContent from './components/dashboard/lab/MoistureContent.vue'
@@ -147,6 +148,19 @@ const router = new Router({
               {
                 text: 'Lab testing',
                 to: { name: 'lab-home' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'samples',
+          name: 'samples-home',
+          component: SamplesHome,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Samples',
+                to: { name: 'samples-home' }
               }
             ]
           }

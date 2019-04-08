@@ -21,6 +21,12 @@
                     </router-link>
                   </b-dropdown-item>
                   <b-dropdown-item aria-role="listitem">
+                    <a href="#" @click.prevent="$refs.projectFiles.isUploadModalActive = true">
+                      <font-awesome-icon :icon="['fas', 'upload']"></font-awesome-icon>
+                       Upload files
+                    </a>
+                  </b-dropdown-item>
+                  <b-dropdown-item aria-role="listitem">
                     <a href="#" class="has-text-danger" @click="handleDelete">
                       <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
                       Delete project
@@ -63,7 +69,7 @@
           <multi-marker-map :locations="boreholes" class="is-fullheight"></multi-marker-map>
         </div>
       </div>
-      <project-files :files="projectFiles" :project="project" @updated="fetchFiles"></project-files>
+      <project-files ref="projectFiles" :files="projectFiles" :project="project" @updated="fetchFiles"></project-files>
 
       <div class="section">
         <h2 class="subtitle">Boreholes</h2>
@@ -74,6 +80,9 @@
           :per-page="perPage"
           :current-page.sync="currentPage"
           >
+          <template slot="empty">
+            No boreholes for this project.
+          </template>
           <template slot-scope="props">
               <b-table-column field="name" label="Borehole">
                  <router-link :to="`/projects/${$route.params.id}/boreholes/${props.row.id}`">{{ props.row.name }}</router-link>
@@ -96,7 +105,6 @@
 
         </b-table>
       </div>
-
 
       <b-modal :active.sync="isEditModalActive" @close="handleResetEdit">
         <form action="" @submit.prevent="handleEdit">

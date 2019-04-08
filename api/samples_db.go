@@ -1,5 +1,7 @@
 package main
 
+import "log"
+
 // ListSamplesByBorehole retrieves a list of soil samples records associated with a given borehole
 func (db *Datastore) ListSamplesByBorehole(boreholeID int64) ([]*Sample, error) {
 	query := `SELECT id, borehole, name, start_depth, end_depth, description, uscs FROM soil_sample WHERE borehole=$1 ORDER BY start_depth`
@@ -25,11 +27,12 @@ func (db *Datastore) ListSamplesByProject(projectID int) ([]*Sample, error) {
 			soil_sample.start_depth,
 			soil_sample.end_depth,
 			soil_sample.description,
-			soil_sample.uscs
+			soil_sample.uscs,
+			borehole.name AS borehole_name
 		FROM soil_sample
 		LEFT JOIN borehole ON (soil_sample.borehole = borehole.id)
 		WHERE borehole.project=$1
-		ORDER BY start_depth`
+		ORDER BY borehole.name, start_depth`
 
 	var err error
 	samples := []*Sample{}
@@ -37,6 +40,7 @@ func (db *Datastore) ListSamplesByProject(projectID int) ([]*Sample, error) {
 	err = db.Select(&samples, query, projectID)
 
 	if err != nil {
+		log.Println(err)
 		return []*Sample{}, err
 	}
 	return samples, nil
