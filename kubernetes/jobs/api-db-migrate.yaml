@@ -2,16 +2,19 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: earthworks-db-migrate
+  namespace: earthworks
 spec:
   backoffLimit: 5
-  activeDeadlineSeconds: 100
+  activeDeadlineSeconds: 900
   template:
     spec:
       restartPolicy: Never
       containers:
       - name: dbmate
-        image: amacneil/dbmate
-        args: ["-e DB_CONN", "migrate"]
+        image: stephenhillier/earthworks-api:latest
+        imagePullPolicy: Always
+        command: ["/bin/sh", "-c"]
+        args: ["/app/dbmate -e DB_CONN wait && /app/dbmate -e DB_CONN -d /app/db/migrations migrate"]
         env:
           - name: DBHOST
             valueFrom:
@@ -34,4 +37,4 @@ spec:
                 name: db-credentials
                 key: username
           - name: DB_CONN
-            value: "postgres://${DBUSER}:${DBPASS}@${DBHOST}:${DBPORT}/geo?sslmode=require"
+            value: postgres://$(DBUSER):$(DBPASS)@$(DBHOST):$(DBPORT)/geo?sslmode=require
