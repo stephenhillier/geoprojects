@@ -167,7 +167,7 @@ app.get('/logs/:projectID/sieves/:sieveID/:sieveSlug.pdf', checkJwt, async funct
   const prReq = client.get(`/projects/${projectID}`)
   const labTestReq = client.get(`/projects/${projectID}/lab/tests/${sieveID}`)
 
-  const plotClient = new sieveplot.SievePlot(`${process.env.PLOTS_SERVICE || 'localhost'}:50051`, grpc.credentials.createInsecure())
+  const plotClient = new sieveplot.SievePlot(`${process.env.PLOT_SERVICE || 'localhost'}:50051`, grpc.credentials.createInsecure())
 
   Promise.all([prReq, labTestReq]).then((values) => {
     project = values[0].data
@@ -178,7 +178,7 @@ app.get('/logs/:projectID/sieves/:sieveID/:sieveSlug.pdf', checkJwt, async funct
       date: 'March 15, 2019',
     }
 
-    console.log(`${process.env.PLOTS_SERVICE || 'localhost'}:50051`)
+    console.log(`${process.env.PLOT_SERVICE || 'localhost'}:50051`)
 
     // this isn't pretty, but the node grpc implementation does not have good async support
     plotClient.plotSieve({}, (err, fig) => {

@@ -40,7 +40,7 @@ metadata:
 spec:
   ports:
   - port: 50051
-    name: http
+    targetPort: 50051
   selector:
     app: plotsvc
 status:
