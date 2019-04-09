@@ -1,16 +1,16 @@
 <template>
   <div class="box">
     <div>
-      <button class="button" :href="`${fileHost}/logs/${$route.params.id}/boreholes/${$route.params.bh}/log.pdf`" target="_blank">
+      <a :href="`${fileHost}/logs/${$route.params.id}/boreholes/${$route.params.bh}/log.pdf`" target="_blank">
         <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
         Publish to PDF
-      </button>
+      </a>
     </div>
-    <div>
-      <button class="button" size="sm" @click="handleDelete">
+    <div class="mt-1">
+      <a href="#" class="is-warning" @click.prevent="handleDelete">
         <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
         Delete borehole
-      </button>
+      </a>
     </div>
   </div>
 </template>

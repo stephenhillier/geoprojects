@@ -7,11 +7,10 @@
         <h2 class="subtitle">{{project.name}}</h2>
       </div>
       <div class="column">
-        <button class="button">Help</button>
-        <button class="button ml-1" :href="`${fileHost}/logs/${$route.params.id}/sieves/${sample.id}/${sample.borehole_name}-${sample.sample_name}-Sieve analysis.pdf`" target="_blank">
+        <a :href="`${fileHost}/logs/${$route.params.id}/sieves/${sample.id}/${sample.borehole_name}-${sample.sample_name}-Sieve analysis.pdf`" target="_blank">
           <font-awesome-icon :icon="['far', 'file-alt']" class="text-muted"></font-awesome-icon>
             Export to PDF
-        </button>
+        </a>
       </div>
     </div>
     <div class="columns">
