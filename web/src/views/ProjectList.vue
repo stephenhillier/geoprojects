@@ -1,6 +1,6 @@
 <template>
 <div class="columns content-wrapper is-fullheight">
-  <div class="column is-narrow project-list is-hidden-mobile">
+  <div class="column is-narrow project-list">
     <div class="box project-list-menu-panel">
       <nav class="menu">
         <p class="menu-label">
@@ -182,7 +182,7 @@ export default {
   margin-top: 25px;
 }
 .project-list-menu-panel {
-  width: 600px;
+  max-width: 600px;
   height: 100%!important;
   display: flex;
   flex-direction: column;

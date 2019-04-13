@@ -104,11 +104,31 @@ body {
   margin-bottom: 15px;
   flex: none;
 }
-.is-fullheight {
-  height: 100%;
+
+@media screen and (max-width: $tablet) {
+  .project-map {
+    height: 400px;
+    z-index: 1;
+  }
+  .map {
+    height: 400px;
+    z-index: 1;
+  }
 }
+
+@media screen and (min-width: $tablet) {
+  .is-fullheight {
+    height: 100%;
+  }
+
+  .map {
+    height: 100%;
+    z-index: 1;
+  }
+}
+
 .is-map-container {
-  height: 400px;
+  height: 100%;
 }
 .is-action-button {
   margin-bottom: 10px;

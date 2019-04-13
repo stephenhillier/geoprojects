@@ -1,5 +1,5 @@
 <template>
-  <div class="box is-mapbox is-fullheight">
+  <div class="box is-mapbox is-map-container">
     <div id="map" class="project-map"></div>
   </div>
 </template>
@@ -9,6 +9,11 @@ import L from 'leaflet'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
+
+import { GestureHandling } from 'leaflet-gesture-handling'
+import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css'
+
+L.Map.addInitHook('addHandler', 'gestureHandling', GestureHandling)
 
 export default {
   name: 'Map',
@@ -63,7 +68,9 @@ export default {
       })
     },
     initMap () {
-      this.map = L.map('map').setView([this.centroid.lat, this.centroid.lng], 3)
+      this.map = L.map('map', {
+        gestureHandling: true
+      }).setView([this.centroid.lat, this.centroid.lng], 3)
       const osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?', { attribution: osmAttrib }).addTo(this.map)
     },

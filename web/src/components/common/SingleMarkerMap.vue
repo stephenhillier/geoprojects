@@ -1,12 +1,15 @@
 <template>
-<div class="box is-fullheight is-mapbox">
+<div class="box is-fullheight is-map-container is-mapbox">
   <div id="map" class="map"></div>
 </div>
 </template>
 
 <script>
 import L from 'leaflet'
+import { GestureHandling } from 'leaflet-gesture-handling'
+import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css'
 
+L.Map.addInitHook('addHandler', 'gestureHandling', GestureHandling)
 export default {
   name: 'Map',
   props: {
@@ -57,7 +60,9 @@ export default {
       })
     },
     initMap () {
-      this.map = L.map('map').setView([this.lat, this.long], 5)
+      this.map = L.map('map', {
+        gestureHandling: true
+      }).setView([this.lat, this.long], 5)
       const osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?', { attribution: osmAttrib }).addTo(this.map)
 
@@ -117,10 +122,7 @@ export default {
 </script>
 
 <style lang="scss">
-.map {
-  height: 100%;
-  z-index: 1;
-}
+
 .is-mapbox {
   padding: 0px;
   border-radius: 0px;
