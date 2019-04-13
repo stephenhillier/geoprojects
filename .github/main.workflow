@@ -30,7 +30,7 @@ action "Push to registry" {
 
 action "Get DO kubeconfig" {
   needs = ["Push to registry"]
-  uses = "digitalocean/action/doctl@master"
+  uses = "digitalocean/action-doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
     CLUSTER_NAME = "island"
@@ -107,7 +107,7 @@ action "web - Push to registry" {
 
 action "web - Get DO kubeconfig" {
   needs = ["web - Push to registry"]
-  uses = "digitalocean/action/doctl@master"
+  uses = "digitalocean/action-doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
     CLUSTER_NAME = "island"
