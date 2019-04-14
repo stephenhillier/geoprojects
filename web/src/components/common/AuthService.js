@@ -53,8 +53,7 @@ class AuthService {
         router.push({ name: 'projects' })
       } else if (err) {
         router.push({ name: 'projects' })
-        console.log(err)
-        alert(`Error: ${err.error}. Check the console for further details.`)
+        this.auth0.authorize()
       }
     })
   }
