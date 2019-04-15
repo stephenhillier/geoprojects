@@ -58,8 +58,8 @@ $input-icon-color: $grey-light;
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
 
-body {
-  background-color: #f0f0f0;
+html {
+  background-color: #fcfcfc;
 }
 
 #app {
@@ -68,6 +68,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  height: 0
 }
 
 #main-content {

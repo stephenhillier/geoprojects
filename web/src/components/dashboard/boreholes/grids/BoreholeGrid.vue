@@ -12,17 +12,17 @@
       </b-table-column>
 
       <b-table-column field="start_date" label="Start date">
-          {{ props.row.start_date }}
+          {{ props.row.start_date | moment('YYYY-MM-DD') }}
       </b-table-column>
       <b-table-column field="end_date" label="End date">
-          {{ props.row.end_date }}
+          {{ props.row.end_date | moment('YYYY-MM-DD') }}
       </b-table-column>
       <b-table-column field="field_eng" label="Field technician/engineer">
           {{ props.row.field_eng }}
       </b-table-column>
       <b-table-column field="location" label="Location">
-          {{ props.row.location[0] }},
-          {{ props.row.location[1] }}
+                  {{ props.row.location[0] ? props.row.location[0].toFixed(6) : null }},
+                  {{ props.row.location[1] ? props.row.location[1].toFixed(6) : null }}
       </b-table-column>
   </template>
 
