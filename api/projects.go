@@ -123,6 +123,33 @@ func (s *server) projectDetail(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, project)
 }
 
+// updateProject updates a project using a ProjectRequest
+func (s *server) updateProject(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	project, ok := ctx.Value(projectCtx).(Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	decoder := json.NewDecoder(req.Body)
+	pReq := ProjectRequest{}
+	err := decoder.Decode(&pReq)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	updated, err := s.datastore.UpdateProject(project.ID, pReq)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+	render.JSON(w, req, updated)
+}
+
 // deleteProject deletes a project
 func (s *server) deleteProject(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()

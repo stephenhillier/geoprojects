@@ -107,3 +107,22 @@ func (db *Datastore) DeleteProject(id int) error {
 	}
 	return nil
 }
+
+// UpdateProject updates the details of a project in the datastore
+func (db *Datastore) UpdateProject(id int, p ProjectRequest) (Project, error) {
+	query := `
+	UPDATE project
+	SET
+		name = $1, number = $2, client = $3, pm = $4, location = $5
+	WHERE id = $6
+	RETURNING id, name, number, client, pm, location
+	`
+
+	proj := Project{}
+
+	err := db.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, id).StructScan(&proj)
+	if err != nil {
+		return Project{}, err
+	}
+	return proj, nil
+}

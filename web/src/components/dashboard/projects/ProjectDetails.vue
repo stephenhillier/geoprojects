@@ -11,23 +11,21 @@
                       <b-icon icon="menu-down"></b-icon>
                   </button>
 
-                  <b-dropdown-item aria-role="listitem">
-                    <a @click="handleEditProject" href="#"><font-awesome-icon :icon="['far', 'edit']" class="text-muted"></font-awesome-icon> Edit</a>
+                  <b-dropdown-item aria-role="listitem" @click="handleEditProject">
+                    <font-awesome-icon :icon="['far', 'edit']" class="text-muted"></font-awesome-icon> Edit
                   </b-dropdown-item>
-                  <b-dropdown-item aria-role="listitem">
+                  <b-dropdown-item has-link aria-role="listitem">
                     <router-link :to="{ name: 'new-borehole' }">
                       <font-awesome-icon :icon="['far', 'plus-square']"></font-awesome-icon>
                        New borehole
                     </router-link>
                   </b-dropdown-item>
-                  <b-dropdown-item aria-role="listitem">
-                    <a href="#" @click.prevent="$refs.projectFiles.isUploadModalActive = true">
+                  <b-dropdown-item aria-role="listitem"  @click="$refs.projectFiles.isUploadModalActive = true">
                       <font-awesome-icon :icon="['fas', 'upload']"></font-awesome-icon>
                        Upload files
-                    </a>
                   </b-dropdown-item>
-                  <b-dropdown-item aria-role="listitem">
-                    <a href="#" class="has-text-danger" @click="handleDelete">
+                  <b-dropdown-item aria-role="listitem" @click="handleDelete">
+                    <a href="#" class="has-text-danger">
                       <font-awesome-icon :icon="['far', 'trash-alt']"></font-awesome-icon>
                       Delete project
                     </a>
@@ -98,8 +96,8 @@
                   {{ props.row.field_eng }}
               </b-table-column>
               <b-table-column field="location" label="Location">
-                  {{ props.row.location[0] }},
-                  {{ props.row.location[1] }}
+                  {{ props.row.location[0] ? props.row.location[0].toFixed(6) : null }},
+                  {{ props.row.location[1] ? props.row.location[1].toFixed(6) : null }}
               </b-table-column>
           </template>
 
@@ -194,6 +192,7 @@ export default {
   data () {
     return {
       isEditModalActive: false,
+      editFormSubmitting: false,
       boreholes: [],
       projectFiles: [],
       currentPage: 1,
@@ -237,8 +236,17 @@ export default {
       localStorage.setItem('earthworks-tutorial-project-summary', JSON.stringify(true))
     },
     handleEdit () {
-      this.isEditModalActive = false
-      console.log(this.editForm)
+      const data = Object.assign({}, this.editForm)
+      this.editFormSubmitting = true
+      this.$http.put(`projects/${this.$route.params.id}`, data).then(() => {
+        this.$noty.success(`Project details updated.`)
+        this.$emit('update-project', true)
+      }).catch((e) => {
+        this.$noty.error('An error occurred updating project. Please try again later.')
+      }).finally(() => {
+        this.editFormSubmitting = false
+        this.isEditModalActive = false
+      })
     },
     handleResetEdit () {
       this.editForm = Object.assign({}, this.project)
