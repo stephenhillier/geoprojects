@@ -26,7 +26,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8081
-        resources: {}
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50mb
+          limits:
+            cpu: 100m
+            memory: 100mb
         env:
           - name: PROJECTS_SERVICE
             value: earthworks-api:8000

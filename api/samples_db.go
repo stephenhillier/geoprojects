@@ -4,7 +4,18 @@ import "log"
 
 // ListSamplesByBorehole retrieves a list of soil samples records associated with a given borehole
 func (db *Datastore) ListSamplesByBorehole(boreholeID int64) ([]*Sample, error) {
-	query := `SELECT id, borehole, name, start_depth, end_depth, description, uscs FROM soil_sample WHERE borehole=$1 ORDER BY start_depth`
+	query := `SELECT
+		soil_sample.id,
+		soil_sample.borehole,
+		soil_sample.name,
+		soil_sample.start_depth,
+		soil_sample.end_depth,
+		soil_sample.description,
+		soil_sample.uscs,
+		borehole.name AS borehole_name
+		FROM soil_sample
+		LEFT JOIN borehole ON (soil_sample.borehole = borehole.id)
+		WHERE borehole=$1 ORDER BY start_depth`
 
 	var err error
 	sample := []*Sample{}
