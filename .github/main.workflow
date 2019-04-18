@@ -1,11 +1,19 @@
 workflow "Deploy API" {
+  resolves = [
+    "stephenhillier/apitest@master"
+  ]
   on = "push"
-  resolves = ["stephenhillier/apitest@master"]
 }
 
 # backend API pipeline
 
+action "API - Filter for master branch" {
+  uses = "actions/bin/filter@4227a6636cb419f91a0d1afb1216ecfab99e433a"
+  args = "branch master"
+}
+
 action "Filter for API folder" {
+  needs = ["API - Filter for master branch"]
   uses = "netlify/actions/diff-includes@exit-code-78"
   args = "api"
 }
@@ -82,7 +90,13 @@ workflow "Deploy web" {
   resolves = ["web - deployment status"]
 }
 
+action "Web - Filter for master branch" {
+  uses = "actions/bin/filter@4227a6636cb419f91a0d1afb1216ecfab99e433a"
+  args = "branch master"
+}
+
 action "Filter for web folder" {
+  needs = ["Web - Filter for master branch"]
   uses = "netlify/actions/diff-includes@exit-code-78"
   args = "web"
 }
