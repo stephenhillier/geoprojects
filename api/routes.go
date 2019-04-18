@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/stephenhillier/geoprojects/api/projects"
 )
 
 func (api *server) appRoutes(r chi.Router) chi.Router {
@@ -20,6 +21,9 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 
 			// Projects routes
 			r.Route("/projects", func(r chi.Router) {
+
+				projectSvc := projects.NewProjectSvc(api.datastore, api.config)
+
 				r.Get("/", api.listProjects)
 				r.Options("/", api.projectOptions)
 				r.Post("/", api.createProject)

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -39,7 +39,7 @@ var cert PEMCert
 
 // jwtAuthentication returns a new JWTMiddleware from the auth0 go-jwt-middleware package.
 // the JWTMiddleware can be used with chi middleware using jwtAuthentication().Handler
-func (api *server) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
+func (api *Server) jwtAuthentication() *jwtmiddleware.JWTMiddleware {
 	var err error
 
 	// get new certificate when server initially starts
@@ -48,25 +48,25 @@ func (api *server) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			// Verify 'aud' claim
-			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(api.config.authAudience, false)
+			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(api.config.AuthAudience, false)
 			if !checkAud {
 				return token, errors.New("invalid audience")
 			}
 			// Verify 'iss' claim
-			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(api.config.authIssuer, false)
+			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(api.config.AuthIssuer, false)
 			if !checkIss {
 				return token, errors.New("invalid issuer")
 			}
 
 			// check if we need a new certificate
-			if api.config.authCert.Cert == "" || api.config.authCert.Kid != token.Header["kid"] || api.config.authCert.Expiry.Before(time.Now()) {
-				api.config.authCert, err = api.getCert(token)
+			if api.config.AuthCert.Cert == "" || api.config.AuthCert.Kid != token.Header["kid"] || api.config.AuthCert.Expiry.Before(time.Now()) {
+				api.config.AuthCert, err = api.getCert(token)
 				if err != nil {
 					log.Panic(err)
 				}
 			}
 
-			result, err := jwt.ParseRSAPublicKeyFromPEM([]byte(api.config.authCert.Cert))
+			result, err := jwt.ParseRSAPublicKeyFromPEM([]byte(api.config.AuthCert.Cert))
 			if err != nil {
 				log.Panic(err)
 			}
@@ -79,7 +79,7 @@ func (api *server) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
 
 // getCert makes a request to the jwks endpoint and returns a public key certificate
 // original code from from auth0.com/docs/
-func (api *server) getCert(token *jwt.Token) (PEMCert, error) {
+func (api *Server) getCert(token *jwt.Token) (PEMCert, error) {
 
 	// create a new PEM certificate `newCert`.
 	// it will not be returned unless we successfully populate it.
@@ -87,8 +87,8 @@ func (api *server) getCert(token *jwt.Token) (PEMCert, error) {
 	newCert := PEMCert{}
 
 	// make a request to the JWKS endpoint specified in `host` above
-	log.Println("Fetching new JWKS from", api.config.authIssuer)
-	response, err := http.Get(api.config.authJWKSEndpoint)
+	log.Println("Fetching new JWKS from", api.config.AuthIssuer)
+	response, err := http.Get(api.config.AuthJWKSEndpoint)
 	if err != nil {
 		return cert, err
 	}
