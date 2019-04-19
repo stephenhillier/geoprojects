@@ -699,7 +699,7 @@ ALTER TABLE ONLY public.gsa_test
 --
 
 ALTER TABLE ONLY public.lab_test
-    ADD CONSTRAINT lab_test_sample_fkey FOREIGN KEY (sample) REFERENCES public.soil_sample(id);
+    ADD CONSTRAINT lab_test_sample_fkey FOREIGN KEY (sample) REFERENCES public.soil_sample(id) ON DELETE CASCADE;
 
 
 --
@@ -749,4 +749,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20190403054441'),
     ('20190403054445'),
     ('20190403054506'),
-    ('20190403054511');
+    ('20190403054511'),
+    ('20190419065059');

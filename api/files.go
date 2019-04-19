@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	projects_v1 "github.com/stephenhillier/geoprojects/api/projects/model"
 )
 
 // FileRequest is a request that contains a file to be uploaded
@@ -52,7 +53,7 @@ func (s *server) NewFile(w http.ResponseWriter, r *http.Request) {
 
 	// get project context
 	ctx := r.Context()
-	project, ok := ctx.Value(projectCtx).(Project)
+	project, ok := ctx.Value(projects_v1.ProjectCtx).(projects_v1.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -94,7 +95,7 @@ func (s *server) NewFile(w http.ResponseWriter, r *http.Request) {
 func (s *server) ListFiles(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx := r.Context()
-	project, ok := ctx.Value(projectCtx).(Project)
+	project, ok := ctx.Value(projects_v1.ProjectCtx).(projects_v1.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -130,7 +131,7 @@ func (s *server) ListFiles(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) GetFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	project, ok := ctx.Value(projectCtx).(Project)
+	project, ok := ctx.Value(projects_v1.ProjectCtx).(projects_v1.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -152,7 +153,7 @@ func (s *server) GetFile(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) DeleteFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	project, ok := ctx.Value(projectCtx).(Project)
+	project, ok := ctx.Value(projects_v1.ProjectCtx).(projects_v1.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -173,7 +174,7 @@ func (s *server) DeleteFile(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) RestoreFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	project, ok := ctx.Value(projectCtx).(Project)
+	project, ok := ctx.Value(projects_v1.ProjectCtx).(projects_v1.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

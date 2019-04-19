@@ -37,9 +37,9 @@ type PEMCert struct {
 
 var cert PEMCert
 
-// jwtAuthentication returns a new JWTMiddleware from the auth0 go-jwt-middleware package.
+// JWTAuthentication returns a new JWTMiddleware from the auth0 go-jwt-middleware package.
 // the JWTMiddleware can be used with chi middleware using jwtAuthentication().Handler
-func (api *Server) jwtAuthentication() *jwtmiddleware.JWTMiddleware {
+func (api *Server) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
 	var err error
 
 	// get new certificate when server initially starts

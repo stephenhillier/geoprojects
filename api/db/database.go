@@ -17,12 +17,12 @@ type Datastore struct {
 
 // Config holds database connection info
 type Config struct {
-	dbconn   string // connection string e.g. postgres://user:pass@127.0.0.1:5432/mydb?sslmode=disable
-	dbdriver string // name of the database driver e.g. postgres
+	Conn   string // connection string e.g. postgres://user:pass@127.0.0.1:5432/mydb?sslmode=disable
+	Driver string // name of the database driver e.g. postgres
 }
 
 // NewDB initializes the database connection
-func NewDB(config Config) (*sqlx.DB, error) {
+func NewDB(config Config) (*Datastore, error) {
 
 	var db *sqlx.DB
 	var err error
@@ -30,7 +30,7 @@ func NewDB(config Config) (*sqlx.DB, error) {
 	// Start attempting to make a database connection.
 	// Break the loop after a connection is successfully made.
 	for {
-		db, err = sqlx.Open(config.dbdriver, config.dbconn)
+		db, err = sqlx.Open(config.Driver, config.Conn)
 		if err != nil {
 			log.Println(err)
 		}
@@ -45,5 +45,5 @@ func NewDB(config Config) (*sqlx.DB, error) {
 	}
 
 	log.Println("Database connection ready.")
-	return db, nil
+	return &Datastore{db}, nil
 }

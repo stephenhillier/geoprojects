@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/stephenhillier/geoprojects/api/db"
 	"github.com/stephenhillier/geoprojects/api/projects"
+	sv "github.com/stephenhillier/geoprojects/api/server"
 )
 
 func (api *server) appRoutes(r chi.Router) chi.Router {
@@ -22,17 +24,27 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 			// Projects routes
 			r.Route("/projects", func(r chi.Router) {
 
-				projectSvc := projects.NewProjectSvc(api.datastore, api.config)
+				dcfg := db.Config{
+					Conn:   "postgres://127.0.0.1:5432/geo?sslmode=disable",
+					Driver: "postgres",
+				}
+				store, _ := db.NewDB(dcfg)
+				cnf := &sv.Config{
+					DefaultPageLimit: 10,
+					MaxPageLimit:     100,
+				}
 
-				r.Get("/", api.listProjects)
-				r.Options("/", api.projectOptions)
-				r.Post("/", api.createProject)
+				projects := projects.NewProjectSvc(store, cnf)
+
+				r.Get("/", projects.List)
+				r.Options("/", projects.Options)
+				r.Post("/", projects.Create)
 				r.Route("/{projectID}", func(r chi.Router) {
-					r.Use(api.projectCtxMiddleware)
-					r.Get("/", api.projectDetail)
-					r.Options("/", api.singleProjectOptions)
-					r.Delete("/", api.deleteProject)
-					r.Put("/", api.updateProject)
+					r.Use(projects.ProjectCtxMiddleware)
+					r.Get("/", projects.Retrieve)
+					r.Options("/", projects.ProjectDetailOptions)
+					r.Delete("/", projects.Delete)
+					r.Put("/", projects.Update)
 
 					r.Get("/samples", api.listSamplesByProject)
 

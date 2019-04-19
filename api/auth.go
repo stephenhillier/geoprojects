@@ -39,7 +39,7 @@ var cert PEMCert
 
 // jwtAuthentication returns a new JWTMiddleware from the auth0 go-jwt-middleware package.
 // the JWTMiddleware can be used with chi middleware using jwtAuthentication().Handler
-func (api *server) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
+func (api *server) jwtAuthentication() *jwtmiddleware.JWTMiddleware {
 	var err error
 
 	// get new certificate when server initially starts

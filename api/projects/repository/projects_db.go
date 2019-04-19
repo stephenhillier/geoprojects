@@ -1,25 +1,42 @@
-package main
+package repository
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/stephenhillier/geoprojects/api/db"
+	projectsv1 "github.com/stephenhillier/geoprojects/api/projects/model"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkt"
 	sq "gopkg.in/Masterminds/squirrel.v1"
 )
 
-// // ProjectsRepository is the set of methods available to a collection of projects
-// type ProjectsRepository interface {
-// 	AllProjects() ([]*Project, error)
-// 	CreateProject(p Project) (Project, error)
-// 	RetrieveProject(projectID int) (Project, error)
-// 	DeleteProject(id int) error
-// }
+// ProjectsRepository is the set of methods available for interacting with Projects records
+type ProjectsRepository interface {
+	AllProjects(name string, number string, search string) ([]projectsv1.Project, error)
+	CreateProject(p projectsv1.ProjectRequest) (projectsv1.Project, error)
+	RetrieveProject(projectID int) (projectsv1.Project, error)
+	UpdateProject(id int, p projectsv1.ProjectRequest) (projectsv1.Project, error)
+	DeleteProject(id int) error
+}
+
+// NewProjectsRepo returns a PostgresRepo with a database connection
+func NewProjectsRepo(database *db.Datastore) *PostgresRepo {
+	return &PostgresRepo{
+		conn: database,
+	}
+}
+
+// PostgresRepo has a database connection and methods to interact with projects in
+// the database.
+type PostgresRepo struct {
+	conn *db.Datastore
+}
 
 // AllProjects returns a list of all projects in the datastore
-func (db *Datastore) AllProjects(name string, number string, search string) ([]Project, error) {
-	projects := []Project{}
+func (repo *PostgresRepo) AllProjects(name string, number string, search string) ([]projectsv1.Project, error) {
+	projects := []projectsv1.Project{}
 	var err error
 
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
@@ -53,32 +70,32 @@ func (db *Datastore) AllProjects(name string, number string, search string) ([]P
 		return projects, err
 	}
 
-	err = db.Select(&projects, projectsQuery, queryArgs...)
+	err = repo.conn.Select(&projects, projectsQuery, queryArgs...)
 
 	if err != nil {
-		return []Project{}, err
+		return []projectsv1.Project{}, err
 	}
 
 	return projects, nil
 }
 
 // CreateProject creates a new project record in the database
-func (db *Datastore) CreateProject(p ProjectRequest) (Project, error) {
+func (repo *PostgresRepo) CreateProject(p projectsv1.ProjectRequest) (projectsv1.Project, error) {
 	query := `INSERT INTO project (name, number, client, pm, location, default_coords) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, number, client, pm, location`
 
-	new := Project{}
+	new := projectsv1.Project{}
 
 	coords := orb.Point{p.DefaultCoords[0], p.DefaultCoords[1]}
-	err := db.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, wkt.MarshalString(coords)).StructScan(&new)
+	err := repo.conn.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, wkt.MarshalString(coords)).StructScan(&new)
 	if err != nil {
-		return Project{}, err
+		return projectsv1.Project{}, err
 	}
 	return new, nil
 }
 
 // RetrieveProject fetches one project record from database (by project ID)
-func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
-	p := Project{}
+func (repo *PostgresRepo) RetrieveProject(projectID int) (projectsv1.Project, error) {
+	p := projectsv1.Project{}
 	query := `SELECT
 							project.id,
 							project.name,
@@ -94,14 +111,14 @@ func (db *Datastore) RetrieveProject(projectID int) (Project, error) {
 						WHERE project.id=$1
 						GROUP BY project.id
 						`
-	err := db.Get(&p, query, projectID)
+	err := repo.conn.Get(&p, query, projectID)
 	return p, err
 }
 
 // DeleteProject sets a project's expiry to the current time
-func (db *Datastore) DeleteProject(id int) error {
+func (repo *PostgresRepo) DeleteProject(id int) error {
 	query := `DELETE FROM project WHERE id = $1`
-	_, err := db.Exec(query, id)
+	_, err := repo.conn.Exec(query, id)
 	if err != nil {
 		return err
 	}
@@ -109,7 +126,7 @@ func (db *Datastore) DeleteProject(id int) error {
 }
 
 // UpdateProject updates the details of a project in the datastore
-func (db *Datastore) UpdateProject(id int, p ProjectRequest) (Project, error) {
+func (repo *PostgresRepo) UpdateProject(id int, p projectsv1.ProjectRequest) (projectsv1.Project, error) {
 	query := `
 	UPDATE project
 	SET
@@ -118,11 +135,11 @@ func (db *Datastore) UpdateProject(id int, p ProjectRequest) (Project, error) {
 	RETURNING id, name, number, client, pm, location
 	`
 
-	proj := Project{}
+	proj := projectsv1.Project{}
 
-	err := db.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, id).StructScan(&proj)
+	err := repo.conn.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, id).StructScan(&proj)
 	if err != nil {
-		return Project{}, err
+		return projectsv1.Project{}, err
 	}
 	return proj, nil
 }

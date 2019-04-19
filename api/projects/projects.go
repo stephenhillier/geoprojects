@@ -10,6 +10,7 @@ import (
 
 	"github.com/stephenhillier/geoprojects/api/db"
 	"github.com/stephenhillier/geoprojects/api/projects/model"
+	"github.com/stephenhillier/geoprojects/api/projects/repository"
 	"github.com/stephenhillier/geoprojects/api/server"
 
 	"github.com/go-chi/chi"
@@ -25,7 +26,7 @@ type PaginatedProjectResponse struct {
 
 // ProjectSvc is a service that provides methods for working with Projects
 type ProjectSvc struct {
-	repo   *model.ProjectsRepo
+	repo   repository.ProjectsRepository
 	config *server.Config
 }
 
@@ -33,7 +34,7 @@ type ProjectSvc struct {
 func NewProjectSvc(store *db.Datastore, config *server.Config) *ProjectSvc {
 	return &ProjectSvc{
 		config: config,
-		repo:   model.NewProjectsRepo(store),
+		repo:   repository.NewProjectsRepo(store),
 	}
 }
 
@@ -166,10 +167,10 @@ func (p *ProjectSvc) Delete(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// projectCtxMiddleware is used by Project routes that have a projectID in the URL path.
+// ProjectCtxMiddleware is used by Project routes that have a projectID in the URL path.
 // it finds the specified project (returning 404 if the project is not found) and adds it
 // to the request context.
-func (p *ProjectSvc) projectCtxMiddleware(next http.Handler) http.Handler {
+func (p *ProjectSvc) ProjectCtxMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		projectID, err := strconv.Atoi(chi.URLParam(r, "projectID"))
 		if err != nil {
