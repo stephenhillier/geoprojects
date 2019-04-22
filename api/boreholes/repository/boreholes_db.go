@@ -16,6 +16,13 @@ type BoreholeRepository interface {
 	CreateBorehole(bh boreholev1.BoreholeCreateRequest, project int64) (boreholev1.Borehole, error)
 	GetBorehole(boreholeID int) (boreholev1.BoreholeResponse, error)
 	DeleteBorehole(boreholeID int64) error
+
+	ListStrataByBorehole(boreholeID int64) ([]*boreholev1.Strata, error)
+	CreateStrata(strata boreholev1.Strata) (boreholev1.Strata, error)
+	CountStrataForBorehole(boreholeID int64) (int, error)
+	RetrieveStrata(strataID int) (boreholev1.Strata, error)
+	UpdateStrata(strata boreholev1.Strata) (boreholev1.Strata, error)
+	DeleteStrata(strataID int64) error
 }
 
 // NewBoreholeRepo returns a PostgresRepo with a database connection

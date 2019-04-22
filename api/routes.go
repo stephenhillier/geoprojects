@@ -96,7 +96,7 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 				r.Route("/{boreholeID}", func(r chi.Router) {
 					r.Use(boreholes.BoreholeCtxMiddleware)
 					r.Get("/", boreholes.Get)
-					r.Get("/strata", api.listStrataByBorehole)
+					r.Get("/strata", boreholes.ListStrataByBorehole)
 					r.Route("/samples", func(r chi.Router) {
 						r.Options("/", api.sampleOptions)
 						r.Get("/", api.listSamplesByBorehole)
@@ -115,12 +115,12 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 
 			// Soil strata routes
 			r.Route("/strata", func(r chi.Router) {
-				r.Options("/", api.strataOptions)
-				r.Post("/", api.createStrata)
+				r.Options("/", boreholes.StrataOptions)
+				r.Post("/", boreholes.CreateStrata)
 				r.Route("/{strataID}", func(r chi.Router) {
-					r.Use(api.strataCtxMiddleware)
-					r.Put("/", api.putStrata)
-					r.Delete("/", api.deleteStrata)
+					r.Use(boreholes.StrataCtxMiddleware)
+					r.Put("/", boreholes.PutStrata)
+					r.Delete("/", boreholes.DeleteStrata)
 				})
 			})
 		})

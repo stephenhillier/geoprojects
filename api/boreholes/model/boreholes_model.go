@@ -68,3 +68,6 @@ type BoreholeV2 struct {
 
 // BoreholeCtx is a context key for a borehole record
 var BoreholeCtx struct{}
+
+// StrataCtx is a context key for a strata record
+var StrataCtx struct{}

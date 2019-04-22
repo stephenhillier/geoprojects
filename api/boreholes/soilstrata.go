@@ -1,4 +1,4 @@
-package main
+package boreholes
 
 import (
 	"context"
@@ -14,34 +14,15 @@ import (
 	"github.com/stephenhillier/soildesc"
 )
 
-// Strata is a soil layer/stratum and contains information such as description and depth of the layer
-type Strata struct {
-	ID          int64   `json:"id"`
-	Borehole    int64   `json:"borehole"`
-	Start       float64 `json:"start" db:"start_depth"`
-	End         float64 `json:"end" db:"end_depth"`
-	Description string  `json:"description"`
-	Soils       string  `json:"soils"`
-	Moisture    string  `json:"moisture"`
-	Consistency string  `json:"consistency"`
-}
-
-// StrataRequest is a struct containing fields required to create a new strata layer
-type StrataRequest struct {
-	Borehole    int64   `json:"borehole,string"`
-	Start       float64 `json:"start,string"`
-	End         float64 `json:"end,string"`
-	Description string  `json:"description"`
-}
-
-func (s *server) strataOptions(w http.ResponseWriter, req *http.Request) {
+// StrataOptions responds to preflight requests with allowed methods
+func (s *BoreholeSvc) StrataOptions(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Allow", "GET, POST, PUT, DELETE, OPTIONS")
 	return
 }
 
-// listStrataByBorehole returns soil strata associated with a specified borehole.
+// ListStrataByBorehole returns soil strata associated with a specified borehole.
 // the borehole must be passed in the request context with the contextKey "boreholeCtx"
-func (s *server) listStrataByBorehole(w http.ResponseWriter, req *http.Request) {
+func (s *BoreholeSvc) ListStrataByBorehole(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	borehole, ok := ctx.Value(boreholev1.BoreholeCtx).(boreholev1.BoreholeResponse)
 
@@ -50,7 +31,7 @@ func (s *server) listStrataByBorehole(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	strata, err := s.datastore.ListStrataByBorehole(borehole.ID)
+	strata, err := s.repo.ListStrataByBorehole(borehole.ID)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
@@ -59,9 +40,10 @@ func (s *server) listStrataByBorehole(w http.ResponseWriter, req *http.Request) 
 	render.JSON(w, req, strata)
 }
 
-func (s *server) createStrata(w http.ResponseWriter, req *http.Request) {
+// CreateStrata creates a soil strata/layer for a borehole
+func (s *BoreholeSvc) CreateStrata(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	strataReq := StrataRequest{}
+	strataReq := boreholev1.StrataRequest{}
 	err := decoder.Decode(&strataReq)
 	if err != nil {
 		log.Println(err)
@@ -77,7 +59,7 @@ func (s *server) createStrata(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	strata := Strata{
+	strata := boreholev1.Strata{
 		Borehole:    strataReq.Borehole,
 		Start:       strataReq.Start,
 		End:         strataReq.End,
@@ -87,7 +69,7 @@ func (s *server) createStrata(w http.ResponseWriter, req *http.Request) {
 		Consistency: parsedDescription.Consistency,
 	}
 
-	newStrata, err := s.datastore.CreateStrata(strata)
+	newStrata, err := s.repo.CreateStrata(strata)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -97,10 +79,10 @@ func (s *server) createStrata(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, newStrata)
 }
 
-// putStrata allows updating a strata record by making a PUT request to the strata's endpoint
-func (s *server) putStrata(w http.ResponseWriter, req *http.Request) {
+// PutStrata allows updating a strata record by making a PUT request to the strata's endpoint
+func (s *BoreholeSvc) PutStrata(w http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	strataReq := StrataRequest{}
+	strataReq := boreholev1.StrataRequest{}
 	err := decoder.Decode(&strataReq)
 	if err != nil {
 		log.Println(err)
@@ -109,7 +91,7 @@ func (s *server) putStrata(w http.ResponseWriter, req *http.Request) {
 	}
 
 	ctx := req.Context()
-	strata, ok := ctx.Value(strataCtx).(Strata)
+	strata, ok := ctx.Value(boreholev1.StrataCtx).(boreholev1.Strata)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -123,7 +105,7 @@ func (s *server) putStrata(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedStrataData := Strata{
+	updatedStrataData := boreholev1.Strata{
 		ID:          strata.ID,
 		Borehole:    strataReq.Borehole,
 		Start:       strataReq.Start,
@@ -134,7 +116,7 @@ func (s *server) putStrata(w http.ResponseWriter, req *http.Request) {
 		Consistency: parsedDescription.Consistency,
 	}
 
-	updatedStrata, err := s.datastore.UpdateStrata(updatedStrataData)
+	updatedStrata, err := s.repo.UpdateStrata(updatedStrataData)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -144,16 +126,16 @@ func (s *server) putStrata(w http.ResponseWriter, req *http.Request) {
 	render.JSON(w, req, updatedStrata)
 }
 
-// deleteStrata asks the datastore to delete a given strata record
-func (s *server) deleteStrata(w http.ResponseWriter, req *http.Request) {
+// DeleteStrata asks the datastore to delete a given strata record
+func (s *BoreholeSvc) DeleteStrata(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	strata, ok := ctx.Value(strataCtx).(Strata)
+	strata, ok := ctx.Value(boreholev1.StrataCtx).(boreholev1.Strata)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
 	}
 
-	err := s.datastore.DeleteStrata(strata.ID)
+	err := s.repo.DeleteStrata(strata.ID)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
@@ -163,10 +145,10 @@ func (s *server) deleteStrata(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
-// strataCtxMiddleware is used by strata routes that have a strataID in the URL path.
+// StrataCtxMiddleware is used by strata routes that have a strataID in the URL path.
 // it finds the specified strata (returning 404 if the strata is not found) and adds it
 // to the request context.
-func (s *server) strataCtxMiddleware(next http.Handler) http.Handler {
+func (s *BoreholeSvc) StrataCtxMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		strataID, err := strconv.Atoi(chi.URLParam(r, "strataID"))
 		if err != nil {
@@ -175,14 +157,14 @@ func (s *server) strataCtxMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		strata, err := s.datastore.RetrieveStrata(strataID)
+		strata, err := s.repo.RetrieveStrata(strataID)
 		if err != nil {
 			log.Println("strata was not found in DB")
 			http.Error(w, http.StatusText(404), 404)
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), strataCtx, strata)
+		ctx := context.WithValue(r.Context(), boreholev1.StrataCtx, strata)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
