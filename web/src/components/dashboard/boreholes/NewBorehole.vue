@@ -14,6 +14,28 @@
                 v-model="form.name"
             ></b-input>
           </b-field>
+          <b-field label="Type">
+            <b-select
+                id="newBoreholeType"
+                v-model="form.type"
+            >
+              <option value="borehole">Borehole</option>
+              <option value="test_pit">Test pit</option>
+              <option value="other">Other</option>
+            </b-select>
+          </b-field>
+          <b-field label="Method of drilling">
+            <b-select
+                id="newBoreholeMethod"
+                v-model="form.drilling_method"
+                placeholder="Select method"
+            >
+              <option value="air_rotary">Air rotary</option>
+              <option value="solid_stem">Solid stem auger</option>
+              <option value="hollow_stem">Hollow stem auger</option>
+              <option value="other">Other</option>
+            </b-select>
+          </b-field>
           <div class="columns">
             <div class="column">
               <b-field label="Date drilling started">
@@ -108,6 +130,8 @@ export default {
         start_date: null,
         end_date: null,
         field_eng: null,
+        drilling_method: null,
+        type: 'borehole', // default value
         location: ['', '']
       }
     },

@@ -9,6 +9,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	boreholev1 "github.com/stephenhillier/geoprojects/api/boreholes/model"
+	projects_v1 "github.com/stephenhillier/geoprojects/api/projects/model"
 )
 
 // Sample is a soil layer/stratum and contains information such as description and depth of the layer
@@ -43,7 +45,7 @@ func (s *server) sampleOptions(w http.ResponseWriter, req *http.Request) {
 // the borehole must be passed in the request context with the contextKey "boreholeCtx"
 func (s *server) listSamplesByBorehole(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	borehole, ok := ctx.Value(boreholeCtx).(BoreholeResponse)
+	borehole, ok := ctx.Value(boreholev1.BoreholeCtx).(boreholev1.BoreholeResponse)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -60,7 +62,7 @@ func (s *server) listSamplesByBorehole(w http.ResponseWriter, req *http.Request)
 
 func (s *server) listSamplesByProject(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	project, ok := ctx.Value(projectCtx).(Project)
+	project, ok := ctx.Value(projects_v1.ProjectCtx).(projects_v1.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -81,7 +83,7 @@ func (s *server) createSample(w http.ResponseWriter, req *http.Request) {
 
 	// get borehole context (this is the borehole indicated by the borehole number in the URI)
 	ctx := req.Context()
-	borehole, ok := ctx.Value(boreholeCtx).(BoreholeResponse)
+	borehole, ok := ctx.Value(boreholev1.BoreholeCtx).(boreholev1.BoreholeResponse)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

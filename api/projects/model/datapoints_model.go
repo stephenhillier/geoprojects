@@ -1,7 +1,8 @@
-package main
+package model
 
 import (
 	"github.com/paulmach/orb"
+	"github.com/stephenhillier/geoprojects/api/db"
 )
 
 // Datapoint is a geographic point that represents the location where data
@@ -11,7 +12,7 @@ import (
 // order to reflect that drilling/subsurface sampling/instrumentation would
 // generally have been performed at the same physical location.
 type Datapoint struct {
-	ID        NullInt64   `json:"id"`
-	Location  orb.Point   `json:"location"`
-	Elevation NullFloat64 `json:"elevation"`
+	ID        db.NullInt64   `json:"id"`
+	Location  orb.Point      `json:"location"`
+	Elevation db.NullFloat64 `json:"elevation"`
 }

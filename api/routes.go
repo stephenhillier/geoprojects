@@ -2,9 +2,26 @@ package main
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/stephenhillier/geoprojects/api/boreholes"
+	"github.com/stephenhillier/geoprojects/api/db"
+	"github.com/stephenhillier/geoprojects/api/projects"
+	sv "github.com/stephenhillier/geoprojects/api/server"
 )
 
 func (api *server) appRoutes(r chi.Router) chi.Router {
+
+	dcfg := db.Config{
+		Conn:   "postgres://127.0.0.1:5432/geo?sslmode=disable",
+		Driver: "postgres",
+	}
+	store, _ := db.NewDB(dcfg)
+	cnf := &sv.Config{
+		DefaultPageLimit: 10,
+		MaxPageLimit:     100,
+	}
+
+	projects := projects.NewProjectSvc(store, cnf)
+	boreholes := boreholes.NewBoreholeSvc(store, cnf)
 
 	// v1 routes
 	r.Route("/api/v1", func(r chi.Router) {
@@ -20,15 +37,16 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 
 			// Projects routes
 			r.Route("/projects", func(r chi.Router) {
-				r.Get("/", api.listProjects)
-				r.Options("/", api.projectOptions)
-				r.Post("/", api.createProject)
+
+				r.Get("/", projects.List)
+				r.Options("/", projects.Options)
+				r.Post("/", projects.Create)
 				r.Route("/{projectID}", func(r chi.Router) {
-					r.Use(api.projectCtxMiddleware)
-					r.Get("/", api.projectDetail)
-					r.Options("/", api.singleProjectOptions)
-					r.Delete("/", api.deleteProject)
-					r.Put("/", api.updateProject)
+					r.Use(projects.ProjectCtxMiddleware)
+					r.Get("/", projects.Retrieve)
+					r.Options("/", projects.ProjectDetailOptions)
+					r.Delete("/", projects.Delete)
+					r.Put("/", projects.Update)
 
 					r.Get("/samples", api.listSamplesByProject)
 
@@ -72,13 +90,13 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 
 			// Boreholes routes
 			r.Route("/boreholes", func(r chi.Router) {
-				r.Options("/", api.boreholeOptions)
-				r.Get("/", api.listBoreholes)
-				r.Post("/", api.createBorehole)
+				r.Options("/", boreholes.Options)
+				r.Get("/", boreholes.List)
+				r.Post("/", boreholes.Create)
 				r.Route("/{boreholeID}", func(r chi.Router) {
-					r.Use(api.boreholeCtxMiddleware)
-					r.Get("/", api.getBorehole)
-					r.Get("/strata", api.listStrataByBorehole)
+					r.Use(boreholes.BoreholeCtxMiddleware)
+					r.Get("/", boreholes.Get)
+					r.Get("/strata", boreholes.ListStrataByBorehole)
 					r.Route("/samples", func(r chi.Router) {
 						r.Options("/", api.sampleOptions)
 						r.Get("/", api.listSamplesByBorehole)
@@ -91,18 +109,18 @@ func (api *server) appRoutes(r chi.Router) chi.Router {
 						})
 					})
 
-					r.Delete("/", api.deleteBorehole)
+					r.Delete("/", boreholes.Delete)
 				})
 			})
 
 			// Soil strata routes
 			r.Route("/strata", func(r chi.Router) {
-				r.Options("/", api.strataOptions)
-				r.Post("/", api.createStrata)
+				r.Options("/", boreholes.StrataOptions)
+				r.Post("/", boreholes.CreateStrata)
 				r.Route("/{strataID}", func(r chi.Router) {
-					r.Use(api.strataCtxMiddleware)
-					r.Put("/", api.putStrata)
-					r.Delete("/", api.deleteStrata)
+					r.Use(boreholes.StrataCtxMiddleware)
+					r.Put("/", boreholes.PutStrata)
+					r.Delete("/", boreholes.DeleteStrata)
 				})
 			})
 		})
