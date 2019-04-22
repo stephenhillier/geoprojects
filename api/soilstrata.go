@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	boreholev1 "github.com/stephenhillier/geoprojects/api/boreholes/model"
 	"github.com/stephenhillier/soildesc"
 )
 
@@ -42,7 +43,8 @@ func (s *server) strataOptions(w http.ResponseWriter, req *http.Request) {
 // the borehole must be passed in the request context with the contextKey "boreholeCtx"
 func (s *server) listStrataByBorehole(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	borehole, ok := ctx.Value(boreholeCtx).(BoreholeResponse)
+	borehole, ok := ctx.Value(boreholev1.BoreholeCtx).(boreholev1.BoreholeResponse)
+
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

@@ -27,3 +27,6 @@ type ProjectRequest struct {
 	Location      string     `json:"location"`
 	DefaultCoords [2]float64 `json:"default_coords"`
 }
+
+// ProjectCtx is a context key for a project
+var ProjectCtx struct{}
