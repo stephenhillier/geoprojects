@@ -57,7 +57,9 @@
                   </tr>
                   <tr>
                     <th class="table-heading-horizontal">Boreholes</th>
-                    <td>{{ project.borehole_count }}</td>
+                    <td>
+                      <router-link :to="{ name: 'project-boreholes' }">{{ project.borehole_count }}</router-link>
+                    </td>
                   </tr>
               </tbody>
           </table>
