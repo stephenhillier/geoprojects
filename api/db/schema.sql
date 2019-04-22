@@ -67,8 +67,12 @@ CREATE TABLE public.borehole (
     start_date date NOT NULL,
     end_date date,
     field_eng text NOT NULL,
+    type text DEFAULT 'borehole'::text,
+    drilling_method text,
+    CONSTRAINT borehole_drilling_method_check CHECK ((char_length(drilling_method) < 30)),
     CONSTRAINT borehole_field_eng_check CHECK ((char_length(field_eng) < 80)),
-    CONSTRAINT borehole_name_check CHECK ((char_length(name) < 40))
+    CONSTRAINT borehole_name_check CHECK ((char_length(name) < 40)),
+    CONSTRAINT borehole_type_check CHECK ((char_length(type) < 30))
 );
 
 
@@ -90,6 +94,18 @@ CREATE SEQUENCE public.borehole_id_seq
 --
 
 ALTER SEQUENCE public.borehole_id_seq OWNED BY public.borehole.id;
+
+
+--
+-- Name: borehole_type; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.borehole_type (
+    code text NOT NULL,
+    description text,
+    CONSTRAINT borehole_type_code_check CHECK ((char_length(code) < 30)),
+    CONSTRAINT borehole_type_description_check CHECK ((char_length(description) < 100))
+);
 
 
 --
@@ -120,6 +136,18 @@ CREATE SEQUENCE public.datapoint_id_seq
 --
 
 ALTER SEQUENCE public.datapoint_id_seq OWNED BY public.datapoint.id;
+
+
+--
+-- Name: drilling_method; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.drilling_method (
+    code text NOT NULL,
+    description text,
+    CONSTRAINT drilling_method_code_check CHECK ((char_length(code) < 30)),
+    CONSTRAINT drilling_method_description_check CHECK ((char_length(description) < 100))
+);
 
 
 --
@@ -536,11 +564,27 @@ ALTER TABLE ONLY public.borehole
 
 
 --
+-- Name: borehole_type borehole_type_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.borehole_type
+    ADD CONSTRAINT borehole_type_pkey PRIMARY KEY (code);
+
+
+--
 -- Name: datapoint datapoint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.datapoint
     ADD CONSTRAINT datapoint_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: drilling_method drilling_method_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.drilling_method
+    ADD CONSTRAINT drilling_method_pkey PRIMARY KEY (code);
 
 
 --
@@ -655,6 +699,14 @@ ALTER TABLE ONLY public.borehole
 
 
 --
+-- Name: borehole borehole_drilling_method_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.borehole
+    ADD CONSTRAINT borehole_drilling_method_fkey FOREIGN KEY (drilling_method) REFERENCES public.drilling_method(code) ON DELETE SET NULL;
+
+
+--
 -- Name: borehole borehole_program_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -668,6 +720,14 @@ ALTER TABLE ONLY public.borehole
 
 ALTER TABLE ONLY public.borehole
     ADD CONSTRAINT borehole_project_fkey FOREIGN KEY (project) REFERENCES public.project(id) ON DELETE CASCADE;
+
+
+--
+-- Name: borehole borehole_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.borehole
+    ADD CONSTRAINT borehole_type_fkey FOREIGN KEY (type) REFERENCES public.borehole_type(code) ON DELETE RESTRICT;
 
 
 --
@@ -750,4 +810,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20190403054445'),
     ('20190403054506'),
     ('20190403054511'),
-    ('20190419065059');
+    ('20190419065059'),
+    ('20190422034654');

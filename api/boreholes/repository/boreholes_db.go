@@ -112,8 +112,8 @@ func (db *PostgresRepo) CreateBorehole(bh boreholev1.BoreholeCreateRequest, proj
 	}
 
 	query := `
-		INSERT INTO borehole (datapoint, program, project, name, start_date, end_date, field_eng)
-		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, project, program, name, datapoint, start_date, end_date, field_eng
+		INSERT INTO borehole (datapoint, program, project, name, start_date, end_date, field_eng, drilling_method, type)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, project, program, name, datapoint, start_date, end_date, field_eng
 	`
 
 	created := boreholev1.Borehole{}
@@ -127,6 +127,8 @@ func (db *PostgresRepo) CreateBorehole(bh boreholev1.BoreholeCreateRequest, proj
 		bh.StartDate,
 		bh.EndDate,
 		bh.FieldEng,
+		bh.DrillingMethod,
+		bh.Type,
 	)
 	if err != nil {
 		return boreholev1.Borehole{}, err
@@ -139,14 +141,26 @@ func (db *PostgresRepo) CreateBorehole(bh boreholev1.BoreholeCreateRequest, proj
 func (db *PostgresRepo) GetBorehole(boreholeID int) (boreholev1.BoreholeResponse, error) {
 	p := boreholev1.BoreholeResponse{}
 	query := `
-		SELECT borehole.id, borehole.project, borehole.program, borehole.datapoint, borehole.name, borehole.start_date, borehole.end_date, borehole.field_eng,
+		SELECT
+			borehole.id,
+			borehole.project,
+			borehole.program,
+			borehole.datapoint,
+			borehole.name,
+			borehole.start_date,
+			borehole.end_date,
+			borehole.field_eng,
+			borehole.drilling_method,
+			bh_drilling_method.description AS drilling_method_description,
 			ST_AsBinary(datapoint.location) AS location
-		FROM borehole 
+		FROM borehole
+		JOIN drilling_method AS bh_drilling_method ON (borehole.drilling_method = bh_drilling_method.code)
 		LEFT JOIN datapoint ON (datapoint.id = borehole.datapoint)
 		WHERE borehole.id=$1	
 		`
 	err := db.conn.Get(&p, query, boreholeID)
 	if err != nil {
+		log.Println(err)
 		return boreholev1.BoreholeResponse{}, err
 	}
 	return p, nil
