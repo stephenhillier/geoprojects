@@ -1,6 +1,10 @@
-package model
+package earthworks
 
-import "github.com/stephenhillier/geoprojects/api/gis"
+import (
+	"github.com/paulmach/orb"
+	"github.com/stephenhillier/geoprojects/earthworks/db"
+	"github.com/stephenhillier/geoprojects/earthworks/pkg/gis"
+)
 
 // Project represents an engineering project. It holds files and data associated with a single project
 type Project struct {
@@ -30,3 +34,15 @@ type ProjectRequest struct {
 
 // ProjectCtx is a context key for a project
 var ProjectCtx struct{}
+
+// Datapoint is a geographic point that represents the location where data
+// was gathered or where boreholes/instruments are located. A single datapoint
+// may have a variety of data or records associated with it.
+// Boreholes/instruments are organized this way (as children of a Datapoint) in
+// order to reflect that drilling/subsurface sampling/instrumentation would
+// generally have been performed at the same physical location.
+type Datapoint struct {
+	ID        db.NullInt64   `json:"id"`
+	Location  orb.Point      `json:"location"`
+	Elevation db.NullFloat64 `json:"elevation"`
+}
