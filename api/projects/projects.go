@@ -11,7 +11,7 @@ import (
 	"github.com/stephenhillier/geoprojects/api/db"
 	"github.com/stephenhillier/geoprojects/api/projects/model"
 	"github.com/stephenhillier/geoprojects/api/projects/repository"
-	"github.com/stephenhillier/geoprojects/api/server"
+	"github.com/stephenhillier/geoprojects/api/server/config"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -27,11 +27,11 @@ type PaginatedProjectResponse struct {
 // ProjectSvc is a service that provides methods for working with Projects
 type ProjectSvc struct {
 	repo   repository.ProjectsRepository
-	config *server.Config
+	config *config.Config
 }
 
 // NewProjectSvc returns a ProjectSvc with methods for working with projects
-func NewProjectSvc(store *db.Datastore, config *server.Config) *ProjectSvc {
+func NewProjectSvc(store *db.Datastore, config *config.Config) *ProjectSvc {
 	return &ProjectSvc{
 		config: config,
 		repo:   repository.NewProjectsRepo(store),

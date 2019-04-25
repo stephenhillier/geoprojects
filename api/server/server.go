@@ -2,26 +2,21 @@ package server
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/stephenhillier/geoprojects/api/boreholes"
 	"github.com/stephenhillier/geoprojects/api/db"
+	"github.com/stephenhillier/geoprojects/api/projects"
+	"github.com/stephenhillier/geoprojects/api/server/config"
 )
 
 // Server represents the server environment (db and router)
 type Server struct {
 	router    chi.Router
 	datastore db.Datastore
-	config    Config
+	config    config.Config
+	handlers  handlers
 }
 
-// Config holds server/database/auth service configuration
-type Config struct {
-	AuthCert         PEMCert // defined in auth.go
-	AuthAudience     string
-	AuthIssuer       string
-	AuthJWKSEndpoint string
-	DBConn           string
-	DBDriver         string
-	DefaultPageLimit int
-	MaxPageLimit     int
-	AuthGroupClaim   string
-	AuthRoleClaim    string
+type handlers struct {
+	Projects  *projects.ProjectSvc
+	Boreholes *boreholes.BoreholeSvc
 }

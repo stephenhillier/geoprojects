@@ -12,7 +12,7 @@ import (
 	boreholev1 "github.com/stephenhillier/geoprojects/api/boreholes/model"
 	"github.com/stephenhillier/geoprojects/api/boreholes/repository"
 	"github.com/stephenhillier/geoprojects/api/db"
-	"github.com/stephenhillier/geoprojects/api/server"
+	"github.com/stephenhillier/geoprojects/api/server/config"
 )
 
 // PaginatedBoreholeResponse contains a count of all borehole records and paginated results from the database
@@ -24,11 +24,11 @@ type PaginatedBoreholeResponse struct {
 // BoreholeSvc is a service that provides methods for working with boreholes
 type BoreholeSvc struct {
 	repo   repository.BoreholeRepository
-	config *server.Config
+	config *config.Config
 }
 
 // NewBoreholeSvc returns a BoreholeSvc with methods for working with boreholes
-func NewBoreholeSvc(store *db.Datastore, config *server.Config) *BoreholeSvc {
+func NewBoreholeSvc(store *db.Datastore, config *config.Config) *BoreholeSvc {
 	return &BoreholeSvc{
 		config: config,
 		repo:   repository.NewBoreholeRepo(store),

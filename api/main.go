@@ -7,18 +7,23 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/stephenhillier/geoprojects/api/boreholes"
+	sv "github.com/stephenhillier/geoprojects/api/server"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/namsral/flag"
+	"github.com/stephenhillier/geoprojects/api/projects"
 )
 
 // server represents the server environment (db and router)
-type server struct {
-	router    chi.Router
-	datastore Datastore
-	config    config
-}
+// type server struct {
+// 	router    chi.Router
+// 	datastore Datastore
+// 	config    config
+// 	handlers  handlers
+// }
 
 // config holds server/database/auth service configuration
 type config struct {
@@ -57,7 +62,7 @@ func main() {
 	flag.StringVar(&conf.authJWKSEndpoint, "jwks_endpoint", "https://earthworks.auth0.com/.well-known/jwks.json", "authentication JWKS endpoint")
 	flag.Parse()
 
-	api := &server{}
+	api := server.NewServer()
 	api.config = conf
 
 	api.config.defaultPageLimit = 10
@@ -85,6 +90,19 @@ func main() {
 	}
 
 	api.datastore = Datastore{db}
+
+	dbCfg := db.Config{
+		Conn:   "postgres://127.0.0.1:5432/geo?sslmode=disable",
+		Driver: "postgres",
+	}
+	store, _ := db.NewDB(dbCfg)
+	cnf := &sv.Config{
+		DefaultPageLimit: 10,
+		MaxPageLimit:     100,
+	}
+
+	projects := projects.NewProjectSvc(store, cnf)
+	boreholes := boreholes.NewBoreholeSvc(store, cnf)
 
 	router := chi.NewRouter()
 
