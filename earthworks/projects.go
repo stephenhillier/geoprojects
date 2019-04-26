@@ -32,9 +32,6 @@ type ProjectRequest struct {
 	DefaultCoords [2]float64 `json:"default_coords"`
 }
 
-// ProjectCtx is a context key for a project
-var ProjectCtx struct{}
-
 // Datapoint is a geographic point that represents the location where data
 // was gathered or where boreholes/instruments are located. A single datapoint
 // may have a variety of data or records associated with it.
@@ -46,3 +43,6 @@ type Datapoint struct {
 	Location  orb.Point      `json:"location"`
 	Elevation db.NullFloat64 `json:"elevation"`
 }
+
+// ProjectCtx is a context key for a project
+var ProjectCtx struct{}

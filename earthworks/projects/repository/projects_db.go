@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/stephenhillier/geoprojects/api/db"
-	projectsv1 "github.com/stephenhillier/geoprojects/api/projects/model"
+	"github.com/stephenhillier/geoprojects/earthworks"
+	"github.com/stephenhillier/geoprojects/earthworks/db"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkt"
@@ -14,14 +14,15 @@ import (
 
 // ProjectsRepository is the set of methods available for interacting with Projects records
 type ProjectsRepository interface {
-	AllProjects(name string, number string, search string) ([]projectsv1.Project, error)
-	CreateProject(p projectsv1.ProjectRequest) (projectsv1.Project, error)
-	RetrieveProject(projectID int) (projectsv1.Project, error)
-	UpdateProject(id int, p projectsv1.ProjectRequest) (projectsv1.Project, error)
+	AllProjects(name string, number string, search string) ([]earthworks.Project, error)
+	CreateProject(p earthworks.ProjectRequest) (earthworks.Project, error)
+	RetrieveProject(projectID int) (earthworks.Project, error)
+	UpdateProject(id int, p earthworks.ProjectRequest) (earthworks.Project, error)
 	DeleteProject(id int) error
 }
 
 // NewProjectsRepo returns a PostgresRepo with a database connection
+// This method can be called with either a sqlx.DB or a sqlx.Tx (transaction)
 func NewProjectsRepo(database *db.Datastore) *PostgresRepo {
 	return &PostgresRepo{
 		conn: database,
@@ -35,8 +36,8 @@ type PostgresRepo struct {
 }
 
 // AllProjects returns a list of all projects in the datastore
-func (repo *PostgresRepo) AllProjects(name string, number string, search string) ([]projectsv1.Project, error) {
-	projects := []projectsv1.Project{}
+func (repo *PostgresRepo) AllProjects(name string, number string, search string) ([]earthworks.Project, error) {
+	projects := []earthworks.Project{}
 	var err error
 
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
@@ -73,29 +74,29 @@ func (repo *PostgresRepo) AllProjects(name string, number string, search string)
 	err = repo.conn.Select(&projects, projectsQuery, queryArgs...)
 
 	if err != nil {
-		return []projectsv1.Project{}, err
+		return []earthworks.Project{}, err
 	}
 
 	return projects, nil
 }
 
 // CreateProject creates a new project record in the database
-func (repo *PostgresRepo) CreateProject(p projectsv1.ProjectRequest) (projectsv1.Project, error) {
+func (repo *PostgresRepo) CreateProject(p earthworks.ProjectRequest) (earthworks.Project, error) {
 	query := `INSERT INTO project (name, number, client, pm, location, default_coords) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, number, client, pm, location`
 
-	new := projectsv1.Project{}
+	new := earthworks.Project{}
 
 	coords := orb.Point{p.DefaultCoords[0], p.DefaultCoords[1]}
 	err := repo.conn.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, wkt.MarshalString(coords)).StructScan(&new)
 	if err != nil {
-		return projectsv1.Project{}, err
+		return earthworks.Project{}, err
 	}
 	return new, nil
 }
 
 // RetrieveProject fetches one project record from database (by project ID)
-func (repo *PostgresRepo) RetrieveProject(projectID int) (projectsv1.Project, error) {
-	p := projectsv1.Project{}
+func (repo *PostgresRepo) RetrieveProject(projectID int) (earthworks.Project, error) {
+	p := earthworks.Project{}
 	query := `SELECT
 							project.id,
 							project.name,
@@ -126,7 +127,7 @@ func (repo *PostgresRepo) DeleteProject(id int) error {
 }
 
 // UpdateProject updates the details of a project in the datastore
-func (repo *PostgresRepo) UpdateProject(id int, p projectsv1.ProjectRequest) (projectsv1.Project, error) {
+func (repo *PostgresRepo) UpdateProject(id int, p earthworks.ProjectRequest) (earthworks.Project, error) {
 	query := `
 	UPDATE project
 	SET
@@ -135,11 +136,11 @@ func (repo *PostgresRepo) UpdateProject(id int, p projectsv1.ProjectRequest) (pr
 	RETURNING id, name, number, client, pm, location
 	`
 
-	proj := projectsv1.Project{}
+	proj := earthworks.Project{}
 
 	err := repo.conn.QueryRowx(query, p.Name, p.Number, p.Client, p.PM, p.Location, id).StructScan(&proj)
 	if err != nil {
-		return projectsv1.Project{}, err
+		return earthworks.Project{}, err
 	}
 	return proj, nil
 }

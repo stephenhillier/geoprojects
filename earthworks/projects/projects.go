@@ -8,10 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stephenhillier/geoprojects/api/db"
-	"github.com/stephenhillier/geoprojects/api/projects/model"
-	"github.com/stephenhillier/geoprojects/api/projects/repository"
-	"github.com/stephenhillier/geoprojects/api/server/config"
+	"github.com/stephenhillier/geoprojects/earthworks"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -20,30 +17,32 @@ import (
 // PaginatedProjectResponse is a paginated API response containing a count of all projects
 // and the current page of projects
 type PaginatedProjectResponse struct {
-	Count   int             `json:"count"`
-	Results []model.Project `json:"results"`
+	Count   int                  `json:"count"`
+	Results []earthworks.Project `json:"results"`
 }
 
 // ProjectSvc is a service that provides methods for working with Projects
+// http handlers will be available as methods e.g. projects.Create
 type ProjectSvc struct {
-	repo   repository.ProjectsRepository
-	config *config.Config
+	repo     ProjectRepository
+	settings earthworks.Settings
 }
 
-// NewProjectSvc returns a ProjectSvc with methods for working with projects
-func NewProjectSvc(store *db.Datastore, config *config.Config) *ProjectSvc {
-	return &ProjectSvc{
-		config: config,
-		repo:   repository.NewProjectsRepo(store),
-	}
+// ProjectRepository is the set of methods available for interacting with Projects records
+type ProjectRepository interface {
+	AllProjects(name string, number string, search string) ([]earthworks.Project, error)
+	CreateProject(p earthworks.ProjectRequest) (earthworks.Project, error)
+	RetrieveProject(projectID int) (earthworks.Project, error)
+	UpdateProject(id int, p earthworks.ProjectRequest) (earthworks.Project, error)
+	DeleteProject(id int) error
 }
 
 // List returns a list of all project records
 func (p *ProjectSvc) List(w http.ResponseWriter, req *http.Request) {
 
 	limit, err := strconv.Atoi(req.FormValue("limit"))
-	if err != nil || limit > p.config.MaxPageLimit || limit < 0 {
-		limit = p.config.DefaultPageLimit
+	if err != nil || limit > p.settings.MaxPageLimit || limit < 0 {
+		limit = p.settings.DefaultPageLimit
 	}
 
 	offset, err := strconv.Atoi(req.FormValue("offset"))
@@ -74,7 +73,7 @@ func (p *ProjectSvc) Create(w http.ResponseWriter, req *http.Request) {
 
 	decoder := json.NewDecoder(req.Body)
 	// take input from POST request and store in a new Project type
-	project := model.ProjectRequest{}
+	project := earthworks.ProjectRequest{}
 	err := decoder.Decode(&project)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -129,7 +128,7 @@ func (p *ProjectSvc) Update(w http.ResponseWriter, req *http.Request) {
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	pReq := model.ProjectRequest{}
+	pReq := earthworks.ProjectRequest{}
 	err = decoder.Decode(&pReq)
 	if err != nil {
 		log.Println(err)
@@ -184,14 +183,14 @@ func (p *ProjectSvc) ProjectCtxMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), model.ProjectCtx, project)
+		ctx := context.WithValue(r.Context(), earthworks.ProjectCtx, project)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func getProjectContext(r *http.Request) (model.Project, error) {
+func getProjectContext(r *http.Request) (earthworks.Project, error) {
 	ctx := r.Context()
-	project, ok := ctx.Value(model.ProjectCtx).(model.Project)
+	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
 	if !ok {
 		return project, errors.New("error getting project from request context")
 	}
