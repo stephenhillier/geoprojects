@@ -46,3 +46,12 @@ type Datapoint struct {
 
 // ProjectCtx is a context key for a project
 var ProjectCtx struct{}
+
+// ProjectRepository is the set of methods available for interacting with Projects records
+type ProjectRepository interface {
+	AllProjects(name string, number string, search string) ([]Project, error)
+	CreateProject(p ProjectRequest) (Project, error)
+	RetrieveProject(projectID int) (Project, error)
+	UpdateProject(id int, p ProjectRequest) (Project, error)
+	DeleteProject(id int) error
+}
