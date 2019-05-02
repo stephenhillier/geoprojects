@@ -47,3 +47,19 @@ func NewDB(config Config) (*Datastore, error) {
 	log.Println("Database connection ready.")
 	return &Datastore{db}, nil
 }
+
+// NewDatastore takes a sqlx.DB handle and returns a
+// Datastore. It blocks until the DB is ready.
+func NewDatastore(db *sqlx.DB) (*Datastore, error) {
+	for {
+		err := db.Ping()
+		if err == nil {
+			break
+		}
+		log.Println(err)
+		log.Println("Waiting for database to become available")
+		time.Sleep(10 * time.Second)
+	}
+	log.Println("Database connection ready.")
+	return &Datastore{db}, nil
+}

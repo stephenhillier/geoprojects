@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"encoding/json"
@@ -60,7 +60,7 @@ func (config *Config) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
 
 			// check if we need a new certificate
 			if config.AuthCert.Cert == "" || config.AuthCert.Kid != token.Header["kid"] || config.AuthCert.Expiry.Before(time.Now()) {
-				config.AuthCert, err = config.getCert(token)
+				config.AuthCert, err = config.GetCert(token)
 				if err != nil {
 					log.Panic(err)
 				}
@@ -77,9 +77,9 @@ func (config *Config) JWTAuthentication() *jwtmiddleware.JWTMiddleware {
 	return jwtMiddleware
 }
 
-// getCert makes a request to the jwks endpoint and returns a public key certificate
+// GetCert makes a request to the jwks endpoint and returns a public key certificate
 // original code from from auth0.com/docs/
-func (config *Config) getCert(token *jwt.Token) (PEMCert, error) {
+func (config *Config) GetCert(token *jwt.Token) (PEMCert, error) {
 
 	// create a new PEM certificate `newCert`.
 	// it will not be returned unless we successfully populate it.

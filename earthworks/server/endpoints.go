@@ -16,7 +16,7 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 
 		// 	// Authenticated routes
 		r.Group(func(r chi.Router) {
-			// r.Use(api.jwtAuthentication().Handler)
+			r.Use(api.Config.JWTAuthentication().Handler)
 
 			// Projects routes
 			r.Route("/projects", func(r chi.Router) {

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"log"
-	"net/http"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 
 	"github.com/go-chi/chi"
 	"github.com/stephenhillier/geoprojects/earthworks"
@@ -10,9 +10,10 @@ import (
 	projectsHandlers "github.com/stephenhillier/geoprojects/earthworks/projects/http"
 )
 
-// Service is a type that contains backing services and settings
+// Service contains backing services and settings
 // for the Earthworks backend app.
 type Service struct {
+	Config   *Config
 	Settings earthworks.Settings
 	Router   chi.Router
 	Handlers Handlers
@@ -23,44 +24,57 @@ type Handlers struct {
 	Projects *projectsHandlers.ProjectSvc
 }
 
+// Config holds server/database/auth service configuration
+type Config struct {
+	AuthCert         PEMCert // defined in auth.go
+	AuthAudience     string
+	AuthIssuer       string
+	AuthJWKSEndpoint string
+	DBConn           string
+	DBDriver         string
+	AuthGroupClaim   string
+	AuthRoleClaim    string
+}
+
 // NewEarthworksService returns an EarthworksService object that ties
 // together the various services that form the backend Earthworks application
-func NewEarthworksService() (Service, error) {
+func NewEarthworksService(datastore *db.Datastore, cnf *Config) (Service, error) {
 
 	svc := Service{}
-
-	dbConfig := db.Config{
-		Conn:   "postgres://127.0.0.1:5432/geo?sslmode=disable",
-		Driver: "postgres",
-	}
-	db, err := db.NewDB(dbConfig)
-	if err != nil {
-		return Service{}, err
-	}
 
 	settings := earthworks.Settings{
 		DefaultPageLimit: 10,
 		MaxPageLimit:     100,
 	}
 
-	projects := projectsHandlers.NewProjectSvc(db, settings)
+	projects := projectsHandlers.NewProjectSvc(datastore, settings)
 	// boreholes := boreholes.NewBoreholeSvc(store, cnf)
 
-	log.Println(projects)
-
 	r := chi.NewRouter()
-	router := svc.appRoutes(r)
 
+	cors := cors.New(cors.Options{
+		// AllowedOrigins: []string{"https://foo.com"},
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+
+	// register middleware
+	r.Use(cors.Handler)
+	r.Use(middleware.Logger)
+
+	svc.Config = cnf
 	svc.Settings = settings
-	svc.Router = router
 	svc.Handlers = Handlers{
 		Projects: projects,
 	}
 
-	return svc, nil
-}
+	router := svc.appRoutes(r)
 
-// health is a simple health check handler that returns HTTP 200 OK.
-func health(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	svc.Router = router
+
+	return svc, nil
 }
