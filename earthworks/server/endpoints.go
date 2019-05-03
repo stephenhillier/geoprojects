@@ -71,41 +71,41 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 				})
 			})
 
-			// 		// Boreholes routes
-			// 		r.Route("/boreholes", func(r chi.Router) {
-			// 			r.Options("/", boreholes.Options)
-			// 			r.Get("/", boreholes.List)
-			// 			r.Post("/", boreholes.Create)
-			// 			r.Route("/{boreholeID}", func(r chi.Router) {
-			// 				r.Use(boreholes.BoreholeCtxMiddleware)
-			// 				r.Get("/", boreholes.Get)
-			// 				r.Get("/strata", boreholes.ListStrataByBorehole)
-			// 				r.Route("/samples", func(r chi.Router) {
-			// 					r.Options("/", api.sampleOptions)
-			// 					r.Get("/", api.listSamplesByBorehole)
-			// 					r.Post("/", api.createSample)
-			// 					r.Route("/{sampleID}", func(r chi.Router) {
-			// 						r.Use(api.sampleCtxMiddleware)
-			// 						r.Get("/", api.retrieveSample)
-			// 						r.Put("/", api.putSample)
-			// 						r.Delete("/", api.deleteSample)
-			// 					})
-			// 				})
+			// Boreholes routes
+			r.Route("/boreholes", func(r chi.Router) {
+				r.Options("/", api.Handlers.Boreholes.Options)
+				r.Get("/", api.Handlers.Boreholes.List)
+				r.Post("/", api.Handlers.Boreholes.Create)
+				r.Route("/{boreholeID}", func(r chi.Router) {
+					r.Use(api.Handlers.Boreholes.BoreholeCtxMiddleware)
+					r.Get("/", api.Handlers.Boreholes.Get)
+					r.Get("/strata", api.Handlers.Boreholes.ListStrataByBorehole)
+					// r.Route("/samples", func(r chi.Router) {
+					// 	r.Options("/", api.sampleOptions)
+					// 	r.Get("/", api.listSamplesByBorehole)
+					// 	r.Post("/", api.createSample)
+					// 	r.Route("/{sampleID}", func(r chi.Router) {
+					// 		r.Use(api.sampleCtxMiddleware)
+					// 		r.Get("/", api.retrieveSample)
+					// 		r.Put("/", api.putSample)
+					// 		r.Delete("/", api.deleteSample)
+					// 	})
+					// })
 
-			// 				r.Delete("/", boreholes.Delete)
-			// 			})
-			// 		})
+					r.Delete("/", api.Handlers.Boreholes.Delete)
+				})
+			})
 
-			// 		// Soil strata routes
-			// 		r.Route("/strata", func(r chi.Router) {
-			// 			r.Options("/", boreholes.StrataOptions)
-			// 			r.Post("/", boreholes.CreateStrata)
-			// 			r.Route("/{strataID}", func(r chi.Router) {
-			// 				r.Use(boreholes.StrataCtxMiddleware)
-			// 				r.Put("/", boreholes.PutStrata)
-			// 				r.Delete("/", boreholes.DeleteStrata)
-			// 			})
-			// 		})
+			// Soil strata routes
+			r.Route("/strata", func(r chi.Router) {
+				r.Options("/", api.Handlers.Boreholes.StrataOptions)
+				r.Post("/", api.Handlers.Boreholes.CreateStrata)
+				r.Route("/{strataID}", func(r chi.Router) {
+					r.Use(api.Handlers.Boreholes.StrataCtxMiddleware)
+					r.Put("/", api.Handlers.Boreholes.PutStrata)
+					r.Delete("/", api.Handlers.Boreholes.DeleteStrata)
+				})
+			})
 		})
 	})
 	return r

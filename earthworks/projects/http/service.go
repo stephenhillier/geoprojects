@@ -6,7 +6,14 @@ import (
 	projectsRepo "github.com/stephenhillier/geoprojects/earthworks/projects/repository"
 )
 
-// NewProjectSvc returns a PRojectSvc with a handle for a database connection and app settings
+// ProjectSvc is a service that provides methods for working with Projects
+// http handlers will be available as methods e.g. projects.Create
+type ProjectSvc struct {
+	Repo     earthworks.ProjectRepository
+	Settings earthworks.Settings
+}
+
+// NewProjectSvc returns a ProjectSvc with a handle for a database connection and app settings
 func NewProjectSvc(db *db.Datastore, settings earthworks.Settings) *ProjectSvc {
 	repo := projectsRepo.NewProjectsRepo(db)
 

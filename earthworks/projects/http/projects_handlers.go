@@ -13,13 +13,6 @@ import (
 	"github.com/stephenhillier/geoprojects/earthworks"
 )
 
-// ProjectSvc is a service that provides methods for working with Projects
-// http handlers will be available as methods e.g. projects.Create
-type ProjectSvc struct {
-	Repo     earthworks.ProjectRepository
-	Settings earthworks.Settings
-}
-
 // PaginatedProjectResponse is a paginated API response containing a count of all projects
 // and the current page of projects
 type PaginatedProjectResponse struct {

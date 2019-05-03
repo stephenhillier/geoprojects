@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/stephenhillier/geoprojects/earthworks"
+	boreholeHandlers "github.com/stephenhillier/geoprojects/earthworks/boreholes/http"
 	"github.com/stephenhillier/geoprojects/earthworks/db"
 	projectsHandlers "github.com/stephenhillier/geoprojects/earthworks/projects/http"
 )
@@ -21,7 +22,8 @@ type Service struct {
 
 // Handlers contains http request handlers for each service
 type Handlers struct {
-	Projects *projectsHandlers.ProjectSvc
+	Projects  *projectsHandlers.ProjectSvc
+	Boreholes *boreholeHandlers.BoreholeSvc
 }
 
 // Config holds server/database/auth service configuration
@@ -48,7 +50,7 @@ func NewEarthworksService(datastore *db.Datastore, cnf *Config) (Service, error)
 	}
 
 	projects := projectsHandlers.NewProjectSvc(datastore, settings)
-	// boreholes := boreholes.NewBoreholeSvc(store, cnf)
+	boreholes := boreholeHandlers.NewBoreholeSvc(datastore, settings)
 
 	r := chi.NewRouter()
 
@@ -69,7 +71,8 @@ func NewEarthworksService(datastore *db.Datastore, cnf *Config) (Service, error)
 	svc.Config = cnf
 	svc.Settings = settings
 	svc.Handlers = Handlers{
-		Projects: projects,
+		Projects:  projects,
+		Boreholes: boreholes,
 	}
 
 	router := svc.appRoutes(r)
