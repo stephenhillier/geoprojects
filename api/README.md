@@ -1,5 +1,9 @@
 # Earthworks HTTP API
 
+Note: deprecated, see /earthworks folder for new API.
+
+## Backend
+
 Backend HTTP API service
 
 Running the server locally: `go run .`

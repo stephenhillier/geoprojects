@@ -8,6 +8,7 @@ import (
 	"github.com/stephenhillier/geoprojects/earthworks"
 	boreholeHandlers "github.com/stephenhillier/geoprojects/earthworks/boreholes/http"
 	"github.com/stephenhillier/geoprojects/earthworks/db"
+	fileHandlers "github.com/stephenhillier/geoprojects/earthworks/files/http"
 	projectsHandlers "github.com/stephenhillier/geoprojects/earthworks/projects/http"
 )
 
@@ -24,6 +25,7 @@ type Service struct {
 type Handlers struct {
 	Projects  *projectsHandlers.ProjectSvc
 	Boreholes *boreholeHandlers.BoreholeSvc
+	Files     *fileHandlers.FileSvc
 }
 
 // Config holds server/database/auth service configuration
@@ -51,6 +53,7 @@ func NewEarthworksService(datastore *db.Datastore, cnf *Config) (Service, error)
 
 	projects := projectsHandlers.NewProjectSvc(datastore, settings)
 	boreholes := boreholeHandlers.NewBoreholeSvc(datastore, settings)
+	files := fileHandlers.NewFileSvc(datastore, settings)
 
 	r := chi.NewRouter()
 
@@ -73,6 +76,7 @@ func NewEarthworksService(datastore *db.Datastore, cnf *Config) (Service, error)
 	svc.Handlers = Handlers{
 		Projects:  projects,
 		Boreholes: boreholes,
+		Files:     files,
 	}
 
 	router := svc.appRoutes(r)

@@ -33,14 +33,14 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 
 					// 				r.Get("/samples", api.listSamplesByProject)
 
-					// 				r.Route("/files", func(r chi.Router) {
-					// 					r.Post("/", api.NewFile)
-					// 					r.Get("/", api.ListFiles)
-					// 					r.Route("/{fileID}", func(r chi.Router) {
-					// 						r.Get("/", api.GetFile)
-					// 						r.Delete("/", api.DeleteFile)
-					// 					})
-					// 				})
+					r.Route("/files", func(r chi.Router) {
+						r.Post("/", api.Handlers.Files.NewFile)
+						r.Get("/", api.Handlers.Files.ListFiles)
+						r.Route("/{fileID}", func(r chi.Router) {
+							r.Get("/", api.Handlers.Files.GetFile)
+							r.Delete("/", api.Handlers.Files.DeleteFile)
+						})
+					})
 
 					// 				// Lab test routes
 
@@ -80,17 +80,17 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 					r.Use(api.Handlers.Boreholes.BoreholeCtxMiddleware)
 					r.Get("/", api.Handlers.Boreholes.Get)
 					r.Get("/strata", api.Handlers.Boreholes.ListStrataByBorehole)
-					// r.Route("/samples", func(r chi.Router) {
-					// 	r.Options("/", api.sampleOptions)
-					// 	r.Get("/", api.listSamplesByBorehole)
-					// 	r.Post("/", api.createSample)
-					// 	r.Route("/{sampleID}", func(r chi.Router) {
-					// 		r.Use(api.sampleCtxMiddleware)
-					// 		r.Get("/", api.retrieveSample)
-					// 		r.Put("/", api.putSample)
-					// 		r.Delete("/", api.deleteSample)
-					// 	})
-					// })
+					r.Route("/samples", func(r chi.Router) {
+						r.Options("/", api.Handlers.Boreholes.SampleOptions)
+						r.Get("/", api.Handlers.Boreholes.ListSamplesByBorehole)
+						r.Post("/", api.Handlers.Boreholes.CreateSample)
+						r.Route("/{sampleID}", func(r chi.Router) {
+							r.Use(api.Handlers.Boreholes.SampleCtxMiddleware)
+							r.Get("/", api.Handlers.Boreholes.RetrieveSample)
+							r.Put("/", api.Handlers.Boreholes.PutSample)
+							r.Delete("/", api.Handlers.Boreholes.DeleteSample)
+						})
+					})
 
 					r.Delete("/", api.Handlers.Boreholes.Delete)
 				})

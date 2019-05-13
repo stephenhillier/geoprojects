@@ -18,6 +18,7 @@ The following special folders contain packages necessary for starting and operat
 
 These folders contain business logic that the Earthworks backend API application uses to manage projects, geotechnical field data and laboratory data.
 
-* `projects/`
-* `boreholes/`
-* `laboratory/`
+* `projects/` - project management
+* `boreholes/` - field drilling, logging and sampling
+* `laboratory/` - laboratory testing
+* `files/` - file/photo storage service

@@ -92,19 +92,43 @@ type StrataRequest struct {
 	Description string  `json:"description"`
 }
 
-// BoreholeCtx is a context key for a borehole record
-var BoreholeCtx struct{}
+// Sample is a soil layer/stratum and contains information such as description and depth of the layer
+type Sample struct {
+	ID           int64   `json:"id"`
+	Name         string  `json:"name"`
+	Borehole     int64   `json:"borehole"`
+	BoreholeName string  `json:"borehole_name" db:"borehole_name"`
+	Start        float64 `json:"start" db:"start_depth"`
+	End          float64 `json:"end" db:"end_depth"`
+	Description  string  `json:"description"`
+	USCS         string  `json:"uscs" db:"uscs"`
+	Tests        int     `json:"test_count"`
+}
 
-// StrataCtx is a context key for a strata record
-var StrataCtx struct{}
+// SampleRequest is a struct containing fields required to create a new sample
+type SampleRequest struct {
+	Name        string  `json:"name"`
+	Borehole    int64   `json:"borehole,string"`
+	Start       float64 `json:"start,string"`
+	End         float64 `json:"end,string"`
+	Description string  `json:"description"`
+	USCS        string  `json:"uscs" db:"uscs"`
+}
 
 // BoreholeRepository is the set of methods available for interacting with Borehole records
 type BoreholeRepository interface {
+	StrataRepository
+	SampleRepository
+
 	ListBoreholes(int, int, int) ([]*BoreholeResponse, int64, error)
 	CreateBorehole(bh BoreholeCreateRequest, project int64) (Borehole, error)
 	GetBorehole(boreholeID int) (BoreholeResponse, error)
 	DeleteBorehole(boreholeID int64) error
+}
 
+// StrataRepository is the set of methods used for working with strata
+// records in a database.
+type StrataRepository interface {
 	ListStrataByBorehole(boreholeID int64) ([]*Strata, error)
 	CreateStrata(strata Strata) (Strata, error)
 	CountStrataForBorehole(boreholeID int64) (int, error)
@@ -112,3 +136,25 @@ type BoreholeRepository interface {
 	UpdateStrata(strata Strata) (Strata, error)
 	DeleteStrata(strataID int64) error
 }
+
+// SampleRepository is the set of methods used for working with
+// sample records in a database.
+type SampleRepository interface {
+	ListSamplesByBorehole(int64) ([]*Sample, error)
+	ListSamplesByProject(int) ([]*Sample, error)
+	CreateSample(Sample) (Sample, error)
+	CountSampleForBorehole(int64) (int, error)
+	RetrieveSample(int) (Sample, error)
+	UpdateSample(Sample) (Sample, error)
+	DeleteSample(int64) error
+	CountTestForSample(int64) (int, error)
+}
+
+// BoreholeCtx is a context key for a borehole record
+var BoreholeCtx struct{}
+
+// StrataCtx is a context key for a strata record
+var StrataCtx struct{}
+
+// SampleCtx is a context key for a sample record in the request context
+var SampleCtx struct{}
