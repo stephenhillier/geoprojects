@@ -31,7 +31,7 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 					r.Delete("/", api.Handlers.Projects.Delete)
 					r.Put("/", api.Handlers.Projects.Update)
 
-					// 				r.Get("/samples", api.listSamplesByProject)
+					r.Get("/samples", api.Handlers.Boreholes.ListSamplesByProject)
 
 					r.Route("/files", func(r chi.Router) {
 						r.Post("/", api.Handlers.Files.NewFile)
@@ -42,32 +42,32 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 						})
 					})
 
-					// 				// Lab test routes
+					// Lab test routes
 
-					// 				r.Route("/lab/tests", func(r chi.Router) {
-					// 					r.Options("/", api.labTestOptions)
-					// 					r.Post("/", api.createLabTest)
-					// 					r.Get("/", api.listLabTestsByProject)
-					// 					r.Route("/{labTestID}", func(r chi.Router) {
-					// 						r.Use(api.labTestCtxMiddleware)
-					// 						r.Options("/", api.singleLabTestOptions)
-					// 						r.Delete("/", api.deleteLabTest)
-					// 						r.Put("/", api.putLabTest)
-					// 						r.Get("/", api.retrieveLabTest)
-					// 						r.Route("/moisture", func(r chi.Router) {
-					// 							r.Get("/", api.retrieveMoistureTest)
-					// 							r.Post("/", api.createMoistureTest)
-					// 							r.Put("/", api.putMoistureTest)
-					// 						})
-					// 						r.Route("/sieves", func(r chi.Router) {
-					// 							r.Post("/", api.addSieveToGSA)
-					// 							r.Route("/{sieveID}", func(r chi.Router) {
-					// 								r.Put("/", api.putSieve)
-					// 								r.Delete("/", api.deleteSieve)
-					// 							})
-					// 						})
-					// 					})
-					// 				})
+					r.Route("/lab/tests", func(r chi.Router) {
+						r.Options("/", api.Handlers.Lab.LabTestOptions)
+						r.Post("/", api.Handlers.Lab.CreateLabTest)
+						r.Get("/", api.Handlers.Lab.ListLabTestsByProject)
+						r.Route("/{labTestID}", func(r chi.Router) {
+							r.Use(api.Handlers.Lab.LabTestCtxMiddleware)
+							r.Options("/", api.Handlers.Lab.SingleLabTestOptions)
+							r.Delete("/", api.Handlers.Lab.DeleteLabTest)
+							r.Put("/", api.Handlers.Lab.PutLabTest)
+							r.Get("/", api.Handlers.Lab.RetrieveLabTest)
+							r.Route("/moisture", func(r chi.Router) {
+								r.Get("/", api.Handlers.Lab.RetrieveMoistureTest)
+								r.Post("/", api.Handlers.Lab.CreateMoistureTest)
+								r.Put("/", api.Handlers.Lab.PutMoistureTest)
+							})
+							r.Route("/sieves", func(r chi.Router) {
+								r.Post("/", api.Handlers.Lab.AddSieveToGSA)
+								r.Route("/{sieveID}", func(r chi.Router) {
+									r.Put("/", api.Handlers.Lab.PutSieve)
+									r.Delete("/", api.Handlers.Lab.DeleteSieve)
+								})
+							})
+						})
+					})
 				})
 			})
 
