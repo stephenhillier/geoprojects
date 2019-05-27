@@ -1,10 +1,9 @@
-module github.com/stephenhillier/geoprojects/earthworks
+module github.com/stephenhillier/geoprojects
 
 go 1.12
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3
-	github.com/Masterminds/squirrel v1.1.0
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi v4.0.2+incompatible

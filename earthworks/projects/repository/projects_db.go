@@ -7,9 +7,9 @@ import (
 	"github.com/stephenhillier/geoprojects/earthworks"
 	"github.com/stephenhillier/geoprojects/earthworks/db"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkt"
-	sq "gopkg.in/Masterminds/squirrel.v1"
 )
 
 // ProjectsRepository is the set of methods available for interacting with Projects records

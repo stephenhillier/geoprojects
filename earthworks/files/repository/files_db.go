@@ -1,7 +1,7 @@
 package repository
 
 import (
-	sq "gopkg.in/Masterminds/squirrel.v1"
+	sq "github.com/Masterminds/squirrel"
 
 	"github.com/stephenhillier/geoprojects/earthworks"
 	"github.com/stephenhillier/geoprojects/earthworks/db"
