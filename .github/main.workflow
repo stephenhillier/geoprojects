@@ -15,13 +15,13 @@ action "API - Filter for master branch" {
 action "Filter for API folder" {
   needs = ["API - Filter for master branch"]
   uses = "netlify/actions/diff-includes@exit-code-78"
-  args = "api"
+  args = "earthworks"
 }
 
 action "Build image" {
   needs = ["Filter for API folder"]
   uses = "actions/docker/cli@04185cf"
-  args = ["build -t stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./api/"]
+  args = ["build -t stephenhillier/earthworks-api:$(echo ${GITHUB_SHA} | head -c7) ./earthworks/"]
 }
 
 action "Docker login" {
@@ -79,8 +79,6 @@ action "stephenhillier/apitest@master" {
   needs = ["Rollout API server"]
   args = "-f .github/apitest/projects.apitest.yaml -e auth0_id=$AUTH0_ID -e auth0_secret=$AUTH0_SECRET"
   secrets = ["AUTH0_ID", "AUTH0_SECRET"]
-
-  # backend API pipeline
 }
 
 # Frontend pipeline
