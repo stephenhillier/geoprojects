@@ -59,6 +59,7 @@ requests:
       start_date: "2018-10-01"
       end_date: ""
       field_eng: STH
+      drilling_method: air_rotary
     expect:
       status: 201
     set:
