@@ -33,6 +33,10 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 
 					r.Get("/samples", api.Handlers.Boreholes.ListSamplesByProject)
 
+					r.Route("/instrumentation", func(r chi.Router) {
+						r.Get("/", api.Handlers.Instrumentation.List)
+					})
+
 					r.Route("/files", func(r chi.Router) {
 						r.Post("/", api.Handlers.Files.NewFile)
 						r.Get("/", api.Handlers.Files.ListFiles)
