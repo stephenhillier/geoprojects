@@ -228,6 +228,44 @@ CREATE TABLE public.gsa_test (
 
 
 --
+-- Name: instrument; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.instrument (
+    id integer NOT NULL,
+    project integer NOT NULL,
+    datapoint integer NOT NULL,
+    program integer,
+    name text NOT NULL,
+    device_id uuid,
+    install_date date NOT NULL,
+    field_eng text NOT NULL,
+    CONSTRAINT instrument_field_eng_check CHECK ((char_length(field_eng) < 80)),
+    CONSTRAINT instrument_name_check CHECK ((char_length(name) < 40))
+);
+
+
+--
+-- Name: instrument_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.instrument_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: instrument_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.instrument_id_seq OWNED BY public.instrument.id;
+
+
+--
 -- Name: lab_test; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -447,6 +485,40 @@ ALTER SEQUENCE public.strata_id_seq OWNED BY public.strata.id;
 
 
 --
+-- Name: time_series_data; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.time_series_data (
+    id integer NOT NULL,
+    device_id uuid NOT NULL,
+    instrument integer,
+    series integer DEFAULT 0,
+    "time" timestamp with time zone,
+    value double precision
+);
+
+
+--
+-- Name: time_series_data_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.time_series_data_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: time_series_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.time_series_data_id_seq OWNED BY public.time_series_data.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -506,6 +578,13 @@ ALTER TABLE ONLY public.gsa_data ALTER COLUMN id SET DEFAULT nextval('public.gsa
 
 
 --
+-- Name: instrument id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instrument ALTER COLUMN id SET DEFAULT nextval('public.instrument_id_seq'::regclass);
+
+
+--
 -- Name: lab_test id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -538,6 +617,13 @@ ALTER TABLE ONLY public.soil_sample ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 ALTER TABLE ONLY public.strata ALTER COLUMN id SET DEFAULT nextval('public.strata_id_seq'::regclass);
+
+
+--
+-- Name: time_series_data id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.time_series_data ALTER COLUMN id SET DEFAULT nextval('public.time_series_data_id_seq'::regclass);
 
 
 --
@@ -612,6 +698,22 @@ ALTER TABLE ONLY public.gsa_test
 
 
 --
+-- Name: instrument instrument_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instrument
+    ADD CONSTRAINT instrument_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: instrument instrument_project_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instrument
+    ADD CONSTRAINT instrument_project_name_key UNIQUE (project, name);
+
+
+--
 -- Name: lab_test lab_test_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -673,6 +775,14 @@ ALTER TABLE ONLY public.soil_sample
 
 ALTER TABLE ONLY public.strata
     ADD CONSTRAINT strata_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: time_series_data time_series_data_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.time_series_data
+    ADD CONSTRAINT time_series_data_pkey PRIMARY KEY (id);
 
 
 --
@@ -755,6 +865,30 @@ ALTER TABLE ONLY public.gsa_test
 
 
 --
+-- Name: instrument instrument_datapoint_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instrument
+    ADD CONSTRAINT instrument_datapoint_fkey FOREIGN KEY (datapoint) REFERENCES public.datapoint(id);
+
+
+--
+-- Name: instrument instrument_program_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instrument
+    ADD CONSTRAINT instrument_program_fkey FOREIGN KEY (program) REFERENCES public.field_program(id);
+
+
+--
+-- Name: instrument instrument_project_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instrument
+    ADD CONSTRAINT instrument_project_fkey FOREIGN KEY (project) REFERENCES public.project(id) ON DELETE CASCADE;
+
+
+--
 -- Name: lab_test lab_test_sample_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -795,6 +929,14 @@ ALTER TABLE ONLY public.strata
 
 
 --
+-- Name: time_series_data time_series_data_instrument_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.time_series_data
+    ADD CONSTRAINT time_series_data_instrument_fkey FOREIGN KEY (instrument) REFERENCES public.instrument(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -811,4 +953,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20190403054506'),
     ('20190403054511'),
     ('20190419065059'),
-    ('20190422034654');
+    ('20190422034654'),
+    ('20190607042011');
