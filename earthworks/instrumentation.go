@@ -18,16 +18,16 @@ type InstrumentationRepository interface {
 // various kinds of field data, such as temperature, settlement,
 // inclination etc.
 type Instrument struct {
-	ID          int64
-	Project     int64
-	Program     db.NullInt64  `json:"program"`
-	DeviceID    db.NullString `json:"device_id" db:"device_id"`
-	Name        string
-	FieldEng    string        `json:"field_eng" db:"field_eng"`
-	Type        db.NullString // the type of instrument. todo: code table
-	Datapoint   int64
-	InstallDate time.Time `json:"install_date" db:"install_date"`
-	Location    gis.PointLocation
+	ID          int64             `json:"id"`
+	Project     int64             `json:"project"`
+	Program     db.NullInt64      `json:"program"`
+	DeviceID    db.NullString     `json:"device_id" db:"device_id"`
+	Name        string            `json:"name"`
+	FieldEng    string            `json:"field_eng" db:"field_eng"`
+	Type        db.NullString     `json:"type"` // the type of instrument. todo: code table
+	Datapoint   int64             `json:"datapoint"`
+	InstallDate time.Time         `json:"install_date" db:"install_date"`
+	Location    gis.PointLocation `json:"location"`
 }
 
 // InstrumentCreateRequest is the data needed to create a new instrument

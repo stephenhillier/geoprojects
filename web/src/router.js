@@ -17,6 +17,8 @@ import BoreholeDetail from './components/dashboard/boreholes/BoreholeDetail.vue'
 import BoreholeDetailActions from './components/dashboard/actions/BoreholeDetailActions.vue'
 import SamplesHome from './components/dashboard/lab/SamplesHome.vue'
 
+import InstrumentationHome from './components/dashboard/instrumentation/InstrumentationHome.vue'
+
 import LabTestingHome from './components/dashboard/lab/LabTestingHome.vue'
 import MoistureContent from './components/dashboard/lab/MoistureContent.vue'
 import GrainSizeAnalysis from './components/dashboard/lab/GrainSizeAnalysis.vue'
@@ -161,6 +163,19 @@ const router = new Router({
               {
                 text: 'Samples',
                 to: { name: 'samples-home' }
+              }
+            ]
+          }
+        },
+        {
+          path: 'instrumentation',
+          name: 'instrumentation-home',
+          component: InstrumentationHome,
+          meta: {
+            breadcrumbs: [
+              {
+                text: 'Instrumentation',
+                to: { name: 'instrumentation-home' }
               }
             ]
           }

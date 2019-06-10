@@ -13,6 +13,8 @@
     <ul class="menu-list">
       <li><router-link :to="{ name: 'project-boreholes', params: { id: this.$route.params.id } }">
         Boreholes</router-link></li>
+      <li><router-link :to="{ name: 'instrumentation-home', params: { id: this.$route.params.id } }">
+        Instrumentation</router-link></li>
     </ul>
     <p class="menu-label">
       Laboratory
