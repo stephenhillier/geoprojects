@@ -8,7 +8,7 @@ metadata:
   name: earthworks-web
   namespace: earthworks
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: earthworks-web
@@ -20,13 +20,20 @@ spec:
         app: earthworks-web
         version: v1
     spec:
+    
       containers:
       - image: stephenhillier/earthworks-web:latest
         name: earthworks-web
         imagePullPolicy: Always
         ports:
         - containerPort: 80
-        resources: {}
+        resources:
+          requests:
+            cpu: 10m
+            memory: 20mb
+          limits:
+            cpu: 100m
+            memory: 100mb
 status: {}
 ---
 apiVersion: v1

@@ -8,7 +8,7 @@ metadata:
   name: logrend
   namespace: earthworks
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: logrend
@@ -28,8 +28,8 @@ spec:
         - containerPort: 8081
         resources:
           requests:
-            cpu: 50m
-            memory: 50mb
+            cpu: 10m
+            memory: 20mb
           limits:
             cpu: 100m
             memory: 100mb

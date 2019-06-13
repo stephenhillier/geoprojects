@@ -8,7 +8,7 @@ metadata:
   name: earthworks-api
   namespace: earthworks
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       run: earthworks-api
@@ -29,7 +29,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
-        resources: {}
+        resources:
+          requests:
+            cpu: 10m
+            memory: 20mb
+          limits:
+            cpu: 100m
+            memory: 100mb
         env:
           - name: DBHOST
             valueFrom:
