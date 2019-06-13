@@ -5,6 +5,7 @@
       <multi-marker-map :locations="instruments"></multi-marker-map>
     </div>
     <instrumentation-table class="mt-1" :instruments="instruments"></instrumentation-table>
+    <router-link tag="button" class="button is-primary" :to="{ name: 'instrumentation-new' }">New instrument</router-link>
   </div>
 </template>
 

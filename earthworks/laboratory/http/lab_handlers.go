@@ -65,7 +65,7 @@ func (s *LabSvc) SingleLabTestOptions(w http.ResponseWriter, req *http.Request) 
 func (s *LabSvc) ListLabTestsByProject(w http.ResponseWriter, req *http.Request) {
 	var err error
 	ctx := req.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

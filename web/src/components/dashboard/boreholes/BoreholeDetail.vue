@@ -2,8 +2,8 @@
   <div>
     <div class="columns">
       <div class="column">
-        <h1>{{ borehole.name }}</h1>
-        <h5>Summary</h5>
+        <h1 class="title">{{ borehole.name }}</h1>
+        <h2 class="subtitle">Summary</h2>
         <div v-if="borehole.location && borehole.location.length">Location: {{ latitude.toFixed(6) }}, {{ longitude.toFixed(6) }}</div>
         <div>
           Started: {{ borehole.start_date | moment('YYYY-MM-DD') }}

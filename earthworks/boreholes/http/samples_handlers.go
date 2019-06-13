@@ -41,7 +41,7 @@ func (svc *BoreholeSvc) ListSamplesByBorehole(w http.ResponseWriter, req *http.R
 // ListSamplesByProject returns samples from a project specified in the URL path
 func (svc *BoreholeSvc) ListSamplesByProject(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

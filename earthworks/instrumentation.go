@@ -12,6 +12,7 @@ import (
 type InstrumentationRepository interface {
 	ListInstruments(project int) ([]*Instrument, error)
 	CreateInstrument(instr InstrumentCreateRequest, project int) (Instrument, error)
+	GetInstrument(id int64) (Instrument, error)
 }
 
 // Instrument is a data collection instrument that records
@@ -32,20 +33,23 @@ type Instrument struct {
 
 // InstrumentCreateRequest is the data needed to create a new instrument
 type InstrumentCreateRequest struct {
-	Project     int64
-	Name        string
+	Project     int64         `json:"project"`
+	Name        string        `json:"name"`
 	DeviceID    db.NullString `json:"device_id" db:"device_id"`
-	Type        db.NullString
-	FieldEng    string      `json:"field_eng" db:"field_eng"`
-	InstallDate db.NullDate `json:"install_date" db:"install_date"`
-	Datapoint   db.NullInt64
-	Location    [2]float64
+	Type        db.NullString `json:"type"`
+	FieldEng    string        `json:"field_eng" db:"field_eng"`
+	InstallDate db.NullDate   `json:"install_date" db:"install_date"`
+	Datapoint   db.NullInt64  `json:"datapoint"`
+	Location    [2]float64    `json:"location"`
 }
 
 // TimeSeriesData contains data in the form of a timestamp and a value.
 type TimeSeriesData struct {
-	ID         int64
-	Instrument int64
-	Timestamp  time.Time
-	Value      float64
+	ID         int64     `json:"id"`
+	Instrument int64     `json:"instrument"`
+	Timestamp  time.Time `json:"timestamp"`
+	Value      float64   `json:"value"`
 }
+
+// InstrumentCtx is a context key for instrumentation
+var InstrumentCtx struct{}

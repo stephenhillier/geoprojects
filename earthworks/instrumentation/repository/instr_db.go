@@ -83,3 +83,27 @@ func (repo *PostgresRepo) CreateInstrument(instr earthworks.InstrumentCreateRequ
 
 	return created, nil
 }
+
+// GetInstrument retrieves details about a single instrument by its ID
+func (repo *PostgresRepo) GetInstrument(id int64) (earthworks.Instrument, error) {
+
+	query := `
+		SELECT
+			instrument.id,
+			instrument.project,
+			instrument.name,
+			instrument.device_id,
+			instrument.datapoint,
+			instrument.field_eng,
+			instrument.install_date,
+			ST_AsBinary(datapoint.location) AS location
+		FROM instrument
+		JOIN datapoint ON instrument.datapoint = datapoint.id
+		WHERE instrument.id = $1	
+	`
+
+	instr := earthworks.Instrument{}
+
+	err := repo.conn.Get(&instr, query, id)
+	return instr, err
+}

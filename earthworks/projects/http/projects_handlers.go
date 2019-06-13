@@ -166,14 +166,14 @@ func (svc *ProjectSvc) ProjectCtxMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), earthworks.ProjectCtx, project)
+		ctx := context.WithValue(r.Context(), earthworks.ContextKey{Name: "ProjectContext"}, project)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
 func getProjectContext(r *http.Request) (earthworks.Project, error) {
 	ctx := r.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		return project, errors.New("error getting project from request context")
 	}

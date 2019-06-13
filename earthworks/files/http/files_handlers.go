@@ -20,7 +20,7 @@ func (svc *FileSvc) NewFile(w http.ResponseWriter, r *http.Request) {
 
 	// get project context
 	ctx := r.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -63,7 +63,7 @@ func (svc *FileSvc) NewFile(w http.ResponseWriter, r *http.Request) {
 func (svc *FileSvc) ListFiles(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx := r.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -100,7 +100,7 @@ func (svc *FileSvc) ListFiles(w http.ResponseWriter, r *http.Request) {
 // GetFile retrieves a file from the file service repo
 func (svc *FileSvc) GetFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -123,7 +123,7 @@ func (svc *FileSvc) GetFile(w http.ResponseWriter, r *http.Request) {
 // DeleteFile expires a file from the file service repo
 func (svc *FileSvc) DeleteFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
@@ -145,7 +145,7 @@ func (svc *FileSvc) DeleteFile(w http.ResponseWriter, r *http.Request) {
 // RestoreFile unexpires an expired file from the file service repo
 func (svc *FileSvc) RestoreFile(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	project, ok := ctx.Value(earthworks.ProjectCtx).(earthworks.Project)
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return

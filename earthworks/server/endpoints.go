@@ -36,6 +36,10 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 					r.Route("/instrumentation", func(r chi.Router) {
 						r.Get("/", api.Handlers.Instrumentation.List)
 						r.Post("/", api.Handlers.Instrumentation.Create)
+						r.Route("/{instrumentID}", func(r chi.Router) {
+							r.Use(api.Handlers.Instrumentation.InstrumentCtxMiddleware)
+							r.Get("/", api.Handlers.Instrumentation.Get)
+						})
 					})
 
 					r.Route("/files", func(r chi.Router) {
