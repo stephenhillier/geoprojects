@@ -107,3 +107,19 @@ func (repo *PostgresRepo) GetInstrument(id int64) (earthworks.Instrument, error)
 	err := repo.conn.Get(&instr, query, id)
 	return instr, err
 }
+
+// PostTimeSeriesData takes any data in an earthworks.TimeSeriesData type
+// (normally containing a timestamp and a value), and stores it in the database.
+// The DeviceID is normally the serial number of the device.
+func (repo *PostgresRepo) PostTimeSeriesData(data earthworks.TimeSeriesData) (earthworks.TimeSeriesData, error) {
+	query := `
+		INSERT INTO time_series_data (device_id, time, value)
+		VALUES ($1, $2, $3)
+		RETURNING id, device_id, time, value
+	`
+
+	created := earthworks.TimeSeriesData{}
+	err := repo.conn.Get(&created, query, data.DeviceID, data.Timestamp, data.Value)
+
+	return created, err
+}

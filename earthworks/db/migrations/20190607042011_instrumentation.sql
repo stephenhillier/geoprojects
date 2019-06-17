@@ -12,7 +12,7 @@ CREATE TABLE instrument (
 );
 
 CREATE TABLE time_series_data (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     device_id UUID NOT NULL,
     instrument INTEGER NULL REFERENCES instrument(id),
     series INTEGER DEFAULT 0,

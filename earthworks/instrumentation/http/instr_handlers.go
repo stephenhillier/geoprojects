@@ -103,3 +103,26 @@ func (svc *InstrumentationSvc) InstrumentCtxMiddleware(next http.Handler) http.H
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+// PostTimeSeriesData handles an incoming request that contains a value and a timestamp.
+// These requests should normally originate from an instrumentation device as the device
+// records and reports readings.
+func (svc *InstrumentationSvc) PostTimeSeriesData(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	dataRequest := earthworks.TimeSeriesData{}
+	err := decoder.Decode(&dataRequest)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	new, err := svc.Repo.PostTimeSeriesData(dataRequest)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	render.Status(r, http.StatusCreated)
+	render.JSON(w, r, new)
+}

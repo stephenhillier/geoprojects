@@ -13,6 +13,13 @@ type InstrumentationRepository interface {
 	ListInstruments(project int) ([]*Instrument, error)
 	CreateInstrument(instr InstrumentCreateRequest, project int) (Instrument, error)
 	GetInstrument(id int64) (Instrument, error)
+	TimeSeriesRepository
+}
+
+// TimeSeriesRepository has methods to store time series data
+// that originates from devices.
+type TimeSeriesRepository interface {
+	PostTimeSeriesData(data TimeSeriesData) (TimeSeriesData, error)
 }
 
 // Instrument is a data collection instrument that records
@@ -46,6 +53,7 @@ type InstrumentCreateRequest struct {
 // TimeSeriesData contains data in the form of a timestamp and a value.
 type TimeSeriesData struct {
 	ID         int64     `json:"id"`
+	DeviceID   string    `json:"device_id"`
 	Instrument int64     `json:"instrument"`
 	Timestamp  time.Time `json:"timestamp"`
 	Value      float64   `json:"value"`
