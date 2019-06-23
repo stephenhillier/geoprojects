@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -115,6 +116,16 @@ func (svc *InstrumentationSvc) PostTimeSeriesData(w http.ResponseWriter, r *http
 		log.Println(err)
 		http.Error(w, err.Error(), 400)
 		return
+	}
+
+	// create a "zero value" time object.  The request timestamp will be "zero"
+	// if a timestamp was not provided along with the data.  If that is the case,
+	// create a new timestamp now.  Ideally, the data should come with a timestamp
+	// in case there were any delays in reporting the data, but in the worst case
+	// scenario we still always need a time.
+	zeroTime := time.Time{}
+	if dataRequest.Timestamp == zeroTime {
+		dataRequest.Timestamp = time.Now()
 	}
 
 	new, err := svc.Repo.PostTimeSeriesData(dataRequest)

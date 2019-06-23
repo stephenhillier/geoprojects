@@ -115,7 +115,7 @@ func (repo *PostgresRepo) PostTimeSeriesData(data earthworks.TimeSeriesData) (ea
 	query := `
 		INSERT INTO time_series_data (device_id, time, value)
 		VALUES ($1, $2, $3)
-		RETURNING id, device_id, time, value
+		RETURNING id, device_id, time as timestamp, value
 	`
 
 	created := earthworks.TimeSeriesData{}

@@ -33,6 +33,9 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 
 					r.Get("/samples", api.Handlers.Boreholes.ListSamplesByProject)
 
+					r.Route("/instrument_data", func(r chi.Router) {
+						r.Post("/", api.Handlers.Instrumentation.PostTimeSeriesData)
+					})
 					r.Route("/instrumentation", func(r chi.Router) {
 						r.Get("/", api.Handlers.Instrumentation.List)
 						r.Post("/", api.Handlers.Instrumentation.Create)

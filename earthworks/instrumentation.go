@@ -53,7 +53,7 @@ type InstrumentCreateRequest struct {
 // TimeSeriesData contains data in the form of a timestamp and a value.
 type TimeSeriesData struct {
 	ID         int64     `json:"id"`
-	DeviceID   string    `json:"device_id"`
+	DeviceID   string    `json:"device_id" db:"device_id"`
 	Instrument int64     `json:"instrument"`
 	Timestamp  time.Time `json:"timestamp"`
 	Value      float64   `json:"value"`
