@@ -12,6 +12,13 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 		r.Group(func(r chi.Router) {
 			// server health check
 			r.Get("/health", health)
+
+			// temporary: allow instrument values to be posted here without authentication.
+			// this endpoint only accepts a number (float) and device id (string).
+			// todo: device authentication.  this is open for testing only.
+			r.Route("/instrument_data", func(r chi.Router) {
+				r.Post("/", api.Handlers.Instrumentation.PostTimeSeriesData)
+			})
 		})
 
 		// 	// Authenticated routes
@@ -33,15 +40,13 @@ func (api *Service) appRoutes(r chi.Router) chi.Router {
 
 					r.Get("/samples", api.Handlers.Boreholes.ListSamplesByProject)
 
-					r.Route("/instrument_data", func(r chi.Router) {
-						r.Post("/", api.Handlers.Instrumentation.PostTimeSeriesData)
-					})
 					r.Route("/instrumentation", func(r chi.Router) {
 						r.Get("/", api.Handlers.Instrumentation.List)
 						r.Post("/", api.Handlers.Instrumentation.Create)
 						r.Route("/{instrumentID}", func(r chi.Router) {
 							r.Use(api.Handlers.Instrumentation.InstrumentCtxMiddleware)
 							r.Get("/", api.Handlers.Instrumentation.Get)
+							r.Get("/data", api.Handlers.Instrumentation.GetTimeSeriesData)
 						})
 					})
 

@@ -136,3 +136,45 @@ func (svc *InstrumentationSvc) PostTimeSeriesData(w http.ResponseWriter, r *http
 	render.Status(r, http.StatusCreated)
 	render.JSON(w, r, new)
 }
+
+// GetTimeSeriesData handles a request for time series based instrumentation data
+// (e.g., data with a value and a timestamp)
+func (svc *InstrumentationSvc) GetTimeSeriesData(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	instr, ok := ctx.Value(earthworks.InstrumentCtx).(earthworks.Instrument)
+	if !ok {
+		http.Error(w, http.StatusText(422), 422)
+		return
+	}
+
+	// return 404 if there's a mismatch between the project in the URL and the instrument's project.
+	if int64(project.ID) != instr.Project {
+		http.Error(w, http.StatusText(404), 404)
+	}
+
+	data := []*earthworks.TimeSeriesData{}
+
+	deviceID, err := instr.DeviceID.Value()
+	id, ok := deviceID.(string)
+	if err != nil || !ok {
+		// no device ID, return empty dataset now
+		// Client already knows that there is no device_id so should be able to
+		// warn user if required.
+		render.JSON(w, r, data)
+		return
+	}
+
+	data, err = svc.Repo.FetchTimeSeriesData(id)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	render.JSON(w, r, data)
+}

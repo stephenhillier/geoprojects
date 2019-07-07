@@ -123,3 +123,17 @@ func (repo *PostgresRepo) PostTimeSeriesData(data earthworks.TimeSeriesData) (ea
 
 	return created, err
 }
+
+// FetchTimeSeriesData retrieves a time/value series data set from the database
+// for a specified device_id.
+func (repo *PostgresRepo) FetchTimeSeriesData(deviceID string) ([]*earthworks.TimeSeriesData, error) {
+
+	data := []*earthworks.TimeSeriesData{}
+
+	query := `
+		SELECT id, device_id, time as timestamp, value FROM time_series_data WHERE device_id = $1;
+	`
+
+	err := repo.conn.Select(&data, query, deviceID)
+	return data, err
+}

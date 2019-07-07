@@ -16,22 +16,47 @@
         </div>
       </div>
     </div>
+    <div class="container mt-3">
+      <div class="card">
+        <ThermChart
+          v-if="chartLoaded"
+          :chart-data="chartData"
+          :options="options"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import SingleMarkerMap from '@/components/common/SingleMarkerMap.vue'
+import ThermChart from '@/components/charts/ThermChart.js'
 
 export default {
   name: 'InstrumentDetails',
   components: {
-    SingleMarkerMap
+    SingleMarkerMap,
+    ThermChart
   },
   data () {
     return {
       instrument: {
         location: []
-      }
+      },
+      instrData: [],
+      instrFields: [
+        {
+          field: 'timestamp',
+          label: 'Time'
+        },
+        {
+          field: 'value',
+          label: 'Value'
+        }
+      ],
+      chartData: null,
+      chartLoaded: false,
+      options: { responsive: true, maintainAspectRatio: false }
     }
   },
   computed: {
@@ -49,10 +74,43 @@ export default {
       }).catch((e) => {
         this.$noty.error('An error occurred while retrieving instrument summary.')
       })
+    },
+    fetchData () {
+      this.$http.get(`projects/${this.$route.params.id}/instrumentation/${this.$route.params.instr}/data`).then((response) => {
+        this.instrData = response.data
+        this.chartData = this.buildChartData(this.instrData)
+        this.chartLoaded = true
+      }).catch((e) => {
+        this.$noty.error('An error occurred while retrieving instrument data.')
+      })
+    },
+    buildChartData (dataset) {
+      const labels = []
+      const set = []
+      for (let i = 0; i < dataset.length; i++) {
+        labels.push(dataset[i].timestamp)
+        set.push(dataset[i].value)
+      }
+      return {
+        labels: labels,
+        datasets: [
+          {
+            backgroundColor: '#fc6c71',
+            borderColor: '#FC2525',
+            borderWidth: 2,
+            label: 'Resistance (Ohms)',
+            fill: false,
+            pointBackgroundColor: '#FC2525',
+            pointBorderColor: '#FC2525',
+            data: set
+          }
+        ]
+      }
     }
   },
   created () {
     this.fetchInstrument()
+    this.fetchData()
   }
 }
 </script>

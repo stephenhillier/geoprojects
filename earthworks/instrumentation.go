@@ -20,6 +20,7 @@ type InstrumentationRepository interface {
 // that originates from devices.
 type TimeSeriesRepository interface {
 	PostTimeSeriesData(data TimeSeriesData) (TimeSeriesData, error)
+	FetchTimeSeriesData(deviceID string) ([]*TimeSeriesData, error)
 }
 
 // Instrument is a data collection instrument that records
