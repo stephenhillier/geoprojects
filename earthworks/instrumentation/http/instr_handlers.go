@@ -63,7 +63,6 @@ func (svc *InstrumentationSvc) Create(w http.ResponseWriter, r *http.Request) {
 // Get handles a GET request and responds with details about a single instrument
 func (svc *InstrumentationSvc) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log.Println(ctx)
 	project, ok := ctx.Value(earthworks.ContextKey{Name: "ProjectContext"}).(earthworks.Project)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
