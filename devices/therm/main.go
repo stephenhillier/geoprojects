@@ -21,7 +21,7 @@ type Reading struct {
 }
 
 func main() {
-	devID := "RaspberryPi-1" // device ID
+	devID := "aaaa1111-aaaa-1aaa-aaaa-123456789abc" // device ID
 	// var diff float64
 
 	var err error
@@ -36,7 +36,7 @@ func main() {
 
 	// work is a function that collects readings and sends them to a server to be stored
 	work := func() {
-		gobot.Every(1*time.Minute, func() {
+		gobot.Every(1*time.Hour, func() {
 
 			r, _ := ads1015.ReadWithDefaults(1)
 			err := report(context.Background(), host, Reading{Value: r, DeviceID: devID})
@@ -68,6 +68,8 @@ func report(ctx context.Context, host *string, v Reading) error {
 		log.Println(err)
 		return err
 	}
+
+	log.Println(v)
 
 	resp, err := http.Post(*host+"/api/v1/instrument_data", "application/json", bytes.NewBuffer(jsonReq))
 	if err != nil {
