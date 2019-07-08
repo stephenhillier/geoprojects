@@ -56,7 +56,22 @@ export default {
       ],
       chartData: null,
       chartLoaded: false,
-      options: { responsive: true, maintainAspectRatio: false }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              unit: 'day',
+              round: 'hour',
+              displayFormats: {
+                day: 'MMM D'
+              }
+            }
+          }]
+        }
+      }
     }
   },
   computed: {
@@ -88,7 +103,9 @@ export default {
       const labels = []
       const set = []
       for (let i = 0; i < dataset.length; i++) {
-        labels.push(dataset[i].timestamp)
+        console.log(dataset[i].timestamp, new Date(dataset[i].timestamp))
+
+        labels.push(new Date(dataset[i].timestamp))
         set.push(dataset[i].value)
       }
       return {
