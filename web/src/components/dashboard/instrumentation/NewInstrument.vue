@@ -20,17 +20,23 @@
                 v-model.number="form.type"
             ></b-input>
           </b-field>
-
-            <b-field label="Date installed">
-              <b-datepicker
-                  id="newInstrumentInstallDate"
-                  placeholder="Click to select..."
-                  icon="calendar"
-                  v-model="form.install_date"
-                  required
-                  >
-              </b-datepicker>
-            </b-field>
+          <b-field label="Device ID">
+            <b-input
+                id="newDeviceID"
+                type="text"
+                v-model="form.device_id"
+            ></b-input>
+          </b-field>
+          <b-field label="Date installed">
+            <b-datepicker
+                id="newInstrumentInstallDate"
+                placeholder="Click to select..."
+                icon="calendar"
+                v-model="form.install_date"
+                required
+                >
+            </b-datepicker>
+          </b-field>
           <b-field label="Field technician/engineer">
             <b-input
                 id="newInstrumentFieldEng"
@@ -100,7 +106,8 @@ export default {
         install_date: null,
         field_eng: null,
         type: '',
-        location: ['', '']
+        location: ['', ''],
+        device_id: ''
       }
     },
     handleFormSubmit () {
